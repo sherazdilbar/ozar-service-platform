@@ -15,9 +15,9 @@ export declare class ChatController {
             } & {
                 id: string;
                 createdAt: Date;
+                text: string;
                 read: boolean;
                 imageUrl: string | null;
-                text: string;
                 conversationId: string;
                 senderId: string;
             };
@@ -75,9 +75,9 @@ export declare class ChatController {
             } & {
                 id: string;
                 createdAt: Date;
+                text: string;
                 read: boolean;
                 imageUrl: string | null;
-                text: string;
                 conversationId: string;
                 senderId: string;
             })[];
@@ -159,18 +159,18 @@ export declare class ChatController {
             currency: string;
             description: string;
             proId: string;
+            images: string[];
             customerId: string;
-            serviceId: string;
             status: import(".prisma/client").$Enums.BookingStatus;
+            serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;
-            images: string[];
+            completedAt: Date | null;
+            cancellationReason: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
             total: number;
-            completedAt: Date | null;
-            cancellationReason: string | null;
             cancelledBy: string | null;
             cancellationFee: number | null;
             refundAmount: number | null;
@@ -216,9 +216,9 @@ export declare class ChatController {
         } & {
             id: string;
             createdAt: Date;
+            text: string;
             read: boolean;
             imageUrl: string | null;
-            text: string;
             conversationId: string;
             senderId: string;
         })[];
@@ -239,9 +239,9 @@ export declare class ChatController {
     } & {
         id: string;
         createdAt: Date;
+        text: string;
         read: boolean;
         imageUrl: string | null;
-        text: string;
         conversationId: string;
         senderId: string;
     }>;

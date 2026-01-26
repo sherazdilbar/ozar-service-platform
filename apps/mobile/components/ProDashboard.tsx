@@ -60,7 +60,7 @@ export default function ProDashboard() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+        <ActivityIndicator size="large" color="#00BCD4" />
       </View>
     );
   }
@@ -76,7 +76,7 @@ export default function ProDashboard() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Gradient Header */}
         <LinearGradient
-          colors={['#667eea', '#764ba2']}
+          colors={['#00BCD4', '#00ACC1']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.header}
@@ -99,7 +99,7 @@ export default function ProDashboard() {
                 <Text style={styles.earningIcon}>💰</Text>
               </View>
               <Text style={styles.earningAmount}>
-                ${stats.todayEarnings.toFixed(2)}
+                {stats.todayEarnings.toFixed(0)} Ft
               </Text>
               <Text style={styles.earningDetail}>
                 {stats.todayBookings} booking{stats.todayBookings !== 1 ? 's' : ''}
@@ -112,7 +112,7 @@ export default function ProDashboard() {
                 <Text style={styles.earningIcon}>📈</Text>
               </View>
               <Text style={styles.earningAmount}>
-                ${stats.weekEarnings.toFixed(2)}
+                {stats.weekEarnings.toFixed(0)} Ft
               </Text>
               <Text style={styles.earningGrowth}>
                 {stats.weekGrowth > 0 ? '+' : ''}{stats.weekGrowth}% from last week
@@ -199,7 +199,7 @@ export default function ProDashboard() {
                     <Text style={styles.serviceName}>{booking.service?.name || 'Service'}</Text>
                   </View>
                   <Text style={styles.bookingPrice}>
-                    ${booking.pricing?.total || booking.service?.price || 0}
+                    {booking.pricing?.total || booking.service?.price || 0} Ft
                   </Text>
                 </View>
                 <View style={styles.scheduleTime}>
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   },
   earningGrowth: {
     fontSize: 12,
-    color: '#10B981',
+    color: 'rgba(255, 255, 255, 0.95)',
     fontWeight: '600',
   },
   statsCard: {
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#4F46E5',
+    color: '#00BCD4',
   },
   emptySchedule: {
     alignItems: 'center',
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: '#E0E7FF',
+    backgroundColor: '#B2EBF2',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#4F46E5',
+    color: '#00838F',
   },
   scheduleInfo: {
     flex: 1,
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   bookingPrice: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#4F46E5',
+    color: '#00BCD4',
   },
   scheduleTime: {
     flexDirection: 'row',
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   setupButton: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#00BCD4',
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 12,

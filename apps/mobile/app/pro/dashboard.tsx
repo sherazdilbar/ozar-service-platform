@@ -156,7 +156,7 @@ export default function ProDashboardScreen() {
       >
         {/* Header */}
         <LinearGradient
-          colors={['#FF6B35', '#FF8C61']}
+          colors={['#00BCD4', '#00ACC1']}
           style={styles.header}
         >
           <Text style={styles.greeting}>Welcome back,</Text>
@@ -179,24 +179,24 @@ export default function ProDashboardScreen() {
         <View style={styles.earningsSection}>
           <View style={styles.earningCard}>
             <LinearGradient
-              colors={['#10B981', '#059669']}
+              colors={['#00BCD4', '#00ACC1']}
               style={styles.earningGradient}
             >
               <Text style={styles.earningLabel}>Total Earnings</Text>
               <Text style={styles.earningValue}>
-                {stats.totalEarnings.toLocaleString()} HUF
+                {stats.totalEarnings.toLocaleString()} Ft
               </Text>
             </LinearGradient>
           </View>
           
           <View style={styles.earningCard}>
             <LinearGradient
-              colors={['#3B82F6', '#2563EB']}
+              colors={['#FF6B35', '#FF8C61']}
               style={styles.earningGradient}
             >
               <Text style={styles.earningLabel}>This Month</Text>
               <Text style={styles.earningValue}>
-                {stats.monthlyEarnings.toLocaleString()} HUF
+                {stats.monthlyEarnings.toLocaleString()} Ft
               </Text>
             </LinearGradient>
           </View>
@@ -238,7 +238,7 @@ export default function ProDashboardScreen() {
               onPress={() => router.push('/(tabs)/bookings')}
             >
               <LinearGradient
-                colors={['#F59E0B', '#D97706']}
+                colors={['#00BCD4', '#00ACC1']}
                 style={styles.actionGradient}
               >
                 <Text style={styles.actionEmoji}>📅</Text>
@@ -251,7 +251,7 @@ export default function ProDashboardScreen() {
               onPress={() => router.push('/pro/services')}
             >
               <LinearGradient
-                colors={['#8B5CF6', '#7C3AED']}
+                colors={['#FF6B35', '#FF8C61']}
                 style={styles.actionGradient}
               >
                 <Text style={styles.actionEmoji}>🛠️</Text>
@@ -264,7 +264,7 @@ export default function ProDashboardScreen() {
               onPress={() => router.push('/pro/profile-edit')}
             >
               <LinearGradient
-                colors={['#06B6D4', '#0891B2']}
+                colors={['#10B981', '#059669']}
                 style={styles.actionGradient}
               >
                 <Text style={styles.actionEmoji}>👤</Text>
@@ -277,7 +277,7 @@ export default function ProDashboardScreen() {
               onPress={() => router.push('/(tabs)/chat')}
             >
               <LinearGradient
-                colors={['#EC4899', '#DB2777']}
+                colors={['#8B5CF6', '#7C3AED']}
                 style={styles.actionGradient}
               >
                 <Text style={styles.actionEmoji}>💬</Text>
@@ -324,7 +324,7 @@ export default function ProDashboardScreen() {
                     {booking.isASAP ? '⚡ ASAP' : `📅 ${new Date(booking.scheduledFor!).toLocaleDateString()}`}
                   </Text>
                   <Text style={styles.bookingPrice}>
-                    {booking.total.toLocaleString()} {booking.currency}
+                    {booking.total.toLocaleString()} Ft
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -602,6 +602,6 @@ const styles = StyleSheet.create({
   bookingPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FF6B35',
+    color: '#00BCD4',
   },
 });

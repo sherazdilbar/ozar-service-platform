@@ -57,7 +57,7 @@ export default function ProServicesScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+        <ActivityIndicator size="large" color="#FF6B35" />
       </View>
     );
   }
@@ -178,8 +178,7 @@ export default function ProServicesScreen() {
 
                       <View style={styles.serviceFooter}>
                         <View style={styles.priceContainer}>
-                          <Text style={styles.priceSymbol}>$</Text>
-                          <Text style={styles.priceAmount}>{service.price}</Text>
+                          <Text style={styles.priceAmount}>{service.price} Ft</Text>
                           <Text style={styles.priceUnit}>
                             /{service.pricingModel === 'HOURLY' ? 'hr' : service.pricingModel === 'FIXED' ? 'fixed' : 'visit'}
                           </Text>
@@ -263,10 +262,10 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#FF6B35',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#4F46E5',
+    shadowColor: '#FF6B35',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -449,9 +448,9 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   priceAmount: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '700',
-    color: '#111827',
+    color: '#FF6B35',
   },
   priceUnit: {
     fontSize: 14,
@@ -475,7 +474,7 @@ const styles = StyleSheet.create({
     margin: 16,
     padding: 24,
     borderRadius: 20,
-    backgroundColor: '#667eea',
+    backgroundColor: '#00BCD4',
   },
   ctaTitle: {
     fontSize: 20,
@@ -498,7 +497,7 @@ const styles = StyleSheet.create({
   ctaButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#667eea',
+    color: '#00BCD4',
   },
   emptyState: {
     alignItems: 'center',
@@ -523,7 +522,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   emptyButton: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#FF6B35',
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 12,

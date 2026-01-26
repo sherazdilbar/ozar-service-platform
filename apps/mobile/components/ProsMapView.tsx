@@ -117,7 +117,7 @@ export default function ProsMapView({ professionals, onProSelect }: ProsMapViewP
                   </Text>
                   <View style={styles.markerInfo}>
                     <Text style={styles.markerRating}>⭐ {pro.rating.toFixed(1)}</Text>
-                    <Text style={styles.markerPrice}>${pro.startingPrice}/hr</Text>
+                    <Text style={styles.markerPrice}>{pro.startingPrice} Ft/hr</Text>
                   </View>
                 </View>
               </View>
