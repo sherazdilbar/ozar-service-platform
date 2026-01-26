@@ -51,6 +51,11 @@ interface Booking {
     name: string;
     duration: number;
   };
+  review?: {
+    id: string;
+    rating: number;
+    comment: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
