@@ -1,0 +1,572 @@
+{
+  "meta": {
+    "title": "Ozar - Find Local Professionals",
+    "description": "Connect with trusted local professionals for all your home service needs"
+  },
+  "nav": {
+    "howItWorks": "How it works",
+    "trustSafety": "Trust & Safety",
+    "login": "Log in",
+    "signup": "Sign Up",
+    "becomePro": "Become a Pro",
+    "logout": "Logout",
+    "profile": "Profile",
+    "myBookings": "My Bookings",
+    "messages": "Messages",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "hero": {
+    "badge": "Trusted by 50,000+ customers",
+    "title": "Find trusted local",
+    "professionals": "professionals",
+    "subtitle": "Connect with verified, highly-rated service professionals. Book instantly, pay safely, and get the job done right.",
+    "stats": {
+      "professionals": "Professionals",
+      "reviews": "Reviews",
+      "secure": "Secure"
+    },
+    "cta": {
+      "findPro": "Find a Pro Now",
+      "becomePro": "Become a Pro"
+    }
+  },
+  "search": {
+    "title": "What service do you need?",
+    "subtitle": "Search for professionals or browse by category",
+    "placeholder": "Search for services or professionals...",
+    "button": "Search",
+    "quickActions": {
+      "availableToday": "Available Today",
+      "topRated": "Top Rated",
+      "verifiedOnly": "Verified Only"
+    }
+  },
+  "categories": {
+    "title": "Browse by Category",
+    "subtitle": "Find the perfect professional for your needs"
+  },
+  "map": {
+    "title": "Explore Professionals Near You",
+    "loading": "Loading map...",
+    "available": "professionals available",
+    "viewAll": "View All Professionals"
+  },
+  "footer": {
+    "tagline": "Connect with trusted local professionals for all your home service needs.",
+    "forCustomers": "For Customers",
+    "forProfessionals": "For Professionals",
+    "company": "Company",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2024 Ozar. All rights reserved."
+  },
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Log in to your account to continue",
+    "heroTitle": "Welcome back to your trusted service marketplace",
+    "heroSubtitle": "Connect with verified professionals and get things done.",
+    "feature1Title": "10,000+ Professionals",
+    "feature1Desc": "Verified experts ready to help",
+    "feature2Title": "Secure Payments",
+    "feature2Desc": "Your money is protected",
+    "email": "Email",
+    "emailPlaceholder": "john@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "Log in",
+    "loggingIn": "Logging in...",
+    "noAccount": "Don't have an account?",
+    "signupLink": "Sign up",
+    "orContinue": "Or continue with",
+    "google": "Google",
+    "facebook": "Facebook",
+    "demoAccess": "Quick Demo Access",
+    "demoPro": "Pro",
+    "demoAdmin": "Admin",
+    "demoPassword": "Password: demo123"
+  },
+  "signup": {
+    "title": "Create account",
+    "subtitle": "Start your journey with us today",
+    "heroTitle": "Join thousands of satisfied users",
+    "heroSubtitle": "Whether you're looking for services or offering them, we've got you covered.",
+    "step": "Step",
+    "of": "of",
+    "customer": "Customer",
+    "professional": "Professional",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "John",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Doe",
+    "email": "Email",
+    "emailPlaceholder": "john@example.com",
+    "phone": "Phone",
+    "phonePlaceholder": "+1 234 567 8900",
+    "city": "City",
+    "cityPlaceholder": "Budapest",
+    "area": "Street/Area",
+    "areaPlaceholder": "Select city first",
+    "selectCityFirst": "Select city first",
+    "locationConfirmed": "Location confirmed:",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordStrength": {
+      "weak": "Weak",
+      "medium": "Medium",
+      "strong": "Strong"
+    },
+    "continue": "Continue",
+    "back": "Back",
+    "createAccount": "Create account",
+    "creating": "Creating...",
+    "agreeTerms": "By signing up, you agree to our",
+    "terms": "Terms",
+    "and": "and",
+    "privacy": "Privacy Policy",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Log in",
+    "quickSetup": "Quick & Easy Setup",
+    "quickSetupDesc": "Get started in under 2 minutes",
+    "freeToJoin": "100% Free to Join",
+    "freeToJoinDesc": "No hidden fees or charges"
+  },
+  "searchPage": {
+    "title": "Find Professionals",
+    "professionals": "professionals",
+    "available": "available",
+    "showingResults": "Showing results",
+    "nearYou": "near you",
+    "filters": "Filters",
+    "advancedFilters": "Advanced Filters",
+    "availableNow": "Available Now",
+    "availableNowDesc": "Show only pros available right now",
+    "minimumRating": "Minimum Rating",
+    "any": "Any",
+    "priceRange": "Price Range (per hour)",
+    "minPrice": "Min Price",
+    "maxPrice": "Max Price",
+    "under": "Under",
+    "distance": "Distance",
+    "searchingWithin": "Searching within",
+    "radius": "km radius",
+    "sortBy": "Sort By",
+    "recommended": "Recommended",
+    "highestRating": "Highest Rating",
+    "lowestPrice": "Lowest Price",
+    "nearest": "Nearest",
+    "fastestResponse": "Fastest Response",
+    "clearAllFilters": "Clear All Filters",
+    "noResults": "No professionals found",
+    "tryAdjusting": "Try adjusting your filters or search area",
+    "clearFilters": "Clear Filters",
+    "findingProfessionals": "Finding professionals...",
+    "topRated": "Top Rated",
+    "experienced": "Experienced",
+    "reviews": "reviews",
+    "jobsCompleted": "Jobs Completed",
+    "responseTime": "Response Time",
+    "location": "Location",
+    "services": "Services",
+    "viewProfile": "View Profile",
+    "listView": "List View",
+    "mapView": "Map View",
+    "startingFrom": "Starting from"
+  },
+  "proProfile": {
+    "loading": "Loading profile...",
+    "notFound": "Professional Not Found",
+    "notFoundDesc": "This profile doesn't exist or has been removed",
+    "backToHome": "Back to Home",
+    "back": "Back",
+    "availableNow": "Available Now",
+    "reviews": "reviews",
+    "completed": "Completed",
+    "yearsExp": "Years exp",
+    "bookNow": "Book Now",
+    "sendMessage": "Send Message",
+    "prosCannotBook": "Pros Cannot Book Services",
+    "prosCannotMessage": "Pros Cannot Message Pros",
+    "responseTime": "Response time",
+    "serviceRadius": "Service radius",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "reviewsTab": "Reviews",
+    "aboutMe": "About Me",
+    "servicesOffered": "Services Offered",
+    "portfolioGallery": "Portfolio Gallery",
+    "customerReviews": "Customer Reviews",
+    "perHour": "Per Hour",
+    "fixedPrice": "Fixed Price",
+    "inspection": "Inspection",
+    "noPortfolio": "No Portfolio Yet",
+    "noPortfolioDesc": "This professional hasn't added any portfolio items",
+    "noReviews": "No Reviews Yet",
+    "noReviewsDesc": "Be the first to review this professional!",
+    "signInRequired": "Sign In Required",
+    "signInDesc": "Please sign in or create an account to book services and message professionals",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "newToOzar": "New to Ozar? Sign up to get started with booking trusted professionals",
+    "responseFrom": "Response from",
+    "backToDashboard": "Back to Dashboard",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "loadingProfile": "Loading your profile...",
+    "rating": "Rating",
+    "businessName": "Business Name",
+    "businessNamePlaceholder": "e.g., Ali's Electrical Services",
+    "professionalBio": "Professional Bio",
+    "bioPlaceholder": "Tell customers about your experience, expertise, and what makes you stand out...",
+    "bioHelp": "💡 A great bio helps customers trust you",
+    "contactPhone": "Contact Phone",
+    "availabilityStatus": "Availability Status",
+    "availableSoon": "Available Soon",
+    "busy": "Busy",
+    "offline": "Offline",
+    "serviceCategories": "Service Categories",
+    "selectAllServices": "Select all services you offer",
+    "locationServiceArea": "Location & Service Area",
+    "whereYouWork": "Where you work and serve customers",
+    "yourBaseLocation": "Your Base Location",
+    "autoDetect": "Auto-Detect",
+    "detecting": "Detecting...",
+    "city": "City",
+    "basicInfoTab": "Basic Info",
+    "servicesTab": "Services",
+    "locationTab": "Location",
+    "portfolioTab": "Portfolio"
+  },
+  "howItWorks": {
+    "badge": "Simple, Fast, Reliable",
+    "title": "How Ozar Works",
+    "subtitle": "Connect with trusted professionals in 4 simple steps. From search to completion, we've got you covered.",
+    "getStarted": "Get Started",
+    "becomePro": "Become a Pro",
+    "step": "Step",
+    "step1": {
+      "title": "Search for Services",
+      "description": "Browse through thousands of verified professionals. Use filters to find exactly what you need - by category, location, rating, or availability.",
+      "point1": "Search by service type or professional name",
+      "point2": "Filter by location, price, and ratings",
+      "point3": "View profiles, portfolios, and reviews"
+    },
+    "step2": {
+      "title": "Connect & Discuss",
+      "description": "Message professionals directly to discuss your needs, ask questions, and get quotes. Our built-in chat makes communication easy and secure.",
+      "point1": "Real-time messaging with professionals",
+      "point2": "Share photos and details of your project",
+      "point3": "Get instant quotes and availability"
+    },
+    "step3": {
+      "title": "Book & Schedule",
+      "description": "Once you've found the right professional, book their service with just a few clicks. Choose your preferred date and time, and you're all set!",
+      "point1": "Flexible scheduling options",
+      "point2": "Secure payment processing",
+      "point3": "Instant booking confirmation"
+    },
+    "step4": {
+      "title": "Get It Done & Review",
+      "description": "The professional completes the work, and you're all set! Leave a review to help others make informed decisions and build trust in our community.",
+      "point1": "Track job progress in real-time",
+      "point2": "Secure payment after completion",
+      "point3": "Leave reviews and ratings"
+    },
+    "whyChoose": {
+      "title": "Why Choose Ozar?",
+      "subtitle": "Everything you need for a seamless experience",
+      "verified": {
+        "title": "Verified Professionals",
+        "description": "All professionals are background-checked and verified for your safety and peace of mind."
+      },
+      "fast": {
+        "title": "Fast & Easy",
+        "description": "Book services in minutes with our streamlined process. No hassle, no waiting."
+      },
+      "community": {
+        "title": "Trusted Community",
+        "description": "Join thousands of satisfied customers and top-rated professionals in our growing community."
+      }
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Join Ozar today and experience the easiest way to find and book professional services.",
+      "signUp": "Sign Up Now",
+      "browse": "Browse Professionals"
+    }
+  },
+  "profile": {
+    "back": "Back",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "emailCannotChange": "Email cannot be changed",
+    "phone": "Phone",
+    "saveChanges": "Save Changes",
+    "saving": "Saving..."
+  },
+  "bookings": {
+    "title": "My Bookings",
+    "totalBookings": "total booking",
+    "totalBookingsPlural": "total bookings",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "loadingBookings": "Loading your bookings...",
+    "noUpcomingBookings": "No upcoming bookings",
+    "noPastBookings": "No past bookings",
+    "noUpcomingDesc": "You don't have any upcoming bookings. Start by finding a professional for your needs!",
+    "noPastDesc": "You don't have any past bookings yet.",
+    "findProfessionals": "Find Professionals",
+    "status": {
+      "pendingApproval": "Pending Approval",
+      "waitingForPro": "Waiting for professional to accept",
+      "accepted": "Accepted",
+      "proAccepted": "Professional has accepted your request",
+      "scheduled": "Scheduled",
+      "appointmentConfirmed": "Appointment confirmed",
+      "inProgress": "In Progress",
+      "workInProgress": "Work is currently being done",
+      "completed": "Completed",
+      "serviceCompleted": "Service completed successfully",
+      "cancelled": "Cancelled",
+      "cancelledByYou": "Cancelled by you",
+      "cancelledByPro": "Cancelled by professional"
+    },
+    "dateTime": "Date & Time",
+    "asap": "ASAP",
+    "location": "Location",
+    "serviceLocation": "Service Location",
+    "totalPrice": "Total Price",
+    "viewDetails": "View Details",
+    "bookingStatus": "Booking Status",
+    "bookingDetails": "Booking Details",
+    "description": "Description",
+    "messageProfessional": "Message Professional",
+    "viewProfile": "View Profile",
+    "bookingId": "Booking ID",
+    "redirectingToLogin": "Redirecting to login..."
+  },
+  "chat": {
+    "title": "Messages",
+    "conversations": "conversation",
+    "conversationsPlural": "conversations",
+    "connected": "Connected",
+    "noMessages": "No messages yet",
+    "noMessagesDesc": "Start a conversation with a professional",
+    "browseProfessionals": "Browse Professionals",
+    "online": "Online",
+    "booking": "Booking"
+  },
+  "proDashboard": {
+    "welcomeBack": "Welcome back",
+    "businessToday": "Here's what's happening with your business today",
+    "todayEarnings": "Today's Earnings",
+    "today": "Today",
+    "total": "Total",
+    "jobs": "jobs",
+    "activeBookings": "Active Bookings",
+    "active": "Active",
+    "completedToday": "Completed Today",
+    "greatWork": "Great work!",
+    "totalEarnings": "Total Earnings",
+    "allTime": "All Time",
+    "jobsCompleted": "jobs completed",
+    "manageServices": "Manage Services",
+    "addEditServices": "Add or edit your services",
+    "editProfile": "Edit Profile",
+    "updateInfo": "Update your information",
+    "messages": "Messages",
+    "chatWithCustomers": "Chat with customers",
+    "pendingRequests": "Pending Requests",
+    "request": "request",
+    "requests": "requests",
+    "waitingForResponse": "waiting for response",
+    "noPendingRequests": "No pending requests",
+    "newRequestsAppear": "New booking requests will appear here",
+    "processing": "Processing...",
+    "accept": "Accept",
+    "decline": "Decline",
+    "todaySchedule": "Today's Schedule",
+    "booking": "booking",
+    "bookings": "bookings",
+    "scheduled": "scheduled",
+    "noBookingsToday": "No bookings today",
+    "scheduleIsClear": "Your schedule is clear",
+    "performance": "Performance",
+    "responseTime": "Response Time",
+    "avgResponse": "Average response",
+    "completionRate": "Completion Rate",
+    "jobsCompletedPercent": "Jobs completed",
+    "thisWeek": "This Week",
+    "todaysEarnings": "Today's earnings",
+    "topPros": "You're in the top 15% of pros!",
+    "quickLinks": "Quick Links",
+    "manageAvailability": "Manage Availability",
+    "viewAllBookings": "View All Bookings",
+    "asap": "ASAP"
+  },
+  "proServices": {
+    "title": "My Services",
+    "subtitle": "Manage your service offerings and pricing",
+    "backToDashboard": "Back to Dashboard",
+    "addService": "Add Service",
+    "editService": "Edit Service",
+    "addNewService": "Add New Service",
+    "serviceName": "Service Name",
+    "serviceNamePlaceholder": "e.g., Electrical Inspection & Repair",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe what this service includes, what customers can expect, and any special features...",
+    "descriptionHelp": "Be detailed to help customers understand what they're booking",
+    "category": "Category",
+    "selectCategory": "Select a category",
+    "pricingModel": "Pricing Model",
+    "fixedPrice": "Fixed Price",
+    "hourlyRate": "Hourly Rate",
+    "price": "Price",
+    "duration": "Duration (minutes)",
+    "durationHelp": "Estimated time to complete this service",
+    "currency": "Currency",
+    "updateService": "Update Service",
+    "updating": "Updating...",
+    "adding": "Adding...",
+    "cancel": "Cancel",
+    "noServices": "No services yet",
+    "noServicesDesc": "Add your first service to start receiving bookings from customers",
+    "addFirstService": "Add Your First Service",
+    "servicesAvailable": "services available",
+    "serviceAvailable": "service available",
+    "edit": "Edit",
+    "delete": "Delete",
+    "perHour": "per hour",
+    "fixed": "fixed",
+    "loadingServices": "Loading your services..."
+  },
+  "trustSafety": {
+    "badge": "Your Safety is Our Priority",
+    "title": "Trust & Safety",
+    "subtitle": "We're committed to creating a safe, secure, and trustworthy platform for everyone. Learn how we protect you every step of the way.",
+    "stats": {
+      "verified": "Verified Pros",
+      "secure": "Secure",
+      "payments": "Payments",
+      "support": "Support"
+    },
+    "verification": {
+      "badge": "Verification Process",
+      "title": "Thoroughly Vetted Professionals",
+      "description": "Every professional on Ozar goes through a comprehensive verification process before they can offer services. We don't compromise on quality or safety.",
+      "identity": {
+        "title": "Identity Verification",
+        "description": "Government-issued ID and address verification"
+      },
+      "background": {
+        "title": "Background Checks",
+        "description": "Criminal record and professional history screening"
+      },
+      "skills": {
+        "title": "Skills Assessment",
+        "description": "Portfolio review and qualification verification"
+      },
+      "insurance": {
+        "title": "Insurance & Licensing",
+        "description": "Valid licenses and insurance documentation"
+      }
+    },
+    "payment": {
+      "badge": "Payment Security",
+      "title": "Your Money is Protected",
+      "description": "We use industry-leading payment processors and hold funds securely until the job is completed to your satisfaction. Your financial information is always encrypted and protected.",
+      "escrow": {
+        "title": "Escrow Protection",
+        "description": "Funds held until work is completed and approved"
+      },
+      "encrypted": {
+        "title": "Encrypted Transactions",
+        "description": "Bank-level encryption for all payments"
+      },
+      "dispute": {
+        "title": "Dispute Resolution",
+        "description": "Fair mediation if issues arise"
+      },
+      "refund": {
+        "title": "Refund Policy",
+        "description": "Money-back guarantee for unsatisfactory work"
+      }
+    },
+    "reviews": {
+      "badge": "Community Trust",
+      "title": "Real Reviews from Real People",
+      "description": "Our review system is built on transparency and authenticity. Only verified customers who have completed a booking can leave reviews, ensuring honest feedback.",
+      "verified": {
+        "title": "Verified Reviews Only",
+        "description": "Reviews from actual completed bookings"
+      },
+      "noFake": {
+        "title": "No Fake Reviews",
+        "description": "AI-powered fraud detection system"
+      },
+      "response": {
+        "title": "Response System",
+        "description": "Professionals can respond to feedback"
+      },
+      "transparent": {
+        "title": "Transparent Ratings",
+        "description": "All ratings visible and unfiltered"
+      }
+    },
+    "privacy": {
+      "badge": "Privacy Protection",
+      "title": "Your Data, Your Control",
+      "description": "We take your privacy seriously. Your personal information is protected with enterprise-grade security, and you have full control over your data at all times.",
+      "minimal": {
+        "title": "Minimal Data Collection",
+        "description": "We only collect what's necessary for the service"
+      },
+      "secure": {
+        "title": "Secure Storage",
+        "description": "Data stored in encrypted, secure servers"
+      },
+      "transparent": {
+        "title": "Transparent Policies",
+        "description": "Clear, easy-to-understand privacy policy"
+      },
+      "audits": {
+        "title": "Regular Audits",
+        "description": "Third-party security audits and compliance checks"
+      }
+    },
+    "support": {
+      "title": "We're Here to Help",
+      "subtitle": "Our dedicated support team is available 24/7",
+      "liveChat": {
+        "title": "Live Chat",
+        "description": "Get instant help from our support team",
+        "button": "Start Chat"
+      },
+      "report": {
+        "title": "Report Issue",
+        "description": "Report safety concerns or violations",
+        "button": "Report Now"
+      },
+      "helpCenter": {
+        "title": "Help Center",
+        "description": "Browse FAQs and guides",
+        "button": "Visit Center"
+      }
+    },
+    "cta": {
+      "title": "Your Safety is Our Mission",
+      "subtitle": "Join thousands of users who trust Ozar for safe, secure, and reliable service connections.",
+      "getStarted": "Get Started Safely",
+      "browse": "Browse Professionals"
+    }
+  }
+}

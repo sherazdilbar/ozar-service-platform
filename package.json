@@ -1,0 +1,19 @@
+{
+  "name": "ozar-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "cd apps/web && npm run dev",
+    "dev:mobile": "cd apps/mobile && npm start",
+    "build:web": "cd apps/web && npm run build",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "5.22.0",
+    "prisma": "5.22.0"
+  }
+}

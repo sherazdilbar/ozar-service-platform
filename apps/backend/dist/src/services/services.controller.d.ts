@@ -1,0 +1,172 @@
+import { ServicesService } from './services.service';
+import { CreateServiceDto } from './dto';
+export declare class ServicesController {
+    private servicesService;
+    constructor(servicesService: ServicesService);
+    findAll(proId?: string, categoryId?: string, req?: any): Promise<({
+        pro: {
+            user: {
+                id: string;
+                firstName: string;
+                lastName: string;
+                avatar: string;
+            };
+        } & {
+            id: string;
+            locationCity: string;
+            locationArea: string;
+            locationLat: number;
+            locationLng: number;
+            createdAt: Date;
+            updatedAt: Date;
+            businessName: string | null;
+            bio: string | null;
+            categories: import(".prisma/client").$Enums.ServiceCategory[];
+            rating: number;
+            reviewCount: number;
+            jobsCompleted: number;
+            yearsExperience: number;
+            verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
+            availabilityStatus: import(".prisma/client").$Enums.AvailabilityStatus;
+            startingPrice: number;
+            currency: string;
+            responseTime: number;
+            serviceAreaCity: string;
+            serviceAreaRadius: number;
+            onboardingCompleted: boolean;
+            onboardingStep: string | null;
+            onboardingStartedAt: Date | null;
+            onboardingCompletedAt: Date | null;
+            userId: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        currency: string;
+        description: string;
+        category: import(".prisma/client").$Enums.ServiceCategory;
+        pricingModel: import(".prisma/client").$Enums.PricingModel;
+        price: number;
+        duration: number;
+        proId: string;
+    })[]>;
+    getMyServices(req: any, categoryId?: string): Promise<({
+        pro: {
+            user: {
+                id: string;
+                firstName: string;
+                lastName: string;
+                avatar: string;
+            };
+        } & {
+            id: string;
+            locationCity: string;
+            locationArea: string;
+            locationLat: number;
+            locationLng: number;
+            createdAt: Date;
+            updatedAt: Date;
+            businessName: string | null;
+            bio: string | null;
+            categories: import(".prisma/client").$Enums.ServiceCategory[];
+            rating: number;
+            reviewCount: number;
+            jobsCompleted: number;
+            yearsExperience: number;
+            verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
+            availabilityStatus: import(".prisma/client").$Enums.AvailabilityStatus;
+            startingPrice: number;
+            currency: string;
+            responseTime: number;
+            serviceAreaCity: string;
+            serviceAreaRadius: number;
+            onboardingCompleted: boolean;
+            onboardingStep: string | null;
+            onboardingStartedAt: Date | null;
+            onboardingCompletedAt: Date | null;
+            userId: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        currency: string;
+        description: string;
+        category: import(".prisma/client").$Enums.ServiceCategory;
+        pricingModel: import(".prisma/client").$Enums.PricingModel;
+        price: number;
+        duration: number;
+        proId: string;
+    })[]>;
+    create(req: any, dto: CreateServiceDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        currency: string;
+        description: string;
+        category: import(".prisma/client").$Enums.ServiceCategory;
+        pricingModel: import(".prisma/client").$Enums.PricingModel;
+        price: number;
+        duration: number;
+        proId: string;
+    }>;
+    delete(id: string, req: any): Promise<{
+        pro: {
+            id: string;
+            locationCity: string;
+            locationArea: string;
+            locationLat: number;
+            locationLng: number;
+            createdAt: Date;
+            updatedAt: Date;
+            businessName: string | null;
+            bio: string | null;
+            categories: import(".prisma/client").$Enums.ServiceCategory[];
+            rating: number;
+            reviewCount: number;
+            jobsCompleted: number;
+            yearsExperience: number;
+            verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
+            availabilityStatus: import(".prisma/client").$Enums.AvailabilityStatus;
+            startingPrice: number;
+            currency: string;
+            responseTime: number;
+            serviceAreaCity: string;
+            serviceAreaRadius: number;
+            onboardingCompleted: boolean;
+            onboardingStep: string | null;
+            onboardingStartedAt: Date | null;
+            onboardingCompletedAt: Date | null;
+            userId: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        currency: string;
+        description: string;
+        category: import(".prisma/client").$Enums.ServiceCategory;
+        pricingModel: import(".prisma/client").$Enums.PricingModel;
+        price: number;
+        duration: number;
+        proId: string;
+    }>;
+    update(id: string, req: any, dto: CreateServiceDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        currency: string;
+        description: string;
+        category: import(".prisma/client").$Enums.ServiceCategory;
+        pricingModel: import(".prisma/client").$Enums.PricingModel;
+        price: number;
+        duration: number;
+        proId: string;
+    }>;
+}

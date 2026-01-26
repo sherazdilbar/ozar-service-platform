@@ -1,0 +1,573 @@
+{
+  "meta": {
+    "title": "Ozar - Találj Helyi Szakembereket",
+    "description": "Kapcsolódj megbízható helyi szakemberekhez minden otthoni szolgáltatási igényedhez"
+  },
+  "nav": {
+    "howItWorks": "Hogyan működik",
+    "trustSafety": "Biztonság",
+    "login": "Bejelentkezés",
+    "signup": "Regisztráció",
+    "becomePro": "Legyél szakember",
+    "logout": "Kijelentkezés",
+    "profile": "Profil",
+    "myBookings": "Foglalásaim",
+    "messages": "Üzenetek",
+    "dashboard": "Irányítópult",
+    "admin": "Admin"
+  },
+  "hero": {
+    "badge": "50 000+ ügyfél bízik bennünk",
+    "title": "Találj megbízható helyi",
+    "professionals": "szakembereket",
+    "subtitle": "Kapcsolódj hitelesített, magasan értékelt szolgáltatókhoz. Foglalj azonnal, fizess biztonságosan, és végeztesd el a munkát megfelelően.",
+    "stats": {
+      "professionals": "Szakember",
+      "reviews": "Értékelés",
+      "secure": "Biztonságos"
+    },
+    "cta": {
+      "findPro": "Találj szakembert most",
+      "becomePro": "Legyél szakember"
+    }
+  },
+  "search": {
+    "title": "Milyen szolgáltatásra van szükséged?",
+    "subtitle": "Keress szakembereket vagy böngéssz kategóriák szerint",
+    "placeholder": "Keress szolgáltatásokat vagy szakembereket...",
+    "button": "Keresés",
+    "quickActions": {
+      "availableToday": "Ma elérhető",
+      "topRated": "Legjobban értékelt",
+      "verifiedOnly": "Csak hitelesített"
+    }
+  },
+  "categories": {
+    "title": "Böngészés kategória szerint",
+    "subtitle": "Találd meg a tökéletes szakembert az igényeidhez"
+  },
+  "map": {
+    "title": "Fedezd fel a közeli szakembereket",
+    "loading": "Térkép betöltése...",
+    "available": "szakember elérhető",
+    "viewAll": "Összes szakember megtekintése"
+  },
+  "footer": {
+    "tagline": "Kapcsolódj megbízható helyi szakemberekhez minden otthoni szolgáltatási igényedhez.",
+    "forCustomers": "Ügyfeleknek",
+    "forProfessionals": "Szakembereknek",
+    "company": "Cég",
+    "aboutUs": "Rólunk",
+    "contact": "Kapcsolat",
+    "privacy": "Adatvédelmi szabályzat",
+    "terms": "Felhasználási feltételek",
+    "copyright": "© 2024 Ozar. Minden jog fenntartva."
+  },
+  "login": {
+    "title": "Üdvözlünk vissza",
+    "subtitle": "Jelentkezz be a fiókodba a folytatáshoz",
+    "heroTitle": "Üdvözlünk vissza a megbízható szolgáltatási piactereden",
+    "heroSubtitle": "Kapcsolódj hitelesített szakemberekhez és végeztesd el a dolgokat.",
+    "feature1Title": "10 000+ szakember",
+    "feature1Desc": "Hitelesített szakértők készen állnak a segítségre",
+    "feature2Title": "Biztonságos fizetések",
+    "feature2Desc": "A pénzed védve van",
+    "email": "E-mail",
+    "emailPlaceholder": "pelda@email.com",
+    "password": "Jelszó",
+    "passwordPlaceholder": "Add meg a jelszavad",
+    "rememberMe": "Emlékezz rám",
+    "forgotPassword": "Elfelejtetted a jelszavad?",
+    "loginButton": "Bejelentkezés",
+    "loggingIn": "Bejelentkezés...",
+    "noAccount": "Nincs még fiókod?",
+    "signupLink": "Regisztrálj",
+    "orContinue": "Vagy folytasd",
+    "google": "Google",
+    "facebook": "Facebook",
+    "demoAccess": "Gyors demo hozzáférés",
+    "demoPro": "Szakember",
+    "demoAdmin": "Admin",
+    "demoPassword": "Jelszó: demo123"
+  },
+  "signup": {
+    "title": "Fiók létrehozása",
+    "subtitle": "Kezdd el az utazást velünk még ma",
+    "heroTitle": "Csatlakozz több ezer elégedett felhasználóhoz",
+    "heroSubtitle": "Akár szolgáltatásokat keresel, akár kínálsz, mi mindent lefedünk.",
+    "step": "Lépés",
+    "of": "/",
+    "customer": "Ügyfél",
+    "professional": "Szakember",
+    "firstName": "Keresztnév",
+    "firstNamePlaceholder": "János",
+    "lastName": "Vezetéknév",
+    "lastNamePlaceholder": "Kovács",
+    "email": "E-mail",
+    "emailPlaceholder": "pelda@email.com",
+    "phone": "Telefon",
+    "phonePlaceholder": "+36 20 123 4567",
+    "city": "Város",
+    "cityPlaceholder": "Budapest",
+    "area": "Utca/Kerület",
+    "areaPlaceholder": "Először válassz várost",
+    "selectCityFirst": "Először válassz várost",
+    "locationConfirmed": "Helyszín megerősítve:",
+    "password": "Jelszó",
+    "passwordPlaceholder": "Add meg a jelszavad",
+    "confirmPassword": "Jelszó megerősítése",
+    "confirmPasswordPlaceholder": "Add meg újra a jelszavad",
+    "passwordMismatch": "A jelszavak nem egyeznek",
+    "passwordStrength": {
+      "weak": "Gyenge",
+      "medium": "Közepes",
+      "strong": "Erős"
+    },
+    "continue": "Folytatás",
+    "back": "Vissza",
+    "createAccount": "Fiók létrehozása",
+    "creating": "Létrehozás...",
+    "agreeTerms": "A regisztrációval elfogadod a",
+    "terms": "Felhasználási feltételeket",
+    "and": "és az",
+    "privacy": "Adatvédelmi szabályzatot",
+    "haveAccount": "Már van fiókod?",
+    "loginLink": "Bejelentkezés",
+    "quickSetup": "Gyors és egyszerű beállítás",
+    "quickSetupDesc": "Kezdj el 2 percen belül",
+    "freeToJoin": "100% ingyenes csatlakozás",
+    "freeToJoinDesc": "Nincsenek rejtett díjak"
+  },
+  "searchPage": {
+    "title": "Szakemberek keresése",
+    "professionals": "szakember",
+    "available": "elérhető",
+    "showingResults": "Találatok megjelenítése",
+    "nearYou": "a közeledben",
+    "filters": "Szűrők",
+    "advancedFilters": "Speciális szűrők",
+    "availableNow": "Most elérhető",
+    "availableNowDesc": "Csak a most elérhető szakemberek",
+    "minimumRating": "Minimum értékelés",
+    "any": "Bármely",
+    "priceRange": "Árkategória (óránként)",
+    "minPrice": "Min ár",
+    "maxPrice": "Max ár",
+    "under": "Alatt",
+    "distance": "Távolság",
+    "searchingWithin": "Keresés",
+    "radius": "km sugarú körben",
+    "sortBy": "Rendezés",
+    "recommended": "Ajánlott",
+    "highestRating": "Legmagasabb értékelés",
+    "lowestPrice": "Legalacsonyabb ár",
+    "nearest": "Legközelebbi",
+    "fastestResponse": "Leggyorsabb válasz",
+    "clearAllFilters": "Összes szűrő törlése",
+    "noResults": "Nem található szakember",
+    "tryAdjusting": "Próbáld módosítani a szűrőket vagy a keresési területet",
+    "clearFilters": "Szűrők törlése",
+    "findingProfessionals": "Szakemberek keresése...",
+    "topRated": "Legjobban értékelt",
+    "experienced": "Tapasztalt",
+    "reviews": "értékelés",
+    "jobsCompleted": "Elvégzett munkák",
+    "responseTime": "Válaszidő",
+    "location": "Helyszín",
+    "services": "Szolgáltatások",
+    "viewProfile": "Profil megtekintése",
+    "listView": "Lista nézet",
+    "mapView": "Térkép nézet",
+    "startingFrom": "Kezdő ár"
+  },
+  "proProfile": {
+    "loading": "Profil betöltése...",
+    "notFound": "Szakember nem található",
+    "notFoundDesc": "Ez a profil nem létezik vagy eltávolították",
+    "backToHome": "Vissza a főoldalra",
+    "back": "Vissza",
+    "availableNow": "Most elérhető",
+    "reviews": "értékelés",
+    "completed": "Elvégzett",
+    "yearsExp": "Év tapasztalat",
+    "bookNow": "Foglalás most",
+    "sendMessage": "Üzenet küldése",
+    "prosCannotBook": "Szakemberek nem foglalhatnak szolgáltatásokat",
+    "prosCannotMessage": "Szakemberek nem üzenhetnek szakembereknek",
+    "responseTime": "Válaszidő",
+    "serviceRadius": "Szolgáltatási sugár",
+    "services": "Szolgáltatások",
+    "portfolio": "Portfólió",
+    "reviewsTab": "Értékelések",
+    "aboutMe": "Rólam",
+    "servicesOffered": "Kínált szolgáltatások",
+    "portfolioGallery": "Portfólió galéria",
+    "customerReviews": "Ügyfél értékelések",
+    "perHour": "Óránként",
+    "fixedPrice": "Fix ár",
+    "inspection": "Felmérés",
+    "noPortfolio": "Még nincs portfólió",
+    "noPortfolioDesc": "Ez a szakember még nem adott hozzá portfólió elemeket",
+    "noReviews": "Még nincsenek értékelések",
+    "noReviewsDesc": "Légy az első, aki értékeli ezt a szakembert!",
+    "signInRequired": "Bejelentkezés szükséges",
+    "signInDesc": "Kérjük, jelentkezz be vagy hozz létre egy fiókot a szolgáltatások foglalásához és az üzenetküldéshez",
+    "signIn": "Bejelentkezés",
+    "createAccount": "Fiók létrehozása",
+    "newToOzar": "Új vagy az Ozaron? Regisztrálj, hogy elkezdhess megbízható szakembereket foglalni",
+    "responseFrom": "Válasz tőle:",
+    "backToDashboard": "Vissza az irányítópulthoz",
+    "saveChanges": "Változtatások mentése",
+    "saving": "Mentés...",
+    "loadingProfile": "Profil betöltése...",
+    "rating": "Értékelés",
+    "basicInfo": "Alapinformációk",
+    "businessName": "Vállalkozás neve",
+    "businessNamePlaceholder": "pl. Ali Elektromos Szolgáltatások",
+    "professionalBio": "Szakmai bemutatkozás",
+    "bioPlaceholder": "Mesélj az ügyfeleknek a tapasztalatodról, szakértelmédről és arról, ami kiemel téged...",
+    "bioHelp": "💡 Egy jó bemutatkozás segít az ügyfeleknek megbízni benned",
+    "contactPhone": "Kapcsolattartó telefon",
+    "availabilityStatus": "Elérhetőségi állapot",
+    "availableSoon": "Hamarosan elérhető",
+    "busy": "Elfoglalt",
+    "offline": "Offline",
+    "serviceCategories": "Szolgáltatási kategóriák",
+    "selectAllServices": "Válaszd ki az összes általad kínált szolgáltatást",
+    "locationServiceArea": "Helyszín és szolgáltatási terület",
+    "whereYouWork": "Ahol dolgozol és kiszolgálod az ügyfeleket",
+    "yourBaseLocation": "Alaphelyszíned",
+    "autoDetect": "Automatikus észlelés",
+    "detecting": "Észlelés...",
+    "city": "Város",
+    "basicInfoTab": "Alapinformációk",
+    "servicesTab": "Szolgáltatások",
+    "locationTab": "Helyszín",
+    "portfolioTab": "Portfólió"
+  },
+  "howItWorks": {
+    "badge": "Egyszerű, Gyors, Megbízható",
+    "title": "Hogyan működik az Ozar",
+    "subtitle": "Kapcsolódj megbízható szakemberekhez 4 egyszerű lépésben. A keresést a befejezésig mindent lefedünk.",
+    "getStarted": "Kezdj el",
+    "becomePro": "Legyél szakember",
+    "step": "Lépés",
+    "step1": {
+      "title": "Keress szolgáltatásokat",
+      "description": "Böngéssz több ezer hitelesített szakember között. Használj szűrőket, hogy pontosan azt találd, amire szükséged van - kategória, helyszín, értékelés vagy elérhetőség szerint.",
+      "point1": "Keresés szolgáltatás típusa vagy szakember neve szerint",
+      "point2": "Szűrés helyszín, ár és értékelések szerint",
+      "point3": "Profilok, portfóliók és értékelések megtekintése"
+    },
+    "step2": {
+      "title": "Kapcsolódj és beszélj",
+      "description": "Üzenj közvetlenül a szakembereknek, hogy megbeszéljétek az igényeidet, kérdezz és kérj árajánlatot. A beépített chat egyszerűvé és biztonságossá teszi a kommunikációt.",
+      "point1": "Valós idejű üzenetküldés szakemberekkel",
+      "point2": "Fotók és részletek megosztása a projektedről",
+      "point3": "Azonnali árajánlatok és elérhetőség"
+    },
+    "step3": {
+      "title": "Foglalj és ütemezz",
+      "description": "Miután megtaláltad a megfelelő szakembert, foglald le a szolgáltatását néhány kattintással. Válaszd ki a kívánt dátumot és időpontot, és kész is vagy!",
+      "point1": "Rugalmas ütemezési lehetőségek",
+      "point2": "Biztonságos fizetési feldolgozás",
+      "point3": "Azonnali foglalási visszaigazolás"
+    },
+    "step4": {
+      "title": "Végeztesd el és értékeld",
+      "description": "A szakember elvégzi a munkát, és kész is vagy! Hagyj értékelést, hogy segíts másoknak megalapozott döntést hozni és építsd a közösségünk bizalmát.",
+      "point1": "Munka előrehaladásának valós idejű követése",
+      "point2": "Biztonságos fizetés befejezés után",
+      "point3": "Értékelések és értékelések hagyása"
+    },
+    "whyChoose": {
+      "title": "Miért válaszd az Ozart?",
+      "subtitle": "Minden, amire szükséged van a zökkenőmentes élményhez",
+      "verified": {
+        "title": "Hitelesített szakemberek",
+        "description": "Minden szakember háttérellenőrzésen esett át és hitelesítve van a biztonságod és nyugalmad érdekében."
+      },
+      "fast": {
+        "title": "Gyors és egyszerű",
+        "description": "Foglalj szolgáltatásokat percek alatt az egyszerűsített folyamatunkkal. Nincs bonyodalom, nincs várakozás."
+      },
+      "community": {
+        "title": "Megbízható közösség",
+        "description": "Csatlakozz több ezer elégedett ügyfélhez és legjobban értékelt szakemberhez a növekvő közösségünkben."
+      }
+    },
+    "cta": {
+      "title": "Készen állsz a kezdésre?",
+      "subtitle": "Csatlakozz az Ozarhoz még ma, és tapasztald meg a legegyszerűbb módját a szakmai szolgáltatások megtalálásának és foglalásának.",
+      "signUp": "Regisztrálj most",
+      "browse": "Szakemberek böngészése"
+    }
+  },
+  "profile": {
+    "back": "Vissza",
+    "personalInfo": "Személyes információk",
+    "firstName": "Keresztnév",
+    "lastName": "Vezetéknév",
+    "email": "E-mail",
+    "emailCannotChange": "Az e-mail nem módosítható",
+    "phone": "Telefon",
+    "saveChanges": "Változtatások mentése",
+    "saving": "Mentés..."
+  },
+  "bookings": {
+    "title": "Foglalásaim",
+    "totalBookings": "foglalás összesen",
+    "totalBookingsPlural": "foglalás összesen",
+    "upcoming": "Közelgő",
+    "past": "Múltbeli",
+    "loadingBookings": "Foglalások betöltése...",
+    "noUpcomingBookings": "Nincsenek közelgő foglalások",
+    "noPastBookings": "Nincsenek múltbeli foglalások",
+    "noUpcomingDesc": "Nincsenek közelgő foglalásaid. Kezdj azzal, hogy találsz egy szakembert az igényeidhez!",
+    "noPastDesc": "Még nincsenek múltbeli foglalásaid.",
+    "findProfessionals": "Szakemberek keresése",
+    "status": {
+      "pendingApproval": "Jóváhagyásra vár",
+      "waitingForPro": "Várakozás a szakember elfogadására",
+      "accepted": "Elfogadva",
+      "proAccepted": "A szakember elfogadta a kérésedet",
+      "scheduled": "Ütemezve",
+      "appointmentConfirmed": "Időpont megerősítve",
+      "inProgress": "Folyamatban",
+      "workInProgress": "A munka jelenleg folyamatban van",
+      "completed": "Befejezve",
+      "serviceCompleted": "Szolgáltatás sikeresen befejezve",
+      "cancelled": "Törölve",
+      "cancelledByYou": "Általad törölve",
+      "cancelledByPro": "Szakember által törölve"
+    },
+    "dateTime": "Dátum és idő",
+    "asap": "Sürgős",
+    "location": "Helyszín",
+    "serviceLocation": "Szolgáltatás helyszíne",
+    "totalPrice": "Teljes ár",
+    "viewDetails": "Részletek megtekintése",
+    "bookingStatus": "Foglalás állapota",
+    "bookingDetails": "Foglalás részletei",
+    "description": "Leírás",
+    "messageProfessional": "Üzenet a szakembernek",
+    "viewProfile": "Profil megtekintése",
+    "bookingId": "Foglalás azonosító",
+    "redirectingToLogin": "Átirányítás a bejelentkezéshez..."
+  },
+  "chat": {
+    "title": "Üzenetek",
+    "conversations": "beszélgetés",
+    "conversationsPlural": "beszélgetés",
+    "connected": "Kapcsolódva",
+    "noMessages": "Még nincsenek üzenetek",
+    "noMessagesDesc": "Kezdj beszélgetést egy szakemberrel",
+    "browseProfessionals": "Szakemberek böngészése",
+    "online": "Online",
+    "booking": "Foglalás"
+  },
+  "proDashboard": {
+    "welcomeBack": "Üdvözlünk vissza",
+    "businessToday": "Itt van, mi történik ma a vállalkozásoddal",
+    "todayEarnings": "Mai bevétel",
+    "today": "Ma",
+    "total": "Összesen",
+    "jobs": "munka",
+    "activeBookings": "Aktív foglalások",
+    "active": "Aktív",
+    "completedToday": "Ma befejezve",
+    "greatWork": "Nagyszerű munka!",
+    "totalEarnings": "Összes bevétel",
+    "allTime": "Minden idők",
+    "jobsCompleted": "elvégzett munka",
+    "manageServices": "Szolgáltatások kezelése",
+    "addEditServices": "Szolgáltatások hozzáadása vagy szerkesztése",
+    "editProfile": "Profil szerkesztése",
+    "updateInfo": "Információk frissítése",
+    "messages": "Üzenetek",
+    "chatWithCustomers": "Csevegés ügyfelekkel",
+    "pendingRequests": "Függőben lévő kérések",
+    "request": "kérés",
+    "requests": "kérés",
+    "waitingForResponse": "válaszra vár",
+    "noPendingRequests": "Nincsenek függőben lévő kérések",
+    "newRequestsAppear": "Az új foglalási kérések itt jelennek meg",
+    "processing": "Feldolgozás...",
+    "accept": "Elfogadás",
+    "decline": "Elutasítás",
+    "todaySchedule": "Mai ütemterv",
+    "booking": "foglalás",
+    "bookings": "foglalás",
+    "scheduled": "ütemezve",
+    "noBookingsToday": "Ma nincsenek foglalások",
+    "scheduleIsClear": "Az ütemterved tiszta",
+    "performance": "Teljesítmény",
+    "responseTime": "Válaszidő",
+    "avgResponse": "Átlagos válasz",
+    "completionRate": "Befejezési arány",
+    "jobsCompletedPercent": "Elvégzett munkák",
+    "thisWeek": "Ezen a héten",
+    "todaysEarnings": "Mai bevétel",
+    "topPros": "A legjobb 15% szakember közé tartozol!",
+    "quickLinks": "Gyors linkek",
+    "manageAvailability": "Elérhetőség kezelése",
+    "viewAllBookings": "Összes foglalás megtekintése",
+    "asap": "Sürgős"
+  },
+  "proServices": {
+    "title": "Szolgáltatásaim",
+    "subtitle": "Szolgáltatási ajánlatok és árazás kezelése",
+    "backToDashboard": "Vissza az irányítópulthoz",
+    "addService": "Szolgáltatás hozzáadása",
+    "editService": "Szolgáltatás szerkesztése",
+    "addNewService": "Új szolgáltatás hozzáadása",
+    "serviceName": "Szolgáltatás neve",
+    "serviceNamePlaceholder": "pl. Elektromos ellenőrzés és javítás",
+    "description": "Leírás",
+    "descriptionPlaceholder": "Írd le, mit tartalmaz ez a szolgáltatás, mire számíthatnak az ügyfelek, és milyen különleges funkciók vannak...",
+    "descriptionHelp": "Légy részletes, hogy segíts az ügyfeleknek megérteni, mit foglalnak",
+    "category": "Kategória",
+    "selectCategory": "Válassz kategóriát",
+    "pricingModel": "Árazási modell",
+    "fixedPrice": "Fix ár",
+    "hourlyRate": "Óradíj",
+    "price": "Ár",
+    "duration": "Időtartam (perc)",
+    "durationHelp": "Becsült idő a szolgáltatás elvégzéséhez",
+    "currency": "Pénznem",
+    "updateService": "Szolgáltatás frissítése",
+    "updating": "Frissítés...",
+    "adding": "Hozzáadás...",
+    "cancel": "Mégse",
+    "noServices": "Még nincsenek szolgáltatások",
+    "noServicesDesc": "Add hozzá az első szolgáltatásodat, hogy elkezdj foglalásokat fogadni az ügyfelektől",
+    "addFirstService": "Add hozzá az első szolgáltatásodat",
+    "servicesAvailable": "szolgáltatás elérhető",
+    "serviceAvailable": "szolgáltatás elérhető",
+    "edit": "Szerkesztés",
+    "delete": "Törlés",
+    "perHour": "óránként",
+    "fixed": "fix",
+    "loadingServices": "Szolgáltatások betöltése..."
+  },
+  "trustSafety": {
+    "badge": "A biztonságod a prioritásunk",
+    "title": "Bizalom és biztonság",
+    "subtitle": "Elkötelezettek vagyunk amellett, hogy biztonságos, védett és megbízható platformot hozzunk létre mindenki számára. Tudd meg, hogyan védünk meg minden lépésnél.",
+    "stats": {
+      "verified": "Hitelesített szakemberek",
+      "secure": "Biztonságos",
+      "payments": "Fizetések",
+      "support": "Támogatás"
+    },
+    "verification": {
+      "badge": "Hitelesítési folyamat",
+      "title": "Alaposan ellenőrzött szakemberek",
+      "description": "Minden szakember átfogó hitelesítési folyamaton megy keresztül, mielőtt szolgáltatásokat kínálhatna. Nem kötünk kompromisszumot a minőség vagy a biztonság terén.",
+      "identity": {
+        "title": "Személyazonosság ellenőrzése",
+        "description": "Kormány által kibocsátott személyi igazolvány és lakcím ellenőrzése"
+      },
+      "background": {
+        "title": "Háttérellenőrzések",
+        "description": "Bűnügyi nyilvántartás és szakmai előzmények szűrése"
+      },
+      "skills": {
+        "title": "Készségfelmérés",
+        "description": "Portfólió áttekintése és képesítés ellenőrzése"
+      },
+      "insurance": {
+        "title": "Biztosítás és engedélyek",
+        "description": "Érvényes engedélyek és biztosítási dokumentáció"
+      }
+    },
+    "payment": {
+      "badge": "Fizetési biztonság",
+      "title": "A pénzed védve van",
+      "description": "Iparágvezető fizetési feldolgozókat használunk, és biztonságosan tartjuk a pénzeszközöket, amíg a munka az elégedettségedre be nem fejeződik. A pénzügyi információid mindig titkosítva és védve vannak.",
+      "escrow": {
+        "title": "Letéti védelem",
+        "description": "A pénzeszközök addig tartva, amíg a munka be nem fejeződik és jóvá nem hagyják"
+      },
+      "encrypted": {
+        "title": "Titkosított tranzakciók",
+        "description": "Banki szintű titkosítás minden fizetéshez"
+      },
+      "dispute": {
+        "title": "Vitarendezés",
+        "description": "Tisztességes közvetítés, ha problémák merülnek fel"
+      },
+      "refund": {
+        "title": "Visszatérítési szabályzat",
+        "description": "Pénz-visszafizetési garancia nem kielégítő munkára"
+      }
+    },
+    "reviews": {
+      "badge": "Közösségi bizalom",
+      "title": "Valódi értékelések valódi emberektől",
+      "description": "Az értékelési rendszerünk átláthatóságra és hitelességre épül. Csak azok a hitelesített ügyfelek hagyhatnak értékelést, akik befejeztek egy foglalást, biztosítva az őszinte visszajelzést.",
+      "verified": {
+        "title": "Csak hitelesített értékelések",
+        "description": "Értékelések tényleges befejezett foglalásokból"
+      },
+      "noFake": {
+        "title": "Nincsenek hamis értékelések",
+        "description": "Mesterséges intelligencia alapú csalásfelismerő rendszer"
+      },
+      "response": {
+        "title": "Válaszrendszer",
+        "description": "A szakemberek válaszolhatnak a visszajelzésekre"
+      },
+      "transparent": {
+        "title": "Átlátható értékelések",
+        "description": "Minden értékelés látható és szűretlen"
+      }
+    },
+    "privacy": {
+      "badge": "Adatvédelmi védelem",
+      "title": "Az adataid, az irányításod",
+      "description": "Komolyan vesszük az adatvédelmedet. A személyes adataid vállalati szintű biztonsággal védettek, és mindig teljes ellenőrzésed van az adataid felett.",
+      "minimal": {
+        "title": "Minimális adatgyűjtés",
+        "description": "Csak azt gyűjtjük, ami szükséges a szolgáltatáshoz"
+      },
+      "secure": {
+        "title": "Biztonságos tárolás",
+        "description": "Az adatok titkosított, biztonságos szervereken tárolva"
+      },
+      "transparent": {
+        "title": "Átlátható szabályzatok",
+        "description": "Világos, könnyen érthető adatvédelmi szabályzat"
+      },
+      "audits": {
+        "title": "Rendszeres ellenőrzések",
+        "description": "Harmadik fél által végzett biztonsági ellenőrzések és megfelelőségi vizsgálatok"
+      }
+    },
+    "support": {
+      "title": "Itt vagyunk, hogy segítsünk",
+      "subtitle": "Elkötelezett támogatási csapatunk 24/7 elérhető",
+      "liveChat": {
+        "title": "Élő chat",
+        "description": "Azonnali segítség a támogatási csapatunktól",
+        "button": "Chat indítása"
+      },
+      "report": {
+        "title": "Probléma jelentése",
+        "description": "Biztonsági aggályok vagy szabálysértések jelentése",
+        "button": "Jelentés most"
+      },
+      "helpCenter": {
+        "title": "Súgóközpont",
+        "description": "GYIK és útmutatók böngészése",
+        "button": "Központ meglátogatása"
+      }
+    },
+    "cta": {
+      "title": "A biztonságod a küldetésünk",
+      "subtitle": "Csatlakozz több ezer felhasználóhoz, akik megbíznak az Ozarban a biztonságos, védett és megbízható szolgáltatási kapcsolatokért.",
+      "getStarted": "Kezdj el biztonságosan",
+      "browse": "Szakemberek böngészése"
+    }
+  }
+}
