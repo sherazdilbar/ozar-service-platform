@@ -1,29 +1,30 @@
 import { Tabs } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
-import { View, Text } from 'react-native';
+import { DashboardIcon, ServicesIcon, BookingsIcon, MessagesIcon, ProfileIcon } from '../../components/TabIcons';
 
 export default function TabLayout() {
   const { user } = useAuth();
   const isPro = user?.role === 'PRO';
 
   if (isPro) {
-    // Professional Tab Layout
+    // Professional Tab Layout - Blue theme matching Figma
     return (
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: '#FF6B35',
+          tabBarActiveTintColor: '#3B82F6',
           tabBarInactiveTintColor: '#9CA3AF',
           tabBarStyle: {
             backgroundColor: 'white',
             borderTopWidth: 1,
-            borderTopColor: '#E5E7EB',
-            height: 70,
-            paddingBottom: 12,
+            borderTopColor: '#F3F4F6',
+            height: 65,
+            paddingBottom: 8,
             paddingTop: 8,
           },
           tabBarLabelStyle: {
-            fontSize: 11,
-            fontWeight: '600',
+            fontSize: 12,
+            fontWeight: '500',
+            marginTop: 4,
           },
           headerShown: false,
         }}
@@ -32,12 +33,8 @@ export default function TabLayout() {
           name="index"
           options={{
             title: 'Dashboard',
-            tabBarIcon: ({ focused, color }) => (
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 24, color }}>
-                  {focused ? '▦' : '▢'}
-                </Text>
-              </View>
+            tabBarIcon: ({ color }) => (
+              <DashboardIcon size={24} color={color} />
             ),
           }}
         />
@@ -45,12 +42,8 @@ export default function TabLayout() {
           name="pro-services"
           options={{
             title: 'Services',
-            tabBarIcon: ({ focused, color }) => (
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 24, color }}>
-                  {focused ? '💼' : '🎒'}
-                </Text>
-              </View>
+            tabBarIcon: ({ color }) => (
+              <ServicesIcon size={24} color={color} />
             ),
           }}
         />
@@ -58,25 +51,17 @@ export default function TabLayout() {
           name="bookings"
           options={{
             title: 'Requests',
-            tabBarIcon: ({ focused, color }) => (
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 24, color }}>
-                  {focused ? '🔔' : '🔕'}
-                </Text>
-              </View>
+            tabBarIcon: ({ color }) => (
+              <BookingsIcon size={24} color={color} />
             ),
           }}
         />
         <Tabs.Screen
           name="chat"
           options={{
-            title: 'Chat',
-            tabBarIcon: ({ focused, color }) => (
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 24, color }}>
-                  {focused ? '💬' : '💭'}
-                </Text>
-              </View>
+            title: 'Messages',
+            tabBarIcon: ({ color }) => (
+              <MessagesIcon size={24} color={color} />
             ),
           }}
         />
@@ -84,12 +69,8 @@ export default function TabLayout() {
           name="profile"
           options={{
             title: 'Profile',
-            tabBarIcon: ({ focused, color }) => (
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 24, color }}>
-                  {focused ? '👤' : '👥'}
-                </Text>
-              </View>
+            tabBarIcon: ({ color }) => (
+              <ProfileIcon size={24} color={color} />
             ),
           }}
         />
@@ -99,7 +80,7 @@ export default function TabLayout() {
     );
   }
 
-  // Customer Tab Layout
+  // Customer Tab Layout - Teal theme, clean design
   return (
     <Tabs
       screenOptions={{
@@ -108,14 +89,15 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: 'white',
           borderTopWidth: 1,
-          borderTopColor: '#E5E7EB',
+          borderTopColor: '#F3F4F6',
           height: 65,
-          paddingBottom: 10,
+          paddingBottom: 8,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
+          fontSize: 12,
+          fontWeight: '500',
+          marginTop: 4,
         },
         headerShown: false,
       }}
@@ -123,29 +105,37 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ focused }) => (focused ? '🏠' : '🏡'),
+          title: 'Explore',
+          tabBarIcon: ({ color }) => (
+            <DashboardIcon size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="bookings"
         options={{
           title: 'Bookings',
-          tabBarIcon: ({ focused }) => (focused ? '📅' : '📆'),
+          tabBarIcon: ({ color }) => (
+            <BookingsIcon size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
           title: 'Messages',
-          tabBarIcon: ({ focused }) => (focused ? '💬' : '💭'),
+          tabBarIcon: ({ color }) => (
+            <MessagesIcon size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ focused }) => (focused ? '👤' : '👥'),
+          tabBarIcon: ({ color }) => (
+            <ProfileIcon size={24} color={color} />
+          ),
         }}
       />
       {/* Hide pro tabs for customers */}

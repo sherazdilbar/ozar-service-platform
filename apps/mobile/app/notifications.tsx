@@ -70,32 +70,30 @@ export default function NotificationsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backBtnText}>←</Text>
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Notifications</Text>
-          {unreadCount > 0 && (
-            <View style={styles.unreadBadge}>
-              <Text style={styles.unreadBadgeText}>{unreadCount}</Text>
-            </View>
-          )}
-        </View>
-        {unreadCount > 0 && (
-          <TouchableOpacity onPress={markAllAsRead} style={styles.markAllBtn}>
-            <Text style={styles.markAllText}>Mark all read</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
       <ScrollView
         style={styles.list}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={loadNotifications} colors={['#00BCD4']} />
         }
+        contentContainerStyle={styles.scrollContent}
       >
+        {/* Header inside scroll for better UX */}
+        <View style={styles.headerInline}>
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>Notifications</Text>
+            {unreadCount > 0 && (
+              <View style={styles.unreadBadge}>
+                <Text style={styles.unreadBadgeText}>{unreadCount}</Text>
+              </View>
+            )}
+          </View>
+          {unreadCount > 0 && (
+            <TouchableOpacity onPress={markAllAsRead} style={styles.markAllBtn}>
+              <Text style={styles.markAllText}>Mark all read</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
         {loading && notifications.length === 0 ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#00BCD4" />
@@ -157,23 +155,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
-  header: {
+  list: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingTop: 16,
+  },
+  headerInline: {
     backgroundColor: 'white',
-    paddingHorizontal: 16,
-    paddingTop: 48,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  backBtn: {
-    marginRight: 12,
-    padding: 4,
-  },
-  backBtnText: {
-    fontSize: 28,
-    color: '#00BCD4',
+    justifyContent: 'space-between',
   },
   headerCenter: {
     flex: 1,
@@ -181,7 +176,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#111827',
   },
@@ -207,9 +202,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#00BCD4',
     fontWeight: '600',
-  },
-  list: {
-    flex: 1,
   },
   loadingContainer: {
     paddingVertical: 64,

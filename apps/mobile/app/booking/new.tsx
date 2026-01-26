@@ -72,7 +72,7 @@ export default function NewBookingScreen() {
 
     setSubmitting(true);
     try {
-      const booking = await bookingsApi.createBooking({
+      await bookingsApi.createBooking({
         proId: proId as string,
         serviceId: serviceId as string,
         isASAP,
@@ -87,21 +87,20 @@ export default function NewBookingScreen() {
         },
       });
 
-      Alert.alert(
-        'Success',
-        'Booking request sent! The professional will respond soon.',
-        [
-          {
-            text: 'View Booking',
-            onPress: () => router.replace(`/booking/${booking.id}`),
-          },
-        ]
-      );
+      // Navigate immediately
+      router.push('/(tabs)/bookings');
+      
+      // Reset state
+      setSubmitting(false);
+      
+      // Show success toast after navigation
+      setTimeout(() => {
+        Alert.alert('Success', 'Your booking request has been sent!');
+      }, 300);
     } catch (error: any) {
       console.error('Failed to create booking:', error);
-      Alert.alert('Error', error.message || 'Failed to create booking');
-    } finally {
       setSubmitting(false);
+      Alert.alert('Error', error.message || 'Failed to create booking');
     }
   };
 

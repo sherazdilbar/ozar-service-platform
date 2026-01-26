@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { prosApi, bookingsApi } from '@ozar/shared/apiClient';
 
@@ -22,6 +24,13 @@ export default function ProDashboard() {
     loadDashboardData();
   }, []);
 
+  // Auto-refresh when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadDashboardData();
+    }, [])
+  );
+
   const loadDashboardData = async () => {
     try {
       // Load profile data
@@ -31,18 +40,37 @@ export default function ProDashboard() {
       // Load today's scheduled bookings
       const bookingsData = await bookingsApi.getBookings();
       const today = new Date().toDateString();
-      const todayBookings = (bookingsData || []).filter((booking: any) => {
-        if (!booking.scheduledFor) return false;
-        return new Date(booking.scheduledFor).toDateString() === today;
+      
+      // Show ACCEPTED, SCHEDULED, and IN_PROGRESS bookings for today
+      const todayBookings = (bookingsData.data || []).filter((booking: any) => {
+        // Include if status is active
+        const isActive = ['ACCEPTED', 'SCHEDULED', 'IN_PROGRESS'].includes(booking.status);
+        if (!isActive) return false;
+        
+        // If ASAP, show it
+        if (booking.isASAP) return true;
+        
+        // If scheduled for today, show it
+        if (booking.scheduledFor) {
+          return new Date(booking.scheduledFor).toDateString() === today;
+        }
+        
+        // If accepted today (no specific schedule), show it
+        if (booking.acceptedAt) {
+          return new Date(booking.acceptedAt).toDateString() === today;
+        }
+        
+        return false;
       });
       setTodaySchedule(todayBookings.slice(0, 3));
 
       // Calculate earnings (this would come from a real earnings API)
-      const completedToday = (bookingsData || []).filter((b: any) => 
+      const completedToday = (bookingsData.data || []).filter((b: any) => 
         b.status === 'COMPLETED' && 
+        b.completedAt &&
         new Date(b.completedAt).toDateString() === today
       );
-      const todayTotal = completedToday.reduce((sum: number, b: any) => sum + (b.pricing?.total || 0), 0);
+      const todayTotal = completedToday.reduce((sum: number, b: any) => sum + (b.total || 0), 0);
       
       setStats({
         todayEarnings: todayTotal,
@@ -55,6 +83,14 @@ export default function ProDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Format number with k notation
+  const formatEarnings = (amount: number): string => {
+    if (amount >= 1000) {
+      return (amount / 1000).toFixed(0) + 'k';
+    }
+    return amount.toFixed(0);
   };
 
   if (loading) {
@@ -74,110 +110,98 @@ export default function ProDashboard() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Gradient Header */}
-        <LinearGradient
-          colors={['#00BCD4', '#00ACC1']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.header}
-        >
-          <View style={styles.headerContent}>
-            <View>
-              <Text style={styles.welcomeText}>Welcome back, {user?.firstName}!</Text>
-              <Text style={styles.headerSubtext}>Here's your business overview</Text>
-            </View>
-            <TouchableOpacity style={styles.waveButton}>
-              <Text style={styles.waveEmoji}>👋</Text>
-            </TouchableOpacity>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.greeting}>
+              Welcome back,{'\n'}
+              <Text style={styles.userName}>{user?.firstName || 'User'}!</Text>
+            </Text>
+            <Text style={styles.subtitle}>Here's your business overview</Text>
           </View>
+          <TouchableOpacity 
+            style={styles.notificationButton}
+            onPress={() => router.push('/notifications')}
+          >
+            <Ionicons name="notifications-outline" size={24} color="#111827" />
+            <View style={styles.notificationDot} />
+          </TouchableOpacity>
+        </View>
 
-          {/* Earnings Cards */}
-          <View style={styles.earningsRow}>
-            <View style={styles.earningCard}>
-              <View style={styles.earningHeader}>
-                <Text style={styles.earningLabel}>Today's{'\n'}Earnings</Text>
-                <Text style={styles.earningIcon}>💰</Text>
-              </View>
-              <Text style={styles.earningAmount}>
-                {stats.todayEarnings.toFixed(0)} Ft
-              </Text>
-              <Text style={styles.earningDetail}>
-                {stats.todayBookings} booking{stats.todayBookings !== 1 ? 's' : ''}
-              </Text>
-            </View>
-
-            <View style={styles.earningCard}>
-              <View style={styles.earningHeader}>
-                <Text style={styles.earningLabel}>This Week</Text>
-                <Text style={styles.earningIcon}>📈</Text>
-              </View>
-              <Text style={styles.earningAmount}>
-                {stats.weekEarnings.toFixed(0)} Ft
-              </Text>
-              <Text style={styles.earningGrowth}>
-                {stats.weekGrowth > 0 ? '+' : ''}{stats.weekGrowth}% from last week
-              </Text>
-            </View>
-          </View>
-        </LinearGradient>
-
-        {/* Stats Row */}
+        {/* Stats Card */}
         <View style={styles.statsCard}>
           <View style={styles.statItem}>
-            <View style={styles.statIconContainer}>
-              <Text style={styles.statIcon}>📅</Text>
+            <View style={[styles.statIconCircle, { backgroundColor: '#DBEAFE' }]}>
+              <Ionicons name="checkmark-circle-outline" size={24} color="#3B82F6" />
             </View>
             <Text style={styles.statValue}>{jobsCompleted}</Text>
-            <Text style={styles.statLabel}>Jobs Done</Text>
+            <Text style={styles.statLabel}>JOBS DONE</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <View style={[styles.statIconContainer, { backgroundColor: '#FEF3C7' }]}>
-              <Text style={styles.statIcon}>⭐</Text>
+            <View style={[styles.statIconCircle, { backgroundColor: '#FEF3C7' }]}>
+              <Ionicons name="star" size={24} color="#F59E0B" />
             </View>
             <Text style={styles.statValue}>{rating > 0 ? rating.toFixed(1) : '0.0'}</Text>
-            <Text style={styles.statLabel}>Rating</Text>
+            <Text style={styles.statLabel}>RATING</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <View style={[styles.statIconContainer, { backgroundColor: '#D1FAE5' }]}>
-              <Text style={styles.statIcon}>👥</Text>
+            <View style={[styles.statIconCircle, { backgroundColor: '#E0E7FF' }]}>
+              <Ionicons name="chatbubble-outline" size={24} color="#6366F1" />
             </View>
             <Text style={styles.statValue}>{reviewCount}</Text>
-            <Text style={styles.statLabel}>Reviews</Text>
+            <Text style={styles.statLabel}>REVIEWS</Text>
           </View>
         </View>
 
-        {/* Setup Profile CTA for new pros */}
-        {!hasProfile && (
-          <View style={styles.setupCard}>
-            <Text style={styles.setupIcon}>🚀</Text>
-            <Text style={styles.setupTitle}>Complete Your Profile</Text>
-            <Text style={styles.setupText}>
-              Set up your professional profile to start receiving booking requests
-            </Text>
-            <TouchableOpacity 
-              style={styles.setupButton}
-              onPress={() => router.push('/pro/profile-edit')}
-            >
-              <Text style={styles.setupButtonText}>Setup Profile</Text>
+        {/* Financials Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Financials</Text>
+            <TouchableOpacity onPress={() => router.push('/pro/analytics')}>
+              <Text style={styles.viewAllText}>View Report →</Text>
             </TouchableOpacity>
           </View>
-        )}
+
+          <View style={styles.earningsRow}>
+            {/* Today's Earnings - Blue Card */}
+            <View style={styles.todayCard}>
+              <Text style={styles.earningLabel}>Today's Earnings</Text>
+              <Text style={styles.earningAmount}>{formatEarnings(stats.todayEarnings)} Ft</Text>
+              <View style={styles.bookingsBadge}>
+                <Text style={styles.bookingsBadgeText}>{stats.todayBookings} bookings</Text>
+              </View>
+            </View>
+
+            {/* This Week - White Card */}
+            <View style={styles.weekCard}>
+              <View style={styles.weekHeader}>
+                <Text style={styles.weekLabel}>This Week</Text>
+                <Ionicons name="trending-up-outline" size={20} color="#D1D5DB" />
+              </View>
+              <Text style={styles.weekAmount}>{formatEarnings(stats.weekEarnings)} Ft</Text>
+              <Text style={styles.weekGrowth}>{stats.weekGrowth}% vs last week</Text>
+            </View>
+          </View>
+        </View>
 
         {/* Today's Schedule */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Today's Schedule</Text>
-            <TouchableOpacity onPress={() => router.push('/pro-requests')}>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/bookings')}>
               <Text style={styles.viewAllText}>View All</Text>
             </TouchableOpacity>
           </View>
 
           {todaySchedule.length === 0 ? (
             <View style={styles.emptySchedule}>
-              <Text style={styles.emptyIcon}>📅</Text>
-              <Text style={styles.emptyText}>No bookings scheduled for today</Text>
+              <View style={styles.emptyIconCircle}>
+                <Ionicons name="calendar-outline" size={40} color="#3B82F6" />
+              </View>
+              <Text style={styles.emptyTitle}>No bookings today</Text>
+              <Text style={styles.emptySubtitle}>You're all caught up! Enjoy your day</Text>
             </View>
           ) : (
             todaySchedule.map((booking) => (
@@ -202,36 +226,12 @@ export default function ProDashboard() {
                     {booking.pricing?.total || booking.service?.price || 0} Ft
                   </Text>
                 </View>
-                <View style={styles.scheduleTime}>
-                  <Text style={styles.timeIcon}>🕐</Text>
-                  <Text style={styles.timeText}>
-                    {booking.scheduledFor ? new Date(booking.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'ASAP'} • {booking.service?.duration || 60} min
-                  </Text>
-                </View>
               </TouchableOpacity>
             ))
           )}
         </View>
 
-        {/* Recent Reviews - Only show if there are reviews */}
-        {reviewCount > 0 && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Recent Reviews</Text>
-              <TouchableOpacity>
-                <Text style={styles.viewAllText}>View All</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.reviewCard}>
-              <Text style={styles.noReviewsText}>
-                Reviews will appear here once customers rate your services
-              </Text>
-            </View>
-          </View>
-        )}
-
-        <View style={{ height: 40 }} />
+        <View style={{ height: 100 }} />
       </ScrollView>
     </View>
   );
@@ -240,116 +240,83 @@ export default function ProDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
   },
   scrollView: {
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 24,
-    paddingHorizontal: 20,
+    backgroundColor: '#FFFFFF',
   },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 24,
+  headerLeft: {
+    flex: 1,
   },
-  welcomeText: {
-    fontSize: 28,
+  greeting: {
+    fontSize: 24,
     fontWeight: '700',
-    color: 'white',
-    marginBottom: 4,
+    color: '#111827',
+    marginBottom: 8,
   },
-  headerSubtext: {
+  userName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#3B82F6',
+  },
+  subtitle: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#9CA3AF',
   },
-  waveButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  notificationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F9FAFB',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
-  waveEmoji: {
-    fontSize: 24,
-  },
-  earningsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  earningCard: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 16,
-    padding: 16,
-  },
-  earningHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  earningLabel: {
-    fontSize: 13,
-    color: 'white',
-    fontWeight: '500',
-  },
-  earningIcon: {
-    fontSize: 20,
-  },
-  earningAmount: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: 'white',
-    marginBottom: 4,
-  },
-  earningDetail: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
-  },
-  earningGrowth: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.95)',
-    fontWeight: '600',
+  notificationDot: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#EF4444',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   statsCard: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    marginHorizontal: 16,
-    marginTop: -20,
+    backgroundColor: '#F9FAFB',
+    marginHorizontal: 20,
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    flexDirection: 'row',
+    marginBottom: 24,
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
   },
-  statIconContainer: {
+  statIconCircle: {
     width: 48,
     height: 48,
-    borderRadius: 12,
-    backgroundColor: '#DBEAFE',
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
-  },
-  statIcon: {
-    fontSize: 24,
   },
   statValue: {
     fontSize: 24,
@@ -358,17 +325,19 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    letterSpacing: 0.5,
   },
   statDivider: {
     width: 1,
     backgroundColor: '#E5E7EB',
-    marginHorizontal: 8,
+    marginHorizontal: 12,
   },
   section: {
-    paddingHorizontal: 16,
-    marginTop: 24,
+    paddingHorizontal: 20,
+    marginBottom: 24,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -384,24 +353,106 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#00BCD4',
+    color: '#3B82F6',
   },
-  emptySchedule: {
-    alignItems: 'center',
-    paddingVertical: 40,
-    backgroundColor: 'white',
-    borderRadius: 16,
+  earningsRow: {
+    flexDirection: 'row',
+    gap: 12,
   },
-  emptyIcon: {
-    fontSize: 48,
+  todayCard: {
+    flex: 1,
+    backgroundColor: '#3B82F6',
+    borderRadius: 20,
+    padding: 20,
+    minHeight: 160,
+    justifyContent: 'space-between',
+  },
+  earningLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 8,
+  },
+  earningAmount: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 12,
   },
-  emptyText: {
+  bookingsBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  bookingsBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  weekCard: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 20,
+    padding: 20,
+    minHeight: 160,
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  weekHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  weekLabel: {
     fontSize: 14,
+    fontWeight: '600',
     color: '#6B7280',
   },
+  weekAmount: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  weekGrowth: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  emptySchedule: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderStyle: 'dashed',
+    padding: 40,
+    alignItems: 'center',
+  },
+  emptyIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#EFF6FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+  },
   scheduleCard: {
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
@@ -410,17 +461,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   scheduleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
   },
   customerAvatar: {
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: '#B2EBF2',
+    backgroundColor: '#DBEAFE',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -428,7 +480,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#00838F',
+    color: '#3B82F6',
   },
   scheduleInfo: {
     flex: 1,
@@ -446,103 +498,6 @@ const styles = StyleSheet.create({
   bookingPrice: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#00BCD4',
-  },
-  scheduleTime: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  timeIcon: {
-    fontSize: 16,
-    marginRight: 6,
-  },
-  timeText: {
-    fontSize: 13,
-    color: '#6B7280',
-  },
-  reviewCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  reviewHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  reviewerName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  reviewTime: {
-    fontSize: 12,
-    color: '#9CA3AF',
-  },
-  starsRow: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  star: {
-    fontSize: 16,
-    marginRight: 2,
-  },
-  reviewComment: {
-    fontSize: 14,
-    color: '#6B7280',
-    lineHeight: 20,
-  },
-  setupCard: {
-    margin: 16,
-    padding: 24,
-    borderRadius: 16,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  setupIcon: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  setupTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  setupText: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 20,
-  },
-  setupButton: {
-    backgroundColor: '#00BCD4',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 12,
-  },
-  setupButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'white',
-  },
-  noReviewsText: {
-    fontSize: 14,
-    color: '#9CA3AF',
-    textAlign: 'center',
-    padding: 20,
+    color: '#3B82F6',
   },
 });

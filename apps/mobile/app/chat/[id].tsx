@@ -143,19 +143,47 @@ export default function ChatDetailScreen() {
 
     const textToSend = messageText.trim();
     setMessageText('');
-    setSending(true);
     stopTyping(id as string);
 
+    // Create optimistic message
+    const optimisticMessage: Message = {
+      id: `temp-${Date.now()}`,
+      text: textToSend,
+      senderId: user?.id || '',
+      createdAt: new Date().toISOString(),
+      read: false,
+      sender: {
+        id: user?.id || '',
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+      },
+    };
+
+    // Add optimistically
+    setMessages((prev) => [...prev, optimisticMessage]);
+    
+    // Scroll to bottom immediately
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 50);
+
+    setSending(true);
     try {
       const message = await chatApi.sendMessage(id as string, textToSend);
-      setMessages((prev) => [...prev, message]);
       
-      // Scroll to bottom
+      // Replace optimistic message with real one
+      setMessages((prev) => 
+        prev.map(m => m.id === optimisticMessage.id ? message : m)
+      );
+      
+      // Scroll to bottom again
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     } catch (error) {
       console.error('Failed to send message:', error);
+      // Remove optimistic message on error
+      setMessages((prev) => prev.filter(m => m.id !== optimisticMessage.id));
       Alert.alert('Error', 'Failed to send message');
       setMessageText(textToSend);
     } finally {
@@ -218,22 +246,16 @@ export default function ChatDetailScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backBtnText}>←</Text>
-        </TouchableOpacity>
-        
-        <View style={styles.headerCenter}>
-          <View style={[styles.avatar, isPro && styles.avatarCustomer]}>
-            <Text style={styles.avatarText}>{initials}</Text>
-          </View>
-          <View style={styles.headerInfo}>
-            <Text style={styles.headerName}>{displayName}</Text>
-            {otherUserTyping && (
-              <Text style={styles.typingText}>typing...</Text>
-            )}
-          </View>
+      {/* Chat Header Info - No back button, Expo provides it */}
+      <View style={styles.chatInfo}>
+        <View style={[styles.avatar, isPro && styles.avatarCustomer]}>
+          <Text style={styles.avatarText}>{initials}</Text>
+        </View>
+        <View style={styles.headerInfo}>
+          <Text style={styles.headerName}>{displayName}</Text>
+          {otherUserTyping && (
+            <Text style={styles.typingText}>typing...</Text>
+          )}
         </View>
       </View>
 
@@ -335,26 +357,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  header: {
+  chatInfo: {
     backgroundColor: 'white',
     paddingHorizontal: 16,
-    paddingTop: 48,
-    paddingBottom: 12,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  backBtn: {
-    marginRight: 12,
-    padding: 4,
-  },
-  backBtnText: {
-    fontSize: 28,
-    color: '#00BCD4',
-  },
-  headerCenter: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },

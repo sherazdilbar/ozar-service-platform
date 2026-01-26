@@ -185,11 +185,11 @@ export default function ProServicesScreen() {
                         </View>
                         <View style={styles.statusContainer}>
                           <Text style={[styles.statusText, styles.statusTextActive]}>
-                            Active
+                            {service.isActive !== false ? 'Active' : 'Inactive'}
                           </Text>
                           <Switch
-                            value={true}
-                            onValueChange={(value) => toggleServiceStatus(service.id, true)}
+                            value={service.isActive !== false}
+                            onValueChange={(value) => toggleServiceStatus(service.id, service.isActive !== false)}
                             trackColor={{ false: '#D1D5DB', true: '#10B981' }}
                             thumbColor="white"
                           />

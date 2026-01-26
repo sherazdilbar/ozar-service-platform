@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { bookingsApi } from '@ozar/shared/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -50,6 +51,13 @@ export default function BookingsScreen() {
     loadBookings();
   }, []);
 
+  // Auto-refresh when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadBookings();
+    }, [])
+  );
+
   const loadBookings = async () => {
     try {
       const result = await bookingsApi.getBookings();
@@ -70,16 +78,29 @@ export default function BookingsScreen() {
 
   const handleRespond = async (bookingId: string, action: 'accept' | 'decline') => {
     setResponding(bookingId);
+    
+    // Optimistically update UI - remove from REQUESTED list immediately
+    setBookings(prev => prev.map(b => 
+      b.id === bookingId 
+        ? { ...b, status: action === 'accept' ? 'ACCEPTED' : 'CANCELLED_BY_PRO' }
+        : b
+    ));
+    
     try {
       if (action === 'accept') {
         await bookingsApi.acceptBooking(bookingId);
-        Alert.alert('Success', 'Booking accepted!');
       } else {
         await bookingsApi.declineBooking(bookingId, 'Not available at this time');
-        Alert.alert('Success', 'Booking declined');
       }
-      loadBookings();
+      
+      // Reload to get the actual server state
+      await loadBookings();
+      
+      // Show success message
+      Alert.alert('Success', action === 'accept' ? 'Booking accepted!' : 'Booking declined');
     } catch (error: any) {
+      // Revert optimistic update on error
+      await loadBookings();
       Alert.alert('Error', error.message || 'Failed to respond to booking');
     } finally {
       setResponding(null);
@@ -139,42 +160,78 @@ export default function BookingsScreen() {
 
   // PRO View - Booking Requests
   if (isPro) {
+    // Filter bookings for current vs past
+    const currentStatuses = ['REQUESTED', 'ACCEPTED', 'SCHEDULED', 'IN_PROGRESS'];
+    const pastStatuses = ['COMPLETED', 'CAPTURED', 'CANCELLED_BY_CUSTOMER', 'CANCELLED_BY_PRO', 'NO_SHOW', 'DISPUTED', 'REFUNDED'];
+    
+    const currentBookings = bookings.filter(b => currentStatuses.includes(b.status));
+    const pastBookings = bookings.filter(b => pastStatuses.includes(b.status));
+    const proDisplayBookings = activeTab === 'upcoming' ? currentBookings : pastBookings;
+
     return (
       <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.proHeader}>
+          <Text style={styles.proTitle}>Requests</Text>
+          <Text style={styles.proSubtitle}>
+            {activeTab === 'upcoming' ? `${currentBookings.length} current` : `${pastBookings.length} past jobs`}
+          </Text>
+        </View>
+
+        {/* Tabs */}
+        <View style={styles.tabs}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'upcoming' && styles.tabActive]}
+            onPress={() => setActiveTab('upcoming')}
+          >
+            <Text style={[styles.tabText, activeTab === 'upcoming' && styles.tabTextActive]}>
+              Current ({currentBookings.length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'past' && styles.tabActive]}
+            onPress={() => setActiveTab('past')}
+          >
+            <Text style={[styles.tabText, activeTab === 'past' && styles.tabTextActive]}>
+              Past ({pastBookings.length})
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         <ScrollView 
           style={styles.scrollView}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#4F46E5']} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#3B82F6']} />
           }
           showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
-          <View style={styles.proHeader}>
-            <Text style={styles.proTitle}>Booking Requests</Text>
-            <Text style={styles.proSubtitle}>{displayBookings.length} pending requests</Text>
-          </View>
-
           {/* Requests List */}
           <View style={styles.requestsList}>
-            {displayBookings.length === 0 ? (
+            {proDisplayBookings.length === 0 ? (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyIcon}>📭</Text>
-                <Text style={styles.emptyTitle}>No Pending Requests</Text>
+                <Text style={styles.emptyIcon}>{activeTab === 'upcoming' ? '📭' : '✅'}</Text>
+                <Text style={styles.emptyTitle}>
+                  {activeTab === 'upcoming' ? 'No Current Requests' : 'No Past Jobs'}
+                </Text>
                 <Text style={styles.emptyText}>
-                  New booking requests will appear here
+                  {activeTab === 'upcoming' 
+                    ? 'New booking requests will appear here'
+                    : 'Completed jobs will appear here'
+                  }
                 </Text>
               </View>
             ) : (
-              displayBookings.map((booking) => {
+              proDisplayBookings.map((booking) => {
                 const customerName = `${booking.customer.firstName} ${booking.customer.lastName}`;
                 const customerInitials = `${booking.customer.firstName[0]}${booking.customer.lastName[0]}`;
+                const isPending = booking.status === 'REQUESTED';
                 
                 return (
                   <View key={booking.id} style={styles.requestCard}>
                     {/* Time Badge */}
                     <View style={styles.timeRow}>
                       <Text style={styles.timeText}>
-                        Requested {getTimeAgo(booking.createdAt)}
+                        {activeTab === 'past' ? 'Completed' : 'Requested'} {getTimeAgo(booking.createdAt)}
                       </Text>
                       <TouchableOpacity onPress={() => router.push(`/booking/${booking.id}`)}>
                         <Text style={styles.chatIcon}>💬</Text>
@@ -220,42 +277,52 @@ export default function BookingsScreen() {
                       <View style={styles.detailRow}>
                         <Text style={styles.detailIcon}>💰</Text>
                         <Text style={styles.detailText}>
-                          {booking.total?.toLocaleString() || '0'} {booking.currency || 'HUF'} estimated
+                          {booking.total?.toLocaleString() || '0'} {booking.currency || 'Ft'}
                         </Text>
                       </View>
                     </View>
 
-                    {/* Action Buttons */}
-                    <View style={styles.actionButtons}>
+                    {/* Action Buttons - Only show for pending requests */}
+                    {isPending && activeTab === 'upcoming' ? (
+                      <View style={styles.actionButtons}>
+                        <TouchableOpacity 
+                          style={styles.declineButton}
+                          onPress={() => handleRespond(booking.id, 'decline')}
+                          disabled={responding === booking.id}
+                        >
+                          {responding === booking.id ? (
+                            <ActivityIndicator size="small" color="#DC2626" />
+                          ) : (
+                            <>
+                              <Text style={styles.declineIcon}>✕</Text>
+                              <Text style={styles.declineText}>Decline</Text>
+                            </>
+                          )}
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                          style={styles.acceptButton}
+                          onPress={() => handleRespond(booking.id, 'accept')}
+                          disabled={responding === booking.id}
+                        >
+                          {responding === booking.id ? (
+                            <ActivityIndicator size="small" color="white" />
+                          ) : (
+                            <>
+                              <Text style={styles.acceptIcon}>✓</Text>
+                              <Text style={styles.acceptText}>Accept</Text>
+                            </>
+                          )}
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
                       <TouchableOpacity 
-                        style={styles.declineButton}
-                        onPress={() => handleRespond(booking.id, 'decline')}
-                        disabled={responding === booking.id}
+                        style={styles.viewDetailsButtonFull}
+                        onPress={() => router.push(`/booking/${booking.id}`)}
                       >
-                        {responding === booking.id ? (
-                          <ActivityIndicator size="small" color="#DC2626" />
-                        ) : (
-                          <>
-                            <Text style={styles.declineIcon}>✕</Text>
-                            <Text style={styles.declineText}>Decline</Text>
-                          </>
-                        )}
+                        <Text style={styles.viewDetailsTextFull}>View Details</Text>
+                        <Text style={styles.viewDetailsArrow}>→</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity 
-                        style={styles.acceptButton}
-                        onPress={() => handleRespond(booking.id, 'accept')}
-                        disabled={responding === booking.id}
-                      >
-                        {responding === booking.id ? (
-                          <ActivityIndicator size="small" color="white" />
-                        ) : (
-                          <>
-                            <Text style={styles.acceptIcon}>✓</Text>
-                            <Text style={styles.acceptText}>Accept</Text>
-                          </>
-                        )}
-                      </TouchableOpacity>
-                    </View>
+                    )}
                   </View>
                 );
               })
@@ -795,5 +862,19 @@ const styles = StyleSheet.create({
   viewDetailsArrow: {
     fontSize: 16,
     color: '#00BCD4',
+  },
+  viewDetailsButtonFull: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#EFF6FF',
+    gap: 6,
+  },
+  viewDetailsTextFull: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#3B82F6',
   },
 });

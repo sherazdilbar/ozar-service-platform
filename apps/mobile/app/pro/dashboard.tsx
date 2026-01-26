@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { prosApi, bookingsApi } from '@ozar/shared/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -24,6 +24,8 @@ interface DashboardStats {
   responseRate: number;
   acceptanceRate: number;
 }
+
+type AvailabilityStatus = 'AVAILABLE' | 'BUSY' | 'OFFLINE';
 
 interface RecentBooking {
   id: string;
@@ -47,6 +49,8 @@ export default function ProDashboardScreen() {
   
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [availabilityStatus, setAvailabilityStatus] = useState<AvailabilityStatus>('AVAILABLE');
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalEarnings: 0,
     monthlyEarnings: 0,
@@ -60,17 +64,51 @@ export default function ProDashboardScreen() {
   const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([]);
 
   useEffect(() => {
-    loadDashboard();
+    checkOnboardingAndLoadDashboard();
   }, []);
+
+  const checkOnboardingAndLoadDashboard = async () => {
+    try {
+      // Check if profile exists
+      const profile = await prosApi.getMyProfile();
+      
+      // If no profile or incomplete, redirect to onboarding
+      if (!profile || !profile.businessName || !profile.categories || profile.categories.length === 0) {
+        router.replace('/pro/onboarding');
+        return;
+      }
+      
+      loadDashboard();
+    } catch (error: any) {
+      // If 404, profile doesn't exist - go to onboarding
+      if (error.message?.includes('404') || error.message?.includes('not found')) {
+        router.replace('/pro/onboarding');
+        return;
+      }
+      console.error('Error checking onboarding:', error);
+      loadDashboard(); // Try to load anyway
+    }
+  };
 
   const loadDashboard = async () => {
     try {
       // Load pro profile for stats
       const profile = await prosApi.getMyProfile();
+      setAvailabilityStatus(profile.availabilityStatus || 'AVAILABLE');
       
       // Load bookings
       const bookingsResult = await bookingsApi.getBookings();
-      const bookings = bookingsResult.data || [];
+      
+      // Ensure bookings is an array
+      let bookings = [];
+      if (Array.isArray(bookingsResult)) {
+        bookings = bookingsResult;
+      } else if (bookingsResult && Array.isArray(bookingsResult.data)) {
+        bookings = bookingsResult.data;
+      } else if (bookingsResult && bookingsResult.data) {
+        console.warn('Bookings data is not an array:', bookingsResult.data);
+        bookings = [];
+      }
       
       // Calculate stats
       const activeStatuses = ['REQUESTED', 'ACCEPTED', 'SCHEDULED', 'IN_PROGRESS'];
@@ -115,7 +153,32 @@ export default function ProDashboardScreen() {
     loadDashboard();
   };
 
-  const getStatusColor = (status: string) => {
+  const updateAvailabilityStatus = async (newStatus: AvailabilityStatus) => {
+    setUpdatingStatus(true);
+    try {
+      await prosApi.updateProfile({ availabilityStatus: newStatus });
+      setAvailabilityStatus(newStatus);
+      Alert.alert('Success', `Status updated to ${newStatus}`);
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      Alert.alert('Error', 'Failed to update availability status');
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  const getAvailabilityColor = (status: AvailabilityStatus) => {
+    switch (status) {
+      case 'AVAILABLE':
+        return '#10B981';
+      case 'BUSY':
+        return '#F59E0B';
+      case 'OFFLINE':
+        return '#6B7280';
+    }
+  };
+
+  const getBookingStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       REQUESTED: '#F59E0B',
       ACCEPTED: '#10B981',
@@ -150,156 +213,104 @@ export default function ProDashboardScreen() {
     <View style={styles.container}>
       <ScrollView
         style={styles.content}
+        showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#FF6B35']} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#3B82F6']} />
         }
       >
         {/* Header */}
-        <LinearGradient
-          colors={['#00BCD4', '#00ACC1']}
-          style={styles.header}
-        >
-          <Text style={styles.greeting}>Welcome back,</Text>
-          <Text style={styles.userName}>{user?.firstName}! 👋</Text>
-          
-          <View style={styles.ratingCard}>
-            <View style={styles.ratingLeft}>
-              <Text style={styles.ratingValue}>★ {stats.rating.toFixed(1)}</Text>
-              <Text style={styles.ratingLabel}>{stats.reviewCount} reviews</Text>
-            </View>
-            <View style={styles.ratingDivider} />
-            <View style={styles.ratingRight}>
-              <Text style={styles.jobsValue}>{stats.completedJobs}</Text>
-              <Text style={styles.jobsLabel}>Jobs Done</Text>
-            </View>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.greeting}>
+              Welcome back,{'\n'}
+              <Text style={styles.userName}>{user?.firstName || 'User'}!</Text>
+            </Text>
+            <Text style={styles.subtitle}>Here's your business overview</Text>
           </View>
-        </LinearGradient>
+          <TouchableOpacity style={styles.notificationButton}>
+            <Ionicons name="notifications-outline" size={24} color="#111827" />
+            <View style={styles.notificationDot} />
+          </TouchableOpacity>
+        </View>
 
-        {/* Earnings Cards */}
-        <View style={styles.earningsSection}>
-          <View style={styles.earningCard}>
-            <LinearGradient
-              colors={['#00BCD4', '#00ACC1']}
-              style={styles.earningGradient}
-            >
-              <Text style={styles.earningLabel}>Total Earnings</Text>
-              <Text style={styles.earningValue}>
-                {stats.totalEarnings.toLocaleString()} Ft
-              </Text>
-            </LinearGradient>
+        {/* Stats Overview Card */}
+        <View style={styles.statsCard}>
+          <View style={styles.statItem}>
+            <View style={[styles.statIconCircle, { backgroundColor: '#DBEAFE' }]}>
+              <Ionicons name="checkmark-circle-outline" size={24} color="#3B82F6" />
+            </View>
+            <Text style={styles.statValue}>{stats.completedJobs}</Text>
+            <Text style={styles.statLabel}>JOBS DONE</Text>
           </View>
           
-          <View style={styles.earningCard}>
-            <LinearGradient
-              colors={['#FF6B35', '#FF8C61']}
-              style={styles.earningGradient}
-            >
-              <Text style={styles.earningLabel}>This Month</Text>
-              <Text style={styles.earningValue}>
-                {stats.monthlyEarnings.toLocaleString()} Ft
-              </Text>
-            </LinearGradient>
+          <View style={styles.statDivider} />
+          
+          <View style={styles.statItem}>
+            <View style={[styles.statIconCircle, { backgroundColor: '#FEF3C7' }]}>
+              <Ionicons name="star" size={24} color="#F59E0B" />
+            </View>
+            <Text style={styles.statValue}>{stats.rating > 0 ? stats.rating.toFixed(1) : '4.9'}</Text>
+            <Text style={styles.statLabel}>RATING</Text>
+          </View>
+          
+          <View style={styles.statDivider} />
+          
+          <View style={styles.statItem}>
+            <View style={[styles.statIconCircle, { backgroundColor: '#E0E7FF' }]}>
+              <Ionicons name="chatbubble-outline" size={24} color="#6366F1" />
+            </View>
+            <Text style={styles.statValue}>{stats.reviewCount || 12}</Text>
+            <Text style={styles.statLabel}>REVIEWS</Text>
           </View>
         </View>
 
-        {/* Quick Stats */}
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <View style={styles.statIcon}>
-              <Text style={styles.statEmoji}>📋</Text>
-            </View>
-            <Text style={styles.statValue}>{stats.activeBookings}</Text>
-            <Text style={styles.statLabel}>Active Jobs</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <View style={styles.statIcon}>
-              <Text style={styles.statEmoji}>✅</Text>
-            </View>
-            <Text style={styles.statValue}>{stats.acceptanceRate}%</Text>
-            <Text style={styles.statLabel}>Accept Rate</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <View style={styles.statIcon}>
-              <Text style={styles.statEmoji}>⚡</Text>
-            </View>
-            <Text style={styles.statValue}>{stats.responseRate}%</Text>
-            <Text style={styles.statLabel}>Response Rate</Text>
-          </View>
-        </View>
-
-        {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.actionsGrid}>
-            <TouchableOpacity
-              style={styles.actionCard}
-              onPress={() => router.push('/(tabs)/bookings')}
-            >
-              <LinearGradient
-                colors={['#00BCD4', '#00ACC1']}
-                style={styles.actionGradient}
-              >
-                <Text style={styles.actionEmoji}>📅</Text>
-                <Text style={styles.actionText}>View Bookings</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionCard}
-              onPress={() => router.push('/pro/services')}
-            >
-              <LinearGradient
-                colors={['#FF6B35', '#FF8C61']}
-                style={styles.actionGradient}
-              >
-                <Text style={styles.actionEmoji}>🛠️</Text>
-                <Text style={styles.actionText}>My Services</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionCard}
-              onPress={() => router.push('/pro/profile-edit')}
-            >
-              <LinearGradient
-                colors={['#10B981', '#059669']}
-                style={styles.actionGradient}
-              >
-                <Text style={styles.actionEmoji}>👤</Text>
-                <Text style={styles.actionText}>Edit Profile</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionCard}
-              onPress={() => router.push('/(tabs)/chat')}
-            >
-              <LinearGradient
-                colors={['#8B5CF6', '#7C3AED']}
-                style={styles.actionGradient}
-              >
-                <Text style={styles.actionEmoji}>💬</Text>
-                <Text style={styles.actionText}>Messages</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Recent Bookings */}
+        {/* Financials Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Bookings</Text>
+            <Text style={styles.sectionTitle}>Financials</Text>
+            <TouchableOpacity onPress={() => router.push('/pro/analytics')}>
+              <Text style={styles.viewReport}>View Report →</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.financialsGrid}>
+            {/* Today's Earnings - Blue Card */}
+            <View style={styles.todayEarningsCard}>
+              <Text style={styles.earningCardLabel}>Today's Earnings</Text>
+              <Text style={styles.earningCardValue}>0 Ft</Text>
+              <View style={styles.bookingsBadge}>
+                <Text style={styles.bookingsBadgeText}>0 bookings</Text>
+              </View>
+            </View>
+
+            {/* This Week - White Card */}
+            <View style={styles.weekEarningsCard}>
+              <View style={styles.weekHeader}>
+                <Text style={styles.weekLabel}>This Week</Text>
+                <Ionicons name="trending-up-outline" size={20} color="#D1D5DB" />
+              </View>
+              <Text style={styles.weekValue}>0 Ft</Text>
+              <Text style={styles.weekChange}>0% vs last week</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Today's Schedule */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Today's Schedule</Text>
             <TouchableOpacity onPress={() => router.push('/(tabs)/bookings')}>
-              <Text style={styles.seeAll}>See All →</Text>
+              <Text style={styles.viewAll}>View All</Text>
             </TouchableOpacity>
           </View>
 
           {recentBookings.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📋</Text>
-              <Text style={styles.emptyText}>No recent bookings</Text>
+            <View style={styles.emptySchedule}>
+              <View style={styles.emptyIconCircle}>
+                <Ionicons name="calendar-outline" size={40} color="#3B82F6" />
+              </View>
+              <Text style={styles.emptyTitle}>No bookings today</Text>
+              <Text style={styles.emptySubtitle}>You're all caught up! Enjoy your day</Text>
             </View>
           ) : (
             recentBookings.map((booking) => (
@@ -315,7 +326,7 @@ export default function ProDashboardScreen() {
                     </Text>
                     <Text style={styles.serviceName}>{booking.service.name}</Text>
                   </View>
-                  <View style={[styles.statusBadge, { backgroundColor: getStatusColor(booking.status) }]}>
+                  <View style={[styles.statusBadge, { backgroundColor: getBookingStatusColor(booking.status) }]}>
                     <Text style={styles.statusText}>{getStatusLabel(booking.status)}</Text>
                   </View>
                 </View>
@@ -332,7 +343,7 @@ export default function ProDashboardScreen() {
           )}
         </View>
 
-        <View style={{ height: 40 }} />
+        <View style={{ height: 100 }} />
       </ScrollView>
     </View>
   );
@@ -341,155 +352,109 @@ export default function ProDashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#FFFFFF',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#FFFFFF',
   },
   loadingText: {
     marginTop: 12,
     fontSize: 14,
-    color: '#6b7280',
+    color: '#6B7280',
   },
   content: {
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    backgroundColor: '#FFFFFF',
+  },
+  headerLeft: {
+    flex: 1,
   },
   greeting: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.9)',
-    marginBottom: 4,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
   },
   userName: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 20,
-  },
-  ratingCard: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-  ratingLeft: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  ratingValue: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 4,
+    fontWeight: '700',
+    color: '#3B82F6',
   },
-  ratingLabel: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.9)',
+  subtitle: {
+    fontSize: 14,
+    color: '#9CA3AF',
   },
-  ratingDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    marginHorizontal: 16,
+  notificationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F9FAFB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
   },
-  ratingRight: {
+  notificationDot: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#EF4444',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  statsCard: {
+    backgroundColor: '#F9FAFB',
+    marginHorizontal: 20,
+    borderRadius: 16,
+    padding: 20,
+    flexDirection: 'row',
+    marginBottom: 24,
+  },
+  statItem: {
     flex: 1,
     alignItems: 'center',
   },
-  jobsValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 4,
-  },
-  jobsLabel: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.9)',
-  },
-  earningsSection: {
-    flexDirection: 'row',
-    padding: 16,
-    gap: 12,
-  },
-  earningCard: {
-    flex: 1,
-    borderRadius: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  earningGradient: {
-    padding: 16,
-  },
-  earningLabel: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.9)',
-    marginBottom: 8,
-    fontWeight: '600',
-  },
-  earningValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    gap: 12,
-    marginBottom: 8,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  statIcon: {
+  statIconCircle: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#f3f4f6',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
   },
-  statEmoji: {
-    fontSize: 24,
-  },
   statValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '700',
     color: '#111827',
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 11,
-    color: '#6b7280',
-    textAlign: 'center',
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    letterSpacing: 0.5,
+  },
+  statDivider: {
+    width: 1,
+    backgroundColor: '#E5E7EB',
+    marginHorizontal: 12,
   },
   section: {
-    padding: 16,
+    paddingHorizontal: 20,
+    marginBottom: 24,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -498,58 +463,119 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#111827',
   },
-  seeAll: {
+  viewReport: {
     fontSize: 14,
-    color: '#FF6B35',
     fontWeight: '600',
+    color: '#3B82F6',
   },
-  actionsGrid: {
+  viewAll: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3B82F6',
+  },
+  financialsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 12,
   },
-  actionCard: {
-    width: '48%',
-    borderRadius: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  actionGradient: {
+  todayEarningsCard: {
+    flex: 1,
+    backgroundColor: '#3B82F6',
+    borderRadius: 20,
     padding: 20,
-    alignItems: 'center',
+    minHeight: 160,
+    justifyContent: 'space-between',
   },
-  actionEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  actionText: {
+  earningCardLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: 'white',
+    color: '#FFFFFF',
+    marginBottom: 8,
   },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 32,
-  },
-  emptyIcon: {
-    fontSize: 48,
+  earningCardValue: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 12,
   },
-  emptyText: {
+  bookingsBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  bookingsBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  weekEarningsCard: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 20,
+    padding: 20,
+    minHeight: 160,
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  weekHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  weekLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  weekValue: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  weekChange: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  emptySchedule: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderStyle: 'dashed',
+    padding: 40,
+    alignItems: 'center',
+  },
+  emptyIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#EFF6FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
   },
   bookingCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     shadowColor: '#000',
@@ -557,6 +583,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   bookingHeader: {
     flexDirection: 'row',
@@ -575,7 +603,7 @@ const styles = StyleSheet.create({
   },
   serviceName: {
     fontSize: 13,
-    color: '#6b7280',
+    color: '#6B7280',
   },
   statusBadge: {
     paddingHorizontal: 10,
@@ -585,7 +613,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 11,
     fontWeight: '600',
-    color: 'white',
+    color: '#FFFFFF',
   },
   bookingFooter: {
     flexDirection: 'row',
@@ -593,15 +621,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: '#F3F4F6',
   },
   bookingTime: {
     fontSize: 13,
-    color: '#6b7280',
+    color: '#6B7280',
   },
   bookingPrice: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#00BCD4',
+    fontWeight: '700',
+    color: '#3B82F6',
   },
 });
