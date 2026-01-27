@@ -4,6 +4,8 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import helmet from 'helmet';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+// import { PerformanceInterceptor } from './common/interceptors/performance.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -23,7 +25,9 @@ async function bootstrap() {
   const allowedOrigins = [
     'http://localhost:3000',  // Web app (dev)
     'http://localhost:8081',  // Mobile app (Expo)
+    'http://localhost:8082',  // Mobile app (Expo alternative port)
     'http://127.0.0.1:8081',  // Mobile app alternative
+    'http://127.0.0.1:8082',  // Mobile app alternative port
     ...(process.env.CORS_ORIGIN?.split(',').map(origin => origin.trim()) || [])
   ];
 
@@ -58,6 +62,12 @@ async function bootstrap() {
       disableErrorMessages: process.env.NODE_ENV === 'production', // Hide detailed errors in production
     }),
   );
+
+  // Global exception filter
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Global performance interceptor - Disabled due to rxjs version conflicts
+  // app.useGlobalInterceptors(new PerformanceInterceptor());
 
   const port = process.env.PORT || 4000;
   await app.listen(port);

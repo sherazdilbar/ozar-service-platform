@@ -81,6 +81,99 @@ export default function ProProfile() {
           </View>
         </View>
 
+        {/* Professional Tools Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Professional Tools</Text>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro/availability')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>📅</Text>
+            </View>
+            <Text style={styles.menuText}>Availability Calendar</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro/service-area')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>📍</Text>
+            </View>
+            <Text style={styles.menuText}>Service Areas</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro/portfolio')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>📸</Text>
+            </View>
+            <Text style={styles.menuText}>Portfolio</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro/certifications')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>🏆</Text>
+            </View>
+            <Text style={styles.menuText}>Certifications & Badges</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro/quick-messages')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>💬</Text>
+            </View>
+            <Text style={styles.menuText}>Quick Messages</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro/reviews')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>⭐</Text>
+            </View>
+            <Text style={styles.menuText}>Reviews Management</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro/customers')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>👥</Text>
+            </View>
+            <Text style={styles.menuText}>Customer Management</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro/analytics')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>📊</Text>
+            </View>
+            <Text style={styles.menuText}>Analytics Dashboard</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Account Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>

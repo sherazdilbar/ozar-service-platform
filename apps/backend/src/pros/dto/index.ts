@@ -146,6 +146,18 @@ export class UpdateProDto {
   yearsExperience?: number;
 
   @IsOptional()
+  @IsNumber()
+  startingPrice?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  onboardingCompleted?: boolean;
+
+  @IsOptional()
+  @IsString()
+  onboardingStep?: string;
+
+  @IsOptional()
   @IsString()
   serviceAreaCity?: string;
 

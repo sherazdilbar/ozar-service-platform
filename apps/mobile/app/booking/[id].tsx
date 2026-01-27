@@ -14,6 +14,7 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { bookingsApi } from '@ozar/shared/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
+import BookingTimeline from '../../components/BookingTimeline';
 
 interface Booking {
   id: string;
@@ -30,6 +31,7 @@ interface Booking {
   platformFee: number;
   total: number;
   currency: string;
+  customerNotes?: string;
   customer: {
     id: string;
     firstName: string;
@@ -39,6 +41,8 @@ interface Booking {
   pro: {
     id: string;
     businessName?: string;
+    locationLat?: number;
+    locationLng?: number;
     user: {
       id: true;
       firstName: string;
@@ -58,6 +62,7 @@ interface Booking {
   };
   createdAt: string;
   updatedAt: string;
+  completedAt?: string;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -95,15 +100,65 @@ export default function BookingDetailScreen() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [rating, setRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
+  
+  // Notes state
+  const [customerNotes, setCustomerNotes] = useState('');
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [savingNotes, setSavingNotes] = useState(false);
+  
+  // ETA calculation for ASAP bookings
+  const [estimatedArrival, setEstimatedArrival] = useState<string | null>(null);
 
   useEffect(() => {
     loadBooking();
   }, [id]);
 
+  useEffect(() => {
+    // Calculate ETA for ASAP bookings
+    if (booking?.isASAP && booking.status === 'ACCEPTED' && booking.pro) {
+      calculateETA();
+    }
+  }, [booking]);
+
+  const calculateETA = () => {
+    if (!booking) return;
+    
+    // Simple distance-based calculation
+    // In a real app, you'd use Mapbox Directions API
+    // For now, assume average speed of 30 km/h in city
+    const avgSpeedKmh = 30;
+    
+    // Calculate straight-line distance (Haversine formula)
+    const R = 6371; // Earth's radius in km
+    const dLat = toRad(booking.locationLat - (booking.pro.locationLat || 47.4979));
+    const dLon = toRad(booking.locationLng - (booking.pro.locationLng || 19.0402));
+    const lat1 = toRad(booking.pro.locationLat || 47.4979);
+    const lat2 = toRad(booking.locationLat);
+    
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c;
+    
+    // Calculate time in minutes (add 10 min buffer for city traffic)
+    const timeMinutes = Math.round((distance / avgSpeedKmh) * 60) + 10;
+    
+    if (timeMinutes < 60) {
+      setEstimatedArrival(`${timeMinutes} minutes`);
+    } else {
+      const hours = Math.floor(timeMinutes / 60);
+      const mins = timeMinutes % 60;
+      setEstimatedArrival(`${hours}h ${mins}m`);
+    }
+  };
+  
+  const toRad = (deg: number) => deg * (Math.PI / 180);
+
   const loadBooking = async () => {
     try {
       const result = await bookingsApi.getBookingById(id as string);
       setBooking(result);
+      setCustomerNotes(result.customerNotes || '');
     } catch (error) {
       console.error('Failed to load booking:', error);
       Alert.alert('Error', 'Failed to load booking details');
@@ -239,6 +294,40 @@ export default function BookingDetailScreen() {
     }
   };
 
+  const handleCancelBooking = async () => {
+    Alert.prompt(
+      'Cancel Booking',
+      'Please provide a reason for cancellation:',
+      async (reason) => {
+        if (!reason?.trim()) return;
+        
+        setActionLoading(true);
+        try {
+          await bookingsApi.cancelBooking(id as string, reason.trim());
+          await loadBooking();
+          Alert.alert('Cancelled', 'Booking has been cancelled');
+        } catch (error: any) {
+          Alert.alert('Error', error.message || 'Failed to cancel booking');
+        } finally {
+          setActionLoading(false);
+        }
+      }
+    );
+  };
+
+  const handleSaveNotes = async () => {
+    setSavingNotes(true);
+    try {
+      await bookingsApi.updateBookingNotes(id as string, customerNotes);
+      setEditingNotes(false);
+      Alert.alert('Success', 'Notes saved successfully');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to save notes');
+    } finally {
+      setSavingNotes(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -276,6 +365,7 @@ export default function BookingDetailScreen() {
   // Customer actions
   const showMessageButton = !isPro && !['CANCELLED_BY_CUSTOMER', 'CANCELLED_BY_PRO'].includes(booking.status);
   const showReviewButton = !isPro && booking.status === 'COMPLETED' && !booking.review;
+  const showCancelButton = !isPro && ['REQUESTED', 'ACCEPTED', 'SCHEDULED'].includes(booking.status);
 
   return (
     <View style={styles.container}>
@@ -317,7 +407,15 @@ export default function BookingDetailScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>When</Text>
           {booking.isASAP ? (
-            <Text style={styles.asapBadge}>⚡ As Soon As Possible</Text>
+            <>
+              <Text style={styles.asapBadge}>⚡ As Soon As Possible</Text>
+              {estimatedArrival && booking.status === 'ACCEPTED' && (
+                <View style={styles.etaContainer}>
+                  <Text style={styles.etaLabel}>Estimated Arrival:</Text>
+                  <Text style={styles.etaValue}>🚗 {estimatedArrival}</Text>
+                </View>
+              )}
+            </>
           ) : (
             <Text style={styles.scheduledText}>
               📅 {new Date(booking.scheduledFor!).toLocaleString()}
@@ -325,11 +423,79 @@ export default function BookingDetailScreen() {
           )}
         </View>
 
+        {/* Booking Timeline */}
+        <View style={styles.section}>
+          <BookingTimeline
+            status={booking.status}
+            isASAP={booking.isASAP}
+            createdAt={booking.createdAt}
+            scheduledFor={booking.scheduledFor}
+            completedAt={booking.completedAt}
+          />
+        </View>
+
         {/* Description */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Description</Text>
           <Text style={styles.description}>{booking.description}</Text>
         </View>
+
+        {/* Customer Notes - Only for customers */}
+        {!isPro && (
+          <View style={styles.section}>
+            <View style={styles.notesHeader}>
+              <Text style={styles.sectionTitle}>Your Notes</Text>
+              {!editingNotes && (
+                <TouchableOpacity onPress={() => setEditingNotes(true)}>
+                  <Text style={styles.editNotesButton}>
+                    {customerNotes ? '✏️ Edit' : '+ Add Notes'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            {editingNotes ? (
+              <>
+                <TextInput
+                  style={styles.notesInput}
+                  placeholder="Add special instructions or notes for the professional..."
+                  placeholderTextColor="#9ca3af"
+                  value={customerNotes}
+                  onChangeText={setCustomerNotes}
+                  multiline
+                  numberOfLines={4}
+                  maxLength={500}
+                />
+                <Text style={styles.charCount}>{customerNotes.length}/500</Text>
+                <View style={styles.notesActions}>
+                  <TouchableOpacity
+                    style={styles.notesCancelButton}
+                    onPress={() => {
+                      setCustomerNotes(booking.customerNotes || '');
+                      setEditingNotes(false);
+                    }}
+                  >
+                    <Text style={styles.notesCancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.notesSaveButton}
+                    onPress={handleSaveNotes}
+                    disabled={savingNotes}
+                  >
+                    {savingNotes ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <Text style={styles.notesSaveText}>Save Notes</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <Text style={styles.notesText}>
+                {customerNotes || 'No notes added yet. Tap "Add Notes" to include special instructions.'}
+              </Text>
+            )}
+          </View>
+        )}
 
         {/* Images */}
         {booking.images && booking.images.length > 0 && (
@@ -382,7 +548,7 @@ export default function BookingDetailScreen() {
       </ScrollView>
 
       {/* Action Buttons */}
-      {(showProActions || showStartButton || showCompleteButton || showMessageButton || showReviewButton) && (
+      {(showProActions || showStartButton || showCompleteButton || showMessageButton || showReviewButton || showCancelButton) && (
         <View style={styles.bottomActions}>
           {showProActions && (
             <>
@@ -436,6 +602,20 @@ export default function BookingDetailScreen() {
           )}
 
           {/* Customer Actions */}
+          {showCancelButton && (
+            <TouchableOpacity
+              style={[styles.actionButton, styles.cancelButton]}
+              onPress={handleCancelBooking}
+              disabled={actionLoading}
+            >
+              {actionLoading ? (
+                <ActivityIndicator size="small" color="#EF4444" />
+              ) : (
+                <Text style={styles.cancelButtonText}>Cancel Booking</Text>
+              )}
+            </TouchableOpacity>
+          )}
+
           {showMessageButton && (
             <TouchableOpacity
               style={[styles.actionButton, styles.messageButton]}
@@ -763,6 +943,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
+  cancelButton: {
+    backgroundColor: '#FEE2E2',
+    flex: 1,
+  },
+  cancelButtonText: {
+    color: '#EF4444',
+    fontSize: 15,
+    fontWeight: '600',
+  },
   reviewButton: {
     backgroundColor: '#00BCD4',
     shadowColor: '#00BCD4',
@@ -862,5 +1051,84 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 15,
     fontWeight: '600',
+  },
+  // Notes Styles
+  notesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  editNotesButton: {
+    fontSize: 14,
+    color: '#00BCD4',
+    fontWeight: '600',
+  },
+  notesInput: {
+    backgroundColor: '#f9fafb',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: '#111827',
+    minHeight: 100,
+    textAlignVertical: 'top',
+    marginBottom: 8,
+  },
+  notesActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+  },
+  notesCancelButton: {
+    flex: 1,
+    backgroundColor: '#f3f4f6',
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  notesCancelText: {
+    color: '#6b7280',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  notesSaveButton: {
+    flex: 2,
+    backgroundColor: '#00BCD4',
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  notesSaveText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  notesText: {
+    fontSize: 15,
+    color: '#374151',
+    lineHeight: 22,
+    fontStyle: 'italic',
+  },
+  // ETA Styles
+  etaContainer: {
+    marginTop: 12,
+    backgroundColor: '#E0F2F1',
+    padding: 12,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#00BCD4',
+  },
+  etaLabel: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 4,
+  },
+  etaValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#00BCD4',
   },
 });

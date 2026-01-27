@@ -9,19 +9,23 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
+import { MultiImagePicker } from './MultiImagePicker';
+import { reviewsApi } from '@ozar/shared/apiClient';
 
 interface Review {
   id: string;
   rating: number;
   comment: string;
+  images?: string[];
   customerName: string;
   customerAvatar?: string;
   createdAt: string;
-  response?: {
-    text: string;
-    createdAt: string;
-  };
+  helpfulCount?: number;
+  isHelpful?: boolean;
+  responseText?: string;
+  responseAt?: string;
 }
 
 interface ReviewsListProps {
@@ -29,7 +33,10 @@ interface ReviewsListProps {
   averageRating: number;
   totalReviews: number;
   canLeaveReview?: boolean;
-  onSubmitReview?: (rating: number, comment: string) => Promise<void>;
+  canRespond?: boolean;
+  currentUserId?: string;
+  onSubmitReview?: (rating: number, comment: string, images?: string[]) => Promise<void>;
+  onRefresh?: () => void;
 }
 
 export default function ReviewsList({
@@ -37,12 +44,26 @@ export default function ReviewsList({
   averageRating,
   totalReviews,
   canLeaveReview = false,
+  canRespond = false,
+  currentUserId,
   onSubmitReview,
+  onRefresh,
 }: ReviewsListProps) {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
+  const [images, setImages] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  
+  // Response modal state
+  const [showResponseModal, setShowResponseModal] = useState(false);
+  const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
+  const [responseText, setResponseText] = useState('');
+  const [respondingToReview, setRespondingToReview] = useState(false);
+  
+  // Image viewer
+  const [viewingImages, setViewingImages] = useState<string[]>([]);
+  const [showImageViewer, setShowImageViewer] = useState(false);
 
   const handleSubmit = async () => {
     if (!comment.trim()) {
@@ -54,15 +75,52 @@ export default function ReviewsList({
 
     setSubmitting(true);
     try {
-      await onSubmitReview(rating, comment.trim());
+      await onSubmitReview(rating, comment.trim(), images);
       setShowReviewModal(false);
       setRating(5);
       setComment('');
+      setImages([]);
       Alert.alert('Success', 'Review submitted successfully!');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to submit review');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleToggleHelpful = async (reviewId: string) => {
+    try {
+      await reviewsApi.toggleHelpfulVote(reviewId);
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to update helpful vote');
+    }
+  };
+
+  const handleRespondToReview = async () => {
+    if (!responseText.trim()) {
+      Alert.alert('Required', 'Please write a response');
+      return;
+    }
+
+    if (!selectedReviewId) return;
+
+    setRespondingToReview(true);
+    try {
+      await reviewsApi.respondToReview(selectedReviewId, responseText.trim());
+      setShowResponseModal(false);
+      setResponseText('');
+      setSelectedReviewId(null);
+      Alert.alert('Success', 'Response posted successfully!');
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to post response');
+    } finally {
+      setRespondingToReview(false);
     }
   };
 
@@ -138,11 +196,56 @@ export default function ReviewsList({
 
               <Text style={styles.reviewComment}>{review.comment}</Text>
 
-              {review.response && (
+              {/* Review Images */}
+              {review.images && review.images.length > 0 && (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.reviewImages}
+                >
+                  {review.images.map((image, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      onPress={() => {
+                        setViewingImages(review.images || []);
+                        setShowImageViewer(true);
+                      }}
+                    >
+                      <Image source={{ uri: image }} style={styles.reviewImage} />
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
+
+              {/* Helpful Button */}
+              <View style={styles.reviewActions}>
+                <TouchableOpacity
+                  style={[styles.helpfulButton, review.isHelpful && styles.helpfulButtonActive]}
+                  onPress={() => handleToggleHelpful(review.id)}
+                >
+                  <Text style={[styles.helpfulButtonText, review.isHelpful && styles.helpfulButtonTextActive]}>
+                    👍 Helpful {review.helpfulCount ? `(${review.helpfulCount})` : ''}
+                  </Text>
+                </TouchableOpacity>
+
+                {canRespond && !review.responseText && (
+                  <TouchableOpacity
+                    style={styles.respondButton}
+                    onPress={() => {
+                      setSelectedReviewId(review.id);
+                      setShowResponseModal(true);
+                    }}
+                  >
+                    <Text style={styles.respondButtonText}>💬 Respond</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {review.responseText && (
                 <View style={styles.responseContainer}>
                   <Text style={styles.responseLabel}>Response from Professional:</Text>
-                  <Text style={styles.responseText}>{review.response.text}</Text>
-                  <Text style={styles.responseDate}>{formatDate(review.response.createdAt)}</Text>
+                  <Text style={styles.responseText}>{review.responseText}</Text>
+                  <Text style={styles.responseDate}>{formatDate(review.responseAt!)}</Text>
                 </View>
               )}
             </View>
@@ -194,6 +297,13 @@ export default function ReviewsList({
                 textAlignVertical="top"
               />
               <Text style={styles.charCount}>{comment.length}/500</Text>
+
+              <Text style={styles.label}>Photos (Optional)</Text>
+              <MultiImagePicker
+                images={images}
+                onImagesChange={setImages}
+                maxImages={5}
+              />
             </ScrollView>
 
             <View style={styles.modalFooter}>
@@ -216,6 +326,89 @@ export default function ReviewsList({
               </TouchableOpacity>
             </View>
           </View>
+        </View>
+      </Modal>
+
+      {/* Response Modal */}
+      <Modal
+        visible={showResponseModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowResponseModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Respond to Review</Text>
+              <TouchableOpacity onPress={() => setShowResponseModal(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalBody}>
+              <Text style={styles.label}>Your Response *</Text>
+              <TextInput
+                style={styles.textArea}
+                placeholder="Thank the customer and address their feedback..."
+                value={responseText}
+                onChangeText={setResponseText}
+                multiline
+                numberOfLines={6}
+                maxLength={500}
+                textAlignVertical="top"
+              />
+              <Text style={styles.charCount}>{responseText.length}/500</Text>
+            </View>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowResponseModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitButton, respondingToReview && styles.submitButtonDisabled]}
+                onPress={handleRespondToReview}
+                disabled={respondingToReview}
+              >
+                {respondingToReview ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text style={styles.submitButtonText}>Post Response</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Image Viewer Modal */}
+      <Modal
+        visible={showImageViewer}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowImageViewer(false)}
+      >
+        <View style={styles.imageViewerOverlay}>
+          <TouchableOpacity
+            style={styles.imageViewerClose}
+            onPress={() => setShowImageViewer(false)}
+          >
+            <Text style={styles.imageViewerCloseText}>✕</Text>
+          </TouchableOpacity>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            style={styles.imageViewerScroll}
+          >
+            {viewingImages.map((image, idx) => (
+              <View key={idx} style={styles.imageViewerContainer}>
+                <Image source={{ uri: image }} style={styles.imageViewerImage} resizeMode="contain" />
+              </View>
+            ))}
+          </ScrollView>
         </View>
       </Modal>
     </View>
@@ -464,5 +657,87 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: 'white',
+  },
+  // Review Images
+  reviewImages: {
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  reviewImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  // Review Actions
+  reviewActions: {
+    flexDirection: 'row',
+    marginTop: 12,
+    gap: 12,
+  },
+  helpfulButton: {
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  helpfulButtonActive: {
+    backgroundColor: '#E0F2F1',
+    borderColor: '#00BCD4',
+  },
+  helpfulButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  helpfulButtonTextActive: {
+    color: '#00BCD4',
+  },
+  respondButton: {
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  respondButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'white',
+  },
+  // Image Viewer
+  imageViewerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+  },
+  imageViewerClose: {
+    position: 'absolute',
+    top: 48,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageViewerCloseText: {
+    fontSize: 24,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  imageViewerScroll: {
+    flex: 1,
+  },
+  imageViewerContainer: {
+    width: 400,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageViewerImage: {
+    width: '100%',
+    height: '100%',
   },
 });

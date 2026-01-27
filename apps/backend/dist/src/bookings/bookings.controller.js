@@ -49,7 +49,13 @@ let BookingsController = class BookingsController {
         return this.bookingsService.completeJob(id, req.user.userId);
     }
     createReview(id, req, body) {
-        return this.bookingsService.createReview(id, req.user.userId, body.rating, body.comment);
+        return this.bookingsService.createReview(id, req.user.userId, body.rating, body.comment, body.images);
+    }
+    cancelByCustomer(id, req, body) {
+        return this.bookingsService.cancelByCustomer(id, req.user.userId, body.reason);
+    }
+    updateCustomerNotes(id, req, body) {
+        return this.bookingsService.updateCustomerNotes(id, req.user.userId, body.notes);
     }
 };
 exports.BookingsController = BookingsController;
@@ -139,6 +145,24 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", void 0)
 ], BookingsController.prototype, "createReview", null);
+__decorate([
+    (0, common_1.Post)(':id/cancel'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", void 0)
+], BookingsController.prototype, "cancelByCustomer", null);
+__decorate([
+    (0, common_1.Put)(':id/notes'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", void 0)
+], BookingsController.prototype, "updateCustomerNotes", null);
 exports.BookingsController = BookingsController = __decorate([
     (0, common_1.Controller)('bookings'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

@@ -31,8 +31,14 @@ export default function ProServicesScreen() {
   };
 
   const toggleServiceStatus = async (serviceId: string, currentStatus: boolean) => {
-    // TODO: Implement service status toggle API
-    console.log('Toggle service:', serviceId, !currentStatus);
+    try {
+      await servicesApi.toggleServiceStatus(serviceId);
+      // Reload services to get updated status
+      await loadServices();
+    } catch (error) {
+      console.error('Failed to toggle service status:', error);
+      Alert.alert('Error', 'Failed to update service status');
+    }
   };
 
   // Group services by category

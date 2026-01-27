@@ -66,13 +66,40 @@ export class BookingsController {
   createReview(
     @Param('id') id: string,
     @Req() req,
-    @Body() body: { rating: number; comment: string },
+    @Body() body: { rating: number; comment: string; images?: string[] },
   ) {
     return this.bookingsService.createReview(
       id,
       req.user.userId,
       body.rating,
       body.comment,
+      body.images,
+    );
+  }
+
+  @Post(':id/cancel')
+  cancelByCustomer(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() body: { reason: string },
+  ) {
+    return this.bookingsService.cancelByCustomer(
+      id,
+      req.user.userId,
+      body.reason,
+    );
+  }
+
+  @Put(':id/notes')
+  updateCustomerNotes(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() body: { notes: string },
+  ) {
+    return this.bookingsService.updateCustomerNotes(
+      id,
+      req.user.userId,
+      body.notes,
     );
   }
 }

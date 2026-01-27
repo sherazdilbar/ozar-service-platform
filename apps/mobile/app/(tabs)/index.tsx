@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Modal, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ServiceCategory, CATEGORY_LABELS, CATEGORY_ICONS } from '@ozar/shared';
+import { CATEGORY_GROUPS } from '@ozar/shared/categoryStructure';
 import { prosApi } from '@ozar/shared/apiClient';
 import { useNotifications } from '../../contexts/NotificationsContext';
 import { useSearch } from '../../contexts/SearchContext';
@@ -55,6 +56,7 @@ function CustomerHome() {
   const [sortBy, setSortBy] = useState<SortOption>('available');
   const [showSearchHistory, setShowSearchHistory] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
   
   // Filter states
   const [minPrice, setMinPrice] = useState('');
@@ -181,18 +183,23 @@ function CustomerHome() {
     setRadiusKm(50); // Reset to default 50km
   };
 
-  const handleSearch = (text: string) => {
-    setSearchText(text);
-    if (text.trim()) {
+  const handleSearch = () => {
+    const text = searchText.trim();
+    if (text) {
       setShowResults(true);
       setShowSearchHistory(false);
-      addToHistory(text.trim());
-      loadPros({ searchTerm: text.trim(), category: selectedCategory });
+      addToHistory(text);
+      loadPros({ searchTerm: text, category: selectedCategory });
     } else if (!selectedCategory) {
       setShowResults(false);
       setShowSearchHistory(false);
       loadPopularPros();
     }
+  };
+
+  const handleSearchTextChange = (text: string) => {
+    setSearchText(text);
+    // Don't auto-search, just update the text
   };
 
   const handleCategorySelect = (category: string) => {
@@ -230,11 +237,23 @@ function CustomerHome() {
           <TouchableOpacity onPress={clearSearch} style={styles.backButton}>
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
-          <Text style={styles.resultsTitle}>
-            {selectedCategory ? CATEGORY_LABELS[selectedCategory as ServiceCategory] : 'Search Results'}
-          </Text>
-          <TouchableOpacity onPress={clearSearch} style={styles.filterButton}>
-            <Text style={styles.filterIcon}>✕</Text>
+          
+          {/* Search Bar in Results */}
+          <View style={styles.resultsSearchBar}>
+            <Text style={styles.searchIcon}>🔍</Text>
+            <TextInput
+              style={styles.resultsSearchInput}
+              placeholder="Search for services..."
+              placeholderTextColor="#9CA3AF"
+              value={searchText}
+              onChangeText={handleSearchTextChange}
+              onSubmitEditing={handleSearch}
+              returnKeyType="search"
+            />
+          </View>
+          
+          <TouchableOpacity onPress={() => setShowFilters(true)} style={styles.filterButton}>
+            <Text style={styles.filterIcon}>🔽</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -287,7 +306,8 @@ function CustomerHome() {
                   placeholder="Search for services..."
                   placeholderTextColor="#9CA3AF"
                   value={searchText}
-                  onChangeText={handleSearch}
+                  onChangeText={handleSearchTextChange}
+                  onSubmitEditing={handleSearch}
                   onFocus={() => setShowSearchHistory(true)}
                   onBlur={() => setTimeout(() => setShowSearchHistory(false), 200)}
                   returnKeyType="search"
@@ -314,7 +334,8 @@ function CustomerHome() {
                       style={styles.searchHistoryItem}
                       onPress={() => {
                         setSearchText(item);
-                        handleSearch(item);
+                        setShowSearchHistory(false);
+                        handleSearch();
                       }}
                     >
                       <Text style={styles.searchHistoryIcon}>🕐</Text>
@@ -326,23 +347,6 @@ function CustomerHome() {
               )}
             </View>
           </>
-        )}
-
-        {/* Filter Button - Show when results are displayed */}
-        {showResults && (
-          <View style={styles.filterButtonContainer}>
-            <TouchableOpacity 
-              style={styles.filterButtonMain}
-              onPress={() => setShowFilters(true)}
-            >
-              <Text style={styles.filterButtonText}>🔧 Filters</Text>
-              {(minPrice || maxPrice || minRating > 0 || availableOnly || verifiedOnly) && (
-                <View style={styles.filterBadge}>
-                  <Text style={styles.filterBadgeText}>•</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
         )}
 
         {/* Filter Modal */}
@@ -362,6 +366,35 @@ function CustomerHome() {
               </View>
 
               <ScrollView style={styles.filterBody}>
+                {/* Sort By */}
+                <Text style={styles.filterLabel}>Sort By</Text>
+                <View style={styles.sortOptionsRow}>
+                  <TouchableOpacity
+                    style={[styles.sortOptionButton, sortBy === 'available' && styles.sortOptionButtonActive]}
+                    onPress={() => setSortBy('available')}
+                  >
+                    <Text style={[styles.sortOptionText, sortBy === 'available' && styles.sortOptionTextActive]}>
+                      Available Now
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.sortOptionButton, sortBy === 'rating' && styles.sortOptionButtonActive]}
+                    onPress={() => setSortBy('rating')}
+                  >
+                    <Text style={[styles.sortOptionText, sortBy === 'rating' && styles.sortOptionTextActive]}>
+                      Top Rated
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.sortOptionButton, sortBy === 'price' && styles.sortOptionButtonActive]}
+                    onPress={() => setSortBy('price')}
+                  >
+                    <Text style={[styles.sortOptionText, sortBy === 'price' && styles.sortOptionTextActive]}>
+                      Price: Low to Hi
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
                 {/* Distance Radius */}
                 <Text style={styles.filterLabel}>Distance</Text>
                 <View style={styles.radiusRow}>
@@ -470,7 +503,12 @@ function CustomerHome() {
           <>
             {/* Browse Categories */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Browse Categories</Text>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Browse Categories</Text>
+                <TouchableOpacity onPress={() => setShowAllCategories(true)}>
+                  <Text style={styles.seeAllLink}>See All</Text>
+                </TouchableOpacity>
+              </View>
               <View style={styles.categoriesGrid}>
                 {CATEGORIES.slice(0, 8).map((category) => (
                   <TouchableOpacity
@@ -500,6 +538,55 @@ function CustomerHome() {
           </>
         )}
 
+        {/* All Categories Modal */}
+        <Modal
+          visible={showAllCategories}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setShowAllCategories(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.categoriesModal}>
+              <View style={styles.filterHeader}>
+                <Text style={styles.filterTitle}>All Categories</Text>
+                <TouchableOpacity onPress={() => setShowAllCategories(false)}>
+                  <Text style={styles.filterClose}>✕</Text>
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView style={styles.filterBody}>
+                {CATEGORY_GROUPS.map((group) => (
+                  <View key={group.id} style={styles.categoryGroup}>
+                    <Text style={styles.categoryGroupTitle}>{group.label}</Text>
+                    <View style={styles.categoryGroupGrid}>
+                      {group.subcategories.map((category) => (
+                        <TouchableOpacity
+                          key={category}
+                          style={[
+                            styles.categoryModalCard,
+                            selectedCategory === category && styles.categoryModalCardSelected,
+                          ]}
+                          onPress={() => {
+                            handleCategorySelect(category);
+                            setShowAllCategories(false);
+                          }}
+                        >
+                          <Text style={styles.categoryModalIcon}>
+                            {CATEGORY_ICONS[category]}
+                          </Text>
+                          <Text style={styles.categoryModalLabel}>
+                            {CATEGORY_LABELS[category]}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+
         {/* Results Section */}
         {showResults ? (
           <View style={styles.section}>
@@ -527,38 +614,6 @@ function CustomerHome() {
                 </TouchableOpacity>
               </View>
             </View>
-
-            {/* Sort Pills */}
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              style={styles.sortScroll}
-            >
-              <TouchableOpacity
-                style={[styles.sortPill, sortBy === 'available' && styles.sortPillActive]}
-                onPress={() => setSortBy('available')}
-              >
-                <Text style={[styles.sortPillText, sortBy === 'available' && styles.sortPillTextActive]}>
-                  Available Now
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.sortPill, sortBy === 'rating' && styles.sortPillActive]}
-                onPress={() => setSortBy('rating')}
-              >
-                <Text style={[styles.sortPillText, sortBy === 'rating' && styles.sortPillTextActive]}>
-                  Top Rated
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.sortPill, sortBy === 'price' && styles.sortPillActive]}
-                onPress={() => setSortBy('price')}
-              >
-                <Text style={[styles.sortPillText, sortBy === 'price' && styles.sortPillTextActive]}>
-                  Price: Low to Hi
-                </Text>
-              </TouchableOpacity>
-            </ScrollView>
 
             <Text style={styles.resultsCount}>
               {filteredAndSortedPros.length} professional{filteredAndSortedPros.length !== 1 ? 's' : ''} available
@@ -595,14 +650,24 @@ function CustomerHome() {
               <View style={styles.emptyState}>
                 <Text style={styles.emptyIcon}>🔍</Text>
                 <Text style={styles.emptyTitle}>No professionals found</Text>
-                <Text style={styles.emptyText}>Try adjusting your search or category</Text>
+                <Text style={styles.emptyText}>
+                  {searchText.trim() 
+                    ? `No results for "${searchText}"`
+                    : selectedCategory 
+                      ? `No ${CATEGORY_LABELS[selectedCategory as ServiceCategory]} available`
+                      : 'Try adjusting your search or filters'
+                  }
+                </Text>
+                <TouchableOpacity style={styles.clearSearchButton} onPress={clearSearch}>
+                  <Text style={styles.clearSearchButtonText}>Clear Search</Text>
+                </TouchableOpacity>
               </View>
             ) : (
-              filteredAndSortedPros.map((pro, index) => {
-                const displayName = pro.businessName || `${pro.user.firstName} ${pro.user.lastName}`;
+              filteredAndSortedPros.map((pro) => {
+                const personName = `${pro.user.firstName} ${pro.user.lastName}`;
+                const workType = pro.categories[0] ? CATEGORY_LABELS[pro.categories[0] as ServiceCategory] : 'Professional';
                 const initials = `${pro.user.firstName[0]}${pro.user.lastName[0]}`.toUpperCase();
                 const isVerified = pro.verificationStatus === 'APPROVED';
-                const isAvailable = pro.availabilityStatus === 'AVAILABLE';
                 
                 return (
                   <TouchableOpacity
@@ -610,48 +675,37 @@ function CustomerHome() {
                     style={styles.proCard}
                     onPress={() => router.push(`/pro/${pro.id}`)}
                   >
-                    <View style={styles.proHeader}>
-                      <View style={styles.proAvatar}>
-                        <Text style={styles.proAvatarText}>{initials}</Text>
+                    <View style={styles.cardRow}>
+                      {/* Left: Avatar with verified badge */}
+                      <View style={styles.avatarContainer}>
+                        <View style={styles.proAvatar}>
+                          <Text style={styles.proAvatarText}>{initials}</Text>
+                        </View>
                         {isVerified && (
-                          <View style={styles.verifiedBadge}>
-                            <Text style={styles.verifiedText}>✓</Text>
+                          <View style={styles.verifiedBadgeBottom}>
+                            <Text style={styles.verifiedIcon}>✓</Text>
                           </View>
                         )}
                       </View>
-                      <View style={styles.proInfo}>
-                        <View style={styles.proNameRow}>
-                          <Text style={styles.proName}>{displayName}</Text>
-                          <View style={styles.ratingBadge}>
-                            <Text style={styles.ratingStar}>⭐</Text>
-                            <Text style={styles.ratingValue}>{pro.rating.toFixed(1)}</Text>
-                            <Text style={styles.ratingCount}>({pro.reviewCount})</Text>
-                          </View>
-                        </View>
-                        <Text style={styles.proLocation}>
-                          {pro.locationArea} • {pro.jobsCompleted} jobs
+
+                      {/* Middle: Info */}
+                      <View style={styles.cardMiddle}>
+                        <Text style={styles.proNameNew}>{personName}</Text>
+                        <Text style={styles.proLocationNew}>
+                          📍 {pro.locationArea} • {pro.jobsCompleted} jobs
                         </Text>
+                        <Text style={styles.categoryText}>{workType}</Text>
                       </View>
-                    </View>
 
-                    <View style={styles.proCategories}>
-                      {pro.categories.slice(0, 2).map((cat: string, idx: number) => (
-                        <View key={idx} style={styles.categoryTag}>
-                          <Text style={styles.categoryTagText}>
-                            {CATEGORY_LABELS[cat as ServiceCategory]}
-                          </Text>
+                      {/* Right: Rating and Price */}
+                      <View style={styles.cardRight}>
+                        <View style={styles.ratingBadgeNew}>
+                          <Text style={styles.ratingStarNew}>⭐</Text>
+                          <Text style={styles.ratingValueNew}>{pro.rating.toFixed(1)}</Text>
+                          <Text style={styles.ratingCountNew}>({pro.reviewCount})</Text>
                         </View>
-                      ))}
-                    </View>
-
-                    <View style={styles.proFooter}>
-                      {isAvailable && (
-                        <View style={styles.availableBadge}>
-                          <View style={styles.greenDot} />
-                          <Text style={styles.availableText}>Available Now</Text>
-                        </View>
-                      )}
-                      <Text style={styles.proPrice}>${pro.startingPrice}/hr</Text>
+                        <Text style={styles.priceNew}>{pro.startingPrice} Ft/hr</Text>
+                      </View>
                     </View>
                   </TouchableOpacity>
                 );
@@ -680,11 +734,11 @@ function CustomerHome() {
                 <Text style={styles.emptyText}>Check back later</Text>
               </View>
             ) : (
-              pros.slice(0, 2).map((pro, index) => {
-                const displayName = pro.businessName || `${pro.user.firstName} ${pro.user.lastName}`;
+              pros.slice(0, 2).map((pro) => {
+                const personName = `${pro.user.firstName} ${pro.user.lastName}`;
+                const workType = pro.categories[0] ? CATEGORY_LABELS[pro.categories[0] as ServiceCategory] : 'Professional';
                 const initials = `${pro.user.firstName[0]}${pro.user.lastName[0]}`.toUpperCase();
                 const isVerified = pro.verificationStatus === 'APPROVED';
-                const isAvailable = pro.availabilityStatus === 'AVAILABLE';
                 
                 return (
                   <TouchableOpacity
@@ -692,48 +746,37 @@ function CustomerHome() {
                     style={styles.proCard}
                     onPress={() => router.push(`/pro/${pro.id}`)}
                   >
-                    <View style={styles.proHeader}>
-                      <View style={styles.proAvatar}>
-                        <Text style={styles.proAvatarText}>{initials}</Text>
+                    <View style={styles.cardRow}>
+                      {/* Left: Avatar with verified badge */}
+                      <View style={styles.avatarContainer}>
+                        <View style={styles.proAvatar}>
+                          <Text style={styles.proAvatarText}>{initials}</Text>
+                        </View>
                         {isVerified && (
-                          <View style={styles.verifiedBadge}>
-                            <Text style={styles.verifiedText}>✓</Text>
+                          <View style={styles.verifiedBadgeBottom}>
+                            <Text style={styles.verifiedIcon}>✓</Text>
                           </View>
                         )}
                       </View>
-                      <View style={styles.proInfo}>
-                        <View style={styles.proNameRow}>
-                          <Text style={styles.proName}>{displayName}</Text>
-                          <View style={styles.ratingBadge}>
-                            <Text style={styles.ratingStar}>⭐</Text>
-                            <Text style={styles.ratingValue}>{pro.rating.toFixed(1)}</Text>
-                            <Text style={styles.ratingCount}>({pro.reviewCount})</Text>
-                          </View>
-                        </View>
-                        <Text style={styles.proLocation}>
-                          {pro.locationArea} • {pro.jobsCompleted} jobs
+
+                      {/* Middle: Info */}
+                      <View style={styles.cardMiddle}>
+                        <Text style={styles.proNameNew}>{personName}</Text>
+                        <Text style={styles.proLocationNew}>
+                          📍 {pro.locationArea} • {pro.jobsCompleted} jobs
                         </Text>
+                        <Text style={styles.categoryText}>{workType}</Text>
                       </View>
-                    </View>
 
-                    <View style={styles.proCategories}>
-                      {pro.categories.slice(0, 2).map((cat: string, idx: number) => (
-                        <View key={idx} style={styles.categoryTag}>
-                          <Text style={styles.categoryTagText}>
-                            {CATEGORY_LABELS[cat as ServiceCategory]}
-                          </Text>
+                      {/* Right: Rating and Price */}
+                      <View style={styles.cardRight}>
+                        <View style={styles.ratingBadgeNew}>
+                          <Text style={styles.ratingStarNew}>⭐</Text>
+                          <Text style={styles.ratingValueNew}>{pro.rating.toFixed(1)}</Text>
+                          <Text style={styles.ratingCountNew}>({pro.reviewCount})</Text>
                         </View>
-                      ))}
-                    </View>
-
-                    <View style={styles.proFooter}>
-                      {isAvailable && (
-                        <View style={styles.availableBadge}>
-                          <View style={styles.greenDot} />
-                          <Text style={styles.availableText}>Available Now</Text>
-                        </View>
-                      )}
-                      <Text style={styles.proPrice}>${pro.startingPrice}/hr</Text>
+                        <Text style={styles.priceNew}>{pro.startingPrice} Ft/hr</Text>
+                      </View>
                     </View>
                   </TouchableOpacity>
                 );
@@ -949,27 +992,6 @@ const styles = StyleSheet.create({
   viewButtonIcon: {
     fontSize: 16,
   },
-  sortScroll: {
-    marginBottom: 16,
-  },
-  sortPill: {
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-  },
-  sortPillActive: {
-    backgroundColor: '#00BCD4',
-  },
-  sortPillText: {
-    fontSize: 13,
-    color: '#374151',
-    fontWeight: '500',
-  },
-  sortPillTextActive: {
-    color: 'white',
-  },
   resultsCount: {
     fontSize: 14,
     color: '#6B7280',
@@ -1079,141 +1101,101 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  proHeader: {
+  cardRow: {
     flexDirection: 'row',
-    marginBottom: 12,
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    position: 'relative',
+    marginRight: 12,
   },
   proAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: '#00BCD4',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
-    position: 'relative',
   },
   proAvatarText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
   },
-  verifiedBadge: {
+  verifiedBadgeBottom: {
     position: 'absolute',
-    bottom: -2,
-    right: -2,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    bottom: 0,
+    right: 0,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     backgroundColor: '#00BCD4',
     borderWidth: 2,
     borderColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  verifiedText: {
+  verifiedIcon: {
     color: 'white',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
   },
-  proInfo: {
+  cardMiddle: {
     flex: 1,
+    justifyContent: 'center',
+    marginRight: 8,
   },
-  proNameRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  proName: {
+  proNameNew: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    flex: 1,
-  },
-  ratingBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF7ED',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    fontWeight: '700',
+    color: '#1F2937',
     marginBottom: 4,
   },
-  ratingStar: {
+  proLocationNew: {
     fontSize: 12,
-    marginRight: 2,
+    color: '#9CA3AF',
+    marginBottom: 6,
   },
-  ratingValue: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#111827',
-    marginRight: 2,
-  },
-  ratingCount: {
-    fontSize: 11,
+  categoryText: {
+    fontSize: 13,
     color: '#6B7280',
-  },
-  proLocation: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  availableBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#D1FAE5',
-    paddingHorizontal: 8,
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
     alignSelf: 'flex-start',
   },
-  greenDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#10B981',
-    marginRight: 4,
+  cardRight: {
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    minHeight: 64,
   },
-  availableText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#10B981',
-  },
-  proCategories: {
+  ratingBadgeNew: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: 12,
-  },
-  categoryTag: {
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 10,
+    alignItems: 'center',
+    backgroundColor: '#FFF7ED',
+    paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
+    marginBottom: 8,
   },
-  categoryTagText: {
-    fontSize: 11,
-    color: '#374151',
-  },
-  proFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-  },
-  jobsCount: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  proPrice: {
+  ratingStarNew: {
     fontSize: 14,
-    fontWeight: '600',
+    marginRight: 2,
+  },
+  ratingValueNew: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginRight: 2,
+  },
+  ratingCountNew: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  priceNew: {
+    fontSize: 18,
+    fontWeight: '700',
     color: '#00BCD4',
   },
   searchHistoryContainer: {
@@ -1271,38 +1253,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#9CA3AF',
   },
-  filterButtonContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  filterButtonMain: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f3f4f6',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    position: 'relative',
-  },
-  filterButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#374151',
-  },
-  filterBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#00BCD4',
-  },
-  filterBadgeText: {
-    fontSize: 8,
-    color: '#00BCD4',
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -1340,6 +1290,32 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginBottom: 12,
     marginTop: 16,
+  },
+  sortOptionsRow: {
+    flexDirection: 'column',
+    gap: 8,
+    marginBottom: 8,
+  },
+  sortOptionButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    alignItems: 'center',
+  },
+  sortOptionButtonActive: {
+    backgroundColor: '#E0F7FA',
+    borderColor: '#00BCD4',
+  },
+  sortOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  sortOptionTextActive: {
+    color: '#00BCD4',
   },
   radiusRow: {
     flexDirection: 'row',
@@ -1489,5 +1465,80 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: 'white',
+  },
+  categoriesModal: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '85%',
+  },
+  categoryGroup: {
+    marginBottom: 24,
+  },
+  categoryGroupTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  categoryGroupGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  categoryModalCard: {
+    width: '30%',
+    aspectRatio: 1,
+    borderRadius: 12,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  categoryModalCardSelected: {
+    backgroundColor: '#E0F7FA',
+    borderColor: '#00BCD4',
+  },
+  categoryModalIcon: {
+    fontSize: 28,
+    marginBottom: 6,
+  },
+  categoryModalLabel: {
+    fontSize: 10,
+    color: '#374151',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  resultsSearchBar: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginHorizontal: 8,
+  },
+  resultsSearchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: '#111827',
+    marginLeft: 4,
+  },
+  clearSearchButton: {
+    backgroundColor: '#00BCD4',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 16,
+  },
+  clearSearchButtonText: {
+    color: 'white',
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

@@ -17,6 +17,14 @@ import { DisputesModule } from './disputes/disputes.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { UploadModule } from './upload/upload.module';
 import { EmailModule } from './email/email.module';
+import { FavoritesModule } from './favorites/favorites.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { AvailabilityModule } from './availability/availability.module';
+import { CertificationsModule } from './certifications/certifications.module';
+import { TemplatesModule } from './templates/templates.module';
+import { ServiceAreaModule } from './service-area/service-area.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -45,6 +53,14 @@ import { EmailModule } from './email/email.module';
     NotificationsModule,
     UploadModule,
     EmailModule,
+    FavoritesModule,
+    ReviewsModule,
+    AnalyticsModule,
+    AvailabilityModule,
+    CertificationsModule,
+    TemplatesModule,
+    ServiceAreaModule,
+    HealthModule,
   ],
   providers: [
     {

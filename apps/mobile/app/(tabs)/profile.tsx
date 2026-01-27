@@ -19,32 +19,55 @@ export default function ProfileScreen() {
   }
 
   // Customer Profile Screen
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log('Logout button pressed');
-    Alert.alert(
-      t.auth.logout,
-      t.auth.logoutConfirm,
-      [
-        { 
-          text: t.common.cancel, 
-          style: 'cancel',
-          onPress: () => console.log('Logout cancelled')
-        },
-        {
-          text: t.auth.logout,
-          style: 'destructive',
-          onPress: async () => {
-            console.log('Logout confirmed, calling logout function');
-            try {
-              await logout();
-              console.log('Logout completed');
-            } catch (error) {
-              console.error('Logout error:', error);
-            }
+    
+    // For web, use window.confirm instead of Alert
+    if (typeof window !== 'undefined' && window.confirm) {
+      const confirmed = window.confirm(t.auth.logoutConfirm || 'Are you sure you want to logout?');
+      if (!confirmed) {
+        console.log('Logout cancelled');
+        return;
+      }
+    } else {
+      // For mobile, use Alert
+      Alert.alert(
+        t.auth.logout,
+        t.auth.logoutConfirm,
+        [
+          { 
+            text: t.common.cancel, 
+            style: 'cancel',
+            onPress: () => console.log('Logout cancelled')
           },
-        },
-      ]
-    );
+          {
+            text: t.auth.logout,
+            style: 'destructive',
+            onPress: async () => {
+              console.log('Logout confirmed, calling logout function');
+              try {
+                await logout();
+                console.log('Logout completed');
+              } catch (error) {
+                console.error('Logout error:', error);
+              }
+            },
+          },
+        ]
+      );
+      return;
+    }
+    
+    // Execute logout for web
+    console.log('Logout confirmed, calling logout function');
+    try {
+      await logout();
+      console.log('Logout completed');
+      // Force redirect to welcome screen
+      router.replace('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   if (!user) {
@@ -102,6 +125,11 @@ export default function ProfileScreen() {
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/profile/edit')}>
           <Text style={styles.menuIcon}>👤</Text>
           <Text style={styles.menuText}>{t.profile.editProfile}</Text>
+          <Text style={styles.menuArrow}>›</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')}>
+          <Text style={styles.menuIcon}>❤️</Text>
+          <Text style={styles.menuText}>Favorites</Text>
           <Text style={styles.menuArrow}>›</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>

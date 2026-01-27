@@ -190,6 +190,8 @@ model User {
   notifications        Notification[]
   customerConversations Conversation[]  @relation("CustomerConversations")
   sentMessages         Message[]        @relation("SentMessages")
+  favorites            Favorite[]       @relation("CustomerFavorites")
+  reviewHelpfulVotes   ReviewHelpfulVote[]
 
   @@index([email])
   @@index([emailVerificationToken])
@@ -249,6 +251,7 @@ model ProProfile {
   reviews       Review[]
   bookings      Booking[]
   conversations Conversation[]
+  favoritedBy   Favorite[]     @relation("ProFavorites")
 
   @@index([userId])
   @@index([verificationStatus])
@@ -266,6 +269,7 @@ model Service {
   price        Int
   duration     Int
   currency     String        @default("USD")
+  isActive     Boolean       @default(true)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -304,6 +308,7 @@ model Booking {
   scheduledFor       DateTime?
   isASAP             Boolean       @default(false)
   description        String
+  customerNotes      String?
   images             String[]
   locationAddr       String
   locationCity       String
@@ -361,18 +366,37 @@ model Review {
   customerId       String
   rating           Int
   comment          String
+  images           String[] @default([])
   responseText     String?
   responseAt       DateTime?
+  helpfulCount     Int      @default(0)
   createdAt        DateTime @default(now())
 
   // Relations
   booking  Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   pro      ProProfile @relation(fields: [proId], references: [id], onDelete: Cascade)
   customer User       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  helpfulVotes ReviewHelpfulVote[]
 
   @@index([proId])
   @@index([customerId])
   @@map("reviews")
+}
+
+model ReviewHelpfulVote {
+  id        String   @id @default(cuid())
+  reviewId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  // Relations
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+  @@index([userId])
+  @@map("review_helpful_votes")
 }
 
 // Dispute Management
@@ -479,4 +503,206 @@ model Message {
   @@index([senderId])
   @@index([createdAt])
   @@map("messages")
+}
+
+// Favorites
+model Favorite {
+  id         String   @id @default(cuid())
+  customerId String
+  proId      String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  customer User       @relation("CustomerFavorites", fields: [customerId], references: [id], onDelete: Cascade)
+  pro      ProProfile @relation("ProFavorites", fields: [proId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, proId])
+  @@index([customerId])
+  @@index([proId])
+  @@map("favorites")
+}
+
+// Availability Schedule
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model AvailabilitySchedule {
+  id        String    @id @default(cuid())
+  proId     String
+  dayOfWeek DayOfWeek
+  startTime String    // Format: "HH:mm"
+  endTime   String    // Format: "HH:mm"
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([proId])
+  @@index([dayOfWeek])
+  @@map("availability_schedules")
+}
+
+model TimeOff {
+  id        String   @id @default(cuid())
+  proId     String
+  startDate DateTime
+  endDate   DateTime
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([proId])
+  @@index([startDate, endDate])
+  @@map("time_offs")
+}
+
+// Certifications & Badges
+enum CertificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+model Certification {
+  id             String              @id @default(cuid())
+  proId          String
+  name           String
+  issuingOrg     String
+  issueDate      DateTime
+  expiryDate     DateTime?
+  certificateUrl String?
+  status         CertificationStatus @default(PENDING)
+  verifiedAt     DateTime?
+  verifiedBy     String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([proId])
+  @@index([status])
+  @@map("certifications")
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  proId       String
+  badgeType   String   // e.g., "VERIFIED", "TOP_RATED", "QUICK_RESPONDER"
+  name        String
+  description String
+  icon        String
+  earnedAt    DateTime @default(now())
+
+  @@index([proId])
+  @@map("badges")
+}
+
+// Automated Responses & Templates
+model ResponseTemplate {
+  id        String   @id @default(cuid())
+  proId     String
+  name      String
+  content   String
+  category  String   // e.g., "GREETING", "CONFIRMATION", "FOLLOW_UP"
+  isActive  Boolean  @default(true)
+  usageCount Int     @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([proId])
+  @@index([category])
+  @@map("response_templates")
+}
+
+model AutoResponse {
+  id        String   @id @default(cuid())
+  proId     String
+  trigger   String   // e.g., "NEW_BOOKING", "AFTER_HOURS"
+  message   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([proId])
+  @@map("auto_responses")
+}
+
+// Service Area Management
+model ServiceArea {
+  id          String   @id @default(cuid())
+  proId       String
+  city        String
+  area        String?
+  radius      Int      // in kilometers
+  travelFee   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([proId])
+  @@map("service_areas")
+}
+
+// Marketing & Referrals
+model ReferralCode {
+  id            String   @id @default(cuid())
+  proId         String
+  code          String   @unique
+  discountType  String   // "PERCENTAGE" or "FIXED"
+  discountValue Int
+  maxUses       Int?
+  usedCount     Int      @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@index([proId])
+  @@index([code])
+  @@map("referral_codes")
+}
+
+model Referral {
+  id           String   @id @default(cuid())
+  referrerId   String   // Pro who referred
+  referredId   String   // Customer who was referred
+  code         String
+  bookingId    String?
+  rewardAmount Int      @default(0)
+  status       String   @default("PENDING") // PENDING, COMPLETED, PAID
+  createdAt    DateTime @default(now())
+
+  @@index([referrerId])
+  @@index([referredId])
+  @@index([code])
+  @@map("referrals")
+}
+
+// Quick Actions & Booking Enhancements
+model QuickMessage {
+  id        String   @id @default(cuid())
+  proId     String
+  message   String
+  category  String   // e.g., "ON_MY_WAY", "RUNNING_LATE", "COMPLETED"
+  usageCount Int     @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([proId])
+  @@map("quick_messages")
+}
+
+model BookingPhoto {
+  id        String   @id @default(cuid())
+  bookingId String
+  imageUrl  String
+  caption   String?
+  type      String   // "BEFORE", "DURING", "AFTER"
+  uploadedBy String
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
+  @@map("booking_photos")
 }

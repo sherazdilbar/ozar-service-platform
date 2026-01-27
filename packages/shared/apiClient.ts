@@ -8,32 +8,71 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 
   'http://localhost:4000/api/v1';
 
-// Token management
+// Token management - works for both web and React Native
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 
+// Storage adapter for cross-platform support
+let storageAdapter: any = null;
+
+// Initialize storage adapter
+if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+  // Web environment
+  storageAdapter = {
+    getItem: (key: string) => localStorage.getItem(key),
+    setItem: (key: string, value: string) => localStorage.setItem(key, value),
+    removeItem: (key: string) => localStorage.removeItem(key),
+  };
+} else {
+  // React Native environment - try to load AsyncStorage
+  try {
+    const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+    storageAdapter = AsyncStorage;
+  } catch (e) {
+    console.warn('[API Client] No storage available');
+  }
+}
+
 export function setTokens(access: string, refresh: string) {
+  console.log('[API Client] Setting tokens, access token length:', access?.length);
   accessToken = access;
   refreshToken = refresh;
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('accessToken', access);
-    localStorage.setItem('refreshToken', refresh);
+  
+  // Store in persistent storage if available
+  if (storageAdapter) {
+    try {
+      storageAdapter.setItem('accessToken', access);
+      storageAdapter.setItem('refreshToken', refresh);
+      console.log('[API Client] Tokens saved to storage');
+    } catch (e) {
+      console.error('[API Client] Failed to save tokens:', e);
+    }
   }
 }
 
 export function getAccessToken(): string | null {
-  if (!accessToken && typeof window !== 'undefined') {
-    accessToken = localStorage.getItem('accessToken');
+  // Always return in-memory token if available
+  if (accessToken) {
+    return accessToken;
   }
-  return accessToken;
+  
+  console.log('[API Client] No in-memory token, check storage');
+  return null;
 }
 
 export function clearTokens() {
+  console.log('[API Client] Clearing all tokens');
   accessToken = null;
   refreshToken = null;
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+  
+  if (storageAdapter) {
+    try {
+      storageAdapter.removeItem('accessToken');
+      storageAdapter.removeItem('refreshToken');
+      console.log('[API Client] Tokens cleared from storage');
+    } catch (e) {
+      console.error('[API Client] Failed to clear tokens:', e);
+    }
   }
 }
 
@@ -43,6 +82,10 @@ async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = getAccessToken();
+  
+  console.log(`[API Client] Request to ${endpoint}`);
+  console.log(`[API Client] Has token:`, !!token);
+  console.log(`[API Client] Token value:`, token ? `${token.substring(0, 20)}...` : 'null');
   
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -54,6 +97,9 @@ async function apiRequest<T>(
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
+    console.log(`[API Client] Authorization header set`);
+  } else {
+    console.warn(`[API Client] NO TOKEN - Request will be unauthorized!`);
   }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -63,6 +109,7 @@ async function apiRequest<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'Request failed' }));
+    console.error(`[API Client] Request failed: ${response.status}`, error);
     throw new Error(error.message || `HTTP ${response.status}`);
   }
 
@@ -221,6 +268,29 @@ export const prosApi = {
       method: 'POST',
     });
   },
+
+  // Portfolio methods
+  async getPortfolio(proId: string) {
+    return apiRequest<any>(`/pros/${proId}/portfolio`);
+  },
+
+  async addPortfolioItem(proId: string, data: {
+    imageUrl: string;
+    title: string;
+    description: string;
+    category: string;
+  }) {
+    return apiRequest<any>(`/pros/${proId}/portfolio`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async deletePortfolioItem(itemId: string) {
+    return apiRequest<any>(`/pros/portfolio/${itemId}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 // Bookings API
@@ -292,10 +362,24 @@ export const bookingsApi = {
     });
   },
 
-  async createReview(bookingId: string, rating: number, comment: string) {
+  async createReview(bookingId: string, rating: number, comment: string, images?: string[]) {
     return apiRequest<any>(`/bookings/${bookingId}/review`, {
       method: 'POST',
-      body: JSON.stringify({ rating, comment }),
+      body: JSON.stringify({ rating, comment, images }),
+    });
+  },
+
+  async cancelBooking(bookingId: string, reason: string) {
+    return apiRequest<any>(`/bookings/${bookingId}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  async updateBookingNotes(bookingId: string, notes: string) {
+    return apiRequest<any>(`/bookings/${bookingId}/notes`, {
+      method: 'PUT',
+      body: JSON.stringify({ notes }),
     });
   },
 };
@@ -344,6 +428,12 @@ export const servicesApi = {
     return apiRequest<any>(`/services/${serviceId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
+    });
+  },
+
+  async toggleServiceStatus(serviceId: string) {
+    return apiRequest<any>(`/services/${serviceId}/toggle-status`, {
+      method: 'PUT',
     });
   },
 };
@@ -483,4 +573,153 @@ export const notificationsApi = {
       method: 'PUT',
     });
   },
+};
+
+// Favorites API
+export const favoritesApi = {
+  async getFavorites() {
+    return apiRequest<any>('/favorites');
+  },
+
+  async addFavorite(proId: string) {
+    return apiRequest<any>(`/favorites/${proId}`, {
+      method: 'POST',
+    });
+  },
+
+  async removeFavorite(proId: string) {
+    return apiRequest<any>(`/favorites/${proId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async isFavorite(proId: string) {
+    return apiRequest<any>(`/favorites/check/${proId}`);
+  },
+};
+
+// Reviews API
+export const reviewsApi = {
+  async getProReviews(proId: string, page = 1, limit = 10) {
+    return apiRequest<any>(`/reviews/pro/${proId}?page=${page}&limit=${limit}`);
+  },
+
+  async getMyReviews() {
+    return apiRequest<any>('/reviews/my-reviews');
+  },
+
+  async getReviewById(reviewId: string) {
+    return apiRequest<any>(`/reviews/${reviewId}`);
+  },
+
+  async respondToReview(reviewId: string, responseText: string) {
+    return apiRequest<any>(`/reviews/${reviewId}/respond`, {
+      method: 'POST',
+      body: JSON.stringify({ responseText }),
+    });
+  },
+
+  async flagReview(reviewId: string, reason: string) {
+    return apiRequest<any>(`/reviews/${reviewId}/flag`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  async toggleHelpfulVote(reviewId: string) {
+    return apiRequest<any>(`/reviews/${reviewId}/helpful`, {
+      method: 'POST',
+    });
+  },
+
+  async isReviewHelpful(reviewId: string) {
+    return apiRequest<any>(`/reviews/${reviewId}/helpful/check`);
+  },
+};
+
+// Analytics API
+export const analyticsApi = {
+  async getProDashboard(period: 'week' | 'month' | 'year' = 'month') {
+    return apiRequest<any>(`/analytics/pro/dashboard?period=${period}`);
+  },
+};
+
+
+// Availability API
+export const availabilityApi = {
+  getSchedule: () => apiRequest('/availability/schedule', { method: 'GET' }),
+  updateSchedule: (schedules: any[]) => apiRequest('/availability/schedule', {
+    method: 'PUT',
+    body: JSON.stringify({ schedules }),
+  }),
+  getTimeOffs: () => apiRequest('/availability/time-off', { method: 'GET' }),
+  addTimeOff: (data: any) => apiRequest('/availability/time-off', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  deleteTimeOff: (id: string) => apiRequest(`/availability/time-off/${id}`, { method: 'DELETE' }),
+};
+
+// Certifications API
+export const certificationsApi = {
+  getCertifications: () => apiRequest('/certifications', { method: 'GET' }),
+  addCertification: (data: any) => apiRequest('/certifications', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  updateCertification: (id: string, data: any) => apiRequest(`/certifications/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  deleteCertification: (id: string) => apiRequest(`/certifications/${id}`, { method: 'DELETE' }),
+  getBadges: () => apiRequest('/certifications/badges', { method: 'GET' }),
+};
+
+// Templates API
+export const templatesApi = {
+  getResponseTemplates: () => apiRequest('/templates/responses', { method: 'GET' }),
+  createResponseTemplate: (data: any) => apiRequest('/templates/responses', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  updateResponseTemplate: (id: string, data: any) => apiRequest(`/templates/responses/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  deleteResponseTemplate: (id: string) => apiRequest(`/templates/responses/${id}`, { method: 'DELETE' }),
+  
+  getQuickMessages: () => apiRequest('/templates/quick-messages', { method: 'GET' }),
+  createQuickMessage: (data: any) => apiRequest('/templates/quick-messages', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  updateQuickMessage: (id: string, data: any) => apiRequest(`/templates/quick-messages/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  deleteQuickMessage: (id: string) => apiRequest(`/templates/quick-messages/${id}`, { method: 'DELETE' }),
+};
+
+// Service Area API
+export const serviceAreaApi = {
+  getServiceAreas: () => apiRequest('/service-areas', { method: 'GET' }),
+  addServiceArea: (data: any) => apiRequest('/service-areas', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  updateServiceArea: (id: string, data: any) => apiRequest(`/service-areas/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  deleteServiceArea: (id: string) => apiRequest(`/service-areas/${id}`, { method: 'DELETE' }),
+  calculateTravelFee: (distance: number) => apiRequest(`/service-areas/calculate-travel-fee?distance=${distance}`, { method: 'GET' }),
+};
+
+// Booking Photos API
+export const bookingPhotosApi = {
+  uploadPhoto: (bookingId: string, data: any) => apiRequest(`/bookings/${bookingId}/photos`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  getPhotos: (bookingId: string) => apiRequest(`/bookings/${bookingId}/photos`, { method: 'GET' }),
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl, ActivityIndicator, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { bookingsApi } from '@ozar/shared/apiClient';
@@ -44,6 +44,11 @@ export default function BookingsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [responding, setResponding] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
+  
+  // Filter states
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<'all' | 'week' | 'month' | '3months'>('all');
 
   const isPro = user?.role === 'PRO';
 
@@ -75,6 +80,44 @@ export default function BookingsScreen() {
     setRefreshing(true);
     loadBookings();
   }, []);
+
+  const filterBookings = (bookingsList: Booking[]) => {
+    let filtered = [...bookingsList];
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter(b => b.service.category === selectedCategory);
+    }
+
+    // Filter by date range (only for past bookings)
+    if (activeTab === 'past' && dateRange !== 'all') {
+      const now = new Date();
+      const cutoffDate = new Date();
+      
+      switch (dateRange) {
+        case 'week':
+          cutoffDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          cutoffDate.setMonth(now.getMonth() - 1);
+          break;
+        case '3months':
+          cutoffDate.setMonth(now.getMonth() - 3);
+          break;
+      }
+      
+      filtered = filtered.filter(b => new Date(b.createdAt) >= cutoffDate);
+    }
+
+    return filtered;
+  };
+
+  const clearFilters = () => {
+    setSelectedCategory(null);
+    setDateRange('all');
+  };
+
+  const activeFiltersCount = [selectedCategory, dateRange !== 'all'].filter(Boolean).length;
 
   const handleRespond = async (bookingId: string, action: 'accept' | 'decline') => {
     setResponding(bookingId);
@@ -339,8 +382,8 @@ export default function BookingsScreen() {
   const upcomingStatuses = ['REQUESTED', 'OFFERED', 'ACCEPTED', 'PAYMENT_AUTHORIZED', 'SCHEDULED', 'IN_PROGRESS'];
   const pastStatuses = ['COMPLETED', 'CAPTURED', 'CANCELLED_BY_CUSTOMER', 'CANCELLED_BY_PRO', 'NO_SHOW', 'DISPUTED', 'REFUNDED'];
 
-  const upcomingBookings = bookings.filter(b => upcomingStatuses.includes(b.status));
-  const pastBookings = bookings.filter(b => pastStatuses.includes(b.status));
+  const upcomingBookings = filterBookings(bookings.filter(b => upcomingStatuses.includes(b.status)));
+  const pastBookings = filterBookings(bookings.filter(b => pastStatuses.includes(b.status)));
   const customerDisplayBookings = activeTab === 'upcoming' ? upcomingBookings : pastBookings;
 
   const getStatusColor = (status: string) => {
@@ -410,6 +453,25 @@ export default function BookingsScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Filter Button - Only show for past bookings */}
+      {activeTab === 'past' && !isPro && (
+        <View style={styles.filterBar}>
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => setShowFilters(true)}
+          >
+            <Text style={styles.filterButtonText}>
+              🎛️ Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+            </Text>
+          </TouchableOpacity>
+          {activeFiltersCount > 0 && (
+            <TouchableOpacity style={styles.clearFiltersButton} onPress={clearFilters}>
+              <Text style={styles.clearFiltersText}>Clear</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       <ScrollView 
         style={styles.list}
@@ -502,6 +564,108 @@ export default function BookingsScreen() {
           })
         )}
       </ScrollView>
+
+      {/* Filter Modal */}
+      <Modal
+        visible={showFilters}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowFilters(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Filter Bookings</Text>
+              <TouchableOpacity onPress={() => setShowFilters(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalBody}>
+              {/* Date Range Filter */}
+              <Text style={styles.filterLabel}>Date Range</Text>
+              <View style={styles.dateRangeOptions}>
+                {[
+                  { value: 'all', label: 'All Time' },
+                  { value: 'week', label: 'Last Week' },
+                  { value: 'month', label: 'Last Month' },
+                  { value: '3months', label: 'Last 3 Months' },
+                ].map((option) => (
+                  <TouchableOpacity
+                    key={option.value}
+                    style={[
+                      styles.dateRangeOption,
+                      dateRange === option.value && styles.dateRangeOptionActive,
+                    ]}
+                    onPress={() => setDateRange(option.value as any)}
+                  >
+                    <Text
+                      style={[
+                        styles.dateRangeOptionText,
+                        dateRange === option.value && styles.dateRangeOptionTextActive,
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Service Category Filter */}
+              <Text style={styles.filterLabel}>Service Type</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <TouchableOpacity
+                  style={[
+                    styles.categoryChip,
+                    !selectedCategory && styles.categoryChipActive,
+                  ]}
+                  onPress={() => setSelectedCategory(null)}
+                >
+                  <Text
+                    style={[
+                      styles.categoryChipText,
+                      !selectedCategory && styles.categoryChipTextActive,
+                    ]}
+                  >
+                    All Services
+                  </Text>
+                </TouchableOpacity>
+                {Array.from(new Set(bookings.map(b => b.service.category))).map((category) => (
+                  <TouchableOpacity
+                    key={category}
+                    style={[
+                      styles.categoryChip,
+                      selectedCategory === category && styles.categoryChipActive,
+                    ]}
+                    onPress={() => setSelectedCategory(category)}
+                  >
+                    <Text
+                      style={[
+                        styles.categoryChipText,
+                        selectedCategory === category && styles.categoryChipTextActive,
+                      ]}
+                    >
+                      {category}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
+                <Text style={styles.clearButtonText}>Clear All</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.applyButton}
+                onPress={() => setShowFilters(false)}
+              >
+                <Text style={styles.applyButtonText}>Apply Filters</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -876,5 +1040,154 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#3B82F6',
+  },
+  filterBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+    gap: 12,
+  },
+  filterButton: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  filterButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  clearFiltersButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  clearFiltersText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#00BCD4',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '80%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  modalClose: {
+    fontSize: 28,
+    color: '#6b7280',
+    fontWeight: '300',
+  },
+  modalBody: {
+    padding: 20,
+  },
+  filterLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 12,
+    marginTop: 8,
+  },
+  dateRangeOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 20,
+  },
+  dateRangeOption: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: '#F3F4F6',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+  },
+  dateRangeOptionActive: {
+    backgroundColor: '#E0F2F1',
+    borderColor: '#00BCD4',
+  },
+  dateRangeOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  dateRangeOptionTextActive: {
+    color: '#00BCD4',
+  },
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#F3F4F6',
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  categoryChipActive: {
+    backgroundColor: '#00BCD4',
+    borderColor: '#00BCD4',
+  },
+  categoryChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  categoryChipTextActive: {
+    color: 'white',
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    padding: 20,
+    gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+  },
+  clearButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+    alignItems: 'center',
+  },
+  clearButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  applyButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#00BCD4',
+    alignItems: 'center',
+  },
+  applyButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: 'white',
   },
 });

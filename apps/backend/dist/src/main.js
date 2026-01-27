@@ -8,6 +8,7 @@ const common_1 = require("@nestjs/common");
 const app_module_1 = require("./app.module");
 const path_1 = require("path");
 const helmet_1 = __importDefault(require("helmet"));
+const http_exception_filter_1 = require("./common/filters/http-exception.filter");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use((0, helmet_1.default)());
@@ -18,7 +19,9 @@ async function bootstrap() {
     const allowedOrigins = [
         'http://localhost:3000',
         'http://localhost:8081',
+        'http://localhost:8082',
         'http://127.0.0.1:8081',
+        'http://127.0.0.1:8082',
         ...(process.env.CORS_ORIGIN?.split(',').map(origin => origin.trim()) || [])
     ];
     app.enableCors({
@@ -48,6 +51,7 @@ async function bootstrap() {
         },
         disableErrorMessages: process.env.NODE_ENV === 'production',
     }));
+    app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     const port = process.env.PORT || 4000;
     await app.listen(port);
     console.log(`🚀 Ozar API running on http://localhost:${port}/api/v1`);

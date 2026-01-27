@@ -459,13 +459,26 @@ export class ProsService {
     if (dto.serviceAreaCity !== undefined) updateData.serviceAreaCity = dto.serviceAreaCity;
     if (dto.locationCity !== undefined) updateData.locationCity = dto.locationCity;
     if (dto.locationArea !== undefined) updateData.locationArea = dto.locationArea;
+    if (dto.onboardingStep !== undefined) updateData.onboardingStep = dto.onboardingStep;
     
     // Array fields
     if (dto.categories !== undefined) updateData.categories = dto.categories as any;
     
     // Numeric fields (use !== undefined to allow 0 values)
     if (dto.yearsExperience !== undefined) updateData.yearsExperience = dto.yearsExperience;
+    if (dto.startingPrice !== undefined) updateData.startingPrice = dto.startingPrice;
     if (dto.serviceAreaRadius !== undefined) updateData.serviceAreaRadius = dto.serviceAreaRadius;
+    
+    // Boolean fields
+    if (dto.onboardingCompleted !== undefined) {
+      updateData.onboardingCompleted = dto.onboardingCompleted;
+      if (dto.onboardingCompleted && !pro.onboardingCompletedAt) {
+        updateData.onboardingCompletedAt = new Date();
+      }
+      if (!pro.onboardingStartedAt) {
+        updateData.onboardingStartedAt = new Date();
+      }
+    }
     
     // Handle location coordinates from nested object (support both formats)
     if (dto.location) {

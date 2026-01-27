@@ -136,6 +136,34 @@ export class ServicesService {
     return updated;
   }
 
+  async toggleStatus(serviceId: string, userId: string) {
+    // Get service with pro info
+    const service = await this.prisma.service.findUnique({
+      where: { id: serviceId },
+      include: {
+        pro: true,
+      },
+    });
+
+    if (!service) {
+      throw new NotFoundException('Service not found');
+    }
+
+    // Verify ownership
+    if (service.pro.userId !== userId) {
+      throw new ForbiddenException('You can only update your own services');
+    }
+
+    const updated = await this.prisma.service.update({
+      where: { id: serviceId },
+      data: {
+        isActive: !service.isActive,
+      },
+    });
+
+    return updated;
+  }
+
   /**
    * Update pro's starting price and currency based on their services
    */

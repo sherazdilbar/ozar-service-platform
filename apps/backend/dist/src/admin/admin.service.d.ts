@@ -46,6 +46,7 @@ export declare class AdminService {
                 pricingModel: import(".prisma/client").$Enums.PricingModel;
                 price: number;
                 duration: number;
+                isActive: boolean;
                 proId: string;
             }[];
         } & {
@@ -186,6 +187,7 @@ export declare class AdminService {
                 pricingModel: import(".prisma/client").$Enums.PricingModel;
                 price: number;
                 duration: number;
+                isActive: boolean;
                 proId: string;
             };
             customer: {
@@ -212,6 +214,7 @@ export declare class AdminService {
             isASAP: boolean;
             completedAt: Date | null;
             cancellationReason: string | null;
+            customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
@@ -292,6 +295,7 @@ export declare class AdminService {
                 isASAP: boolean;
                 completedAt: Date | null;
                 cancellationReason: string | null;
+                customerNotes: string | null;
                 locationAddr: string;
                 servicePrice: number;
                 platformFee: number;
@@ -350,6 +354,7 @@ export declare class AdminService {
             isASAP: boolean;
             completedAt: Date | null;
             cancellationReason: string | null;
+            customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;

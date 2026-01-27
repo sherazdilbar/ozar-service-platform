@@ -401,12 +401,25 @@ let ProsService = class ProsService {
             updateData.locationCity = dto.locationCity;
         if (dto.locationArea !== undefined)
             updateData.locationArea = dto.locationArea;
+        if (dto.onboardingStep !== undefined)
+            updateData.onboardingStep = dto.onboardingStep;
         if (dto.categories !== undefined)
             updateData.categories = dto.categories;
         if (dto.yearsExperience !== undefined)
             updateData.yearsExperience = dto.yearsExperience;
+        if (dto.startingPrice !== undefined)
+            updateData.startingPrice = dto.startingPrice;
         if (dto.serviceAreaRadius !== undefined)
             updateData.serviceAreaRadius = dto.serviceAreaRadius;
+        if (dto.onboardingCompleted !== undefined) {
+            updateData.onboardingCompleted = dto.onboardingCompleted;
+            if (dto.onboardingCompleted && !pro.onboardingCompletedAt) {
+                updateData.onboardingCompletedAt = new Date();
+            }
+            if (!pro.onboardingStartedAt) {
+                updateData.onboardingStartedAt = new Date();
+            }
+        }
         if (dto.location) {
             updateData.locationCity = dto.location.city;
             updateData.locationArea = dto.location.area;

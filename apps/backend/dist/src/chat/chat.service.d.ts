@@ -167,6 +167,7 @@ export declare class ChatService {
             isASAP: boolean;
             completedAt: Date | null;
             cancellationReason: string | null;
+            customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;

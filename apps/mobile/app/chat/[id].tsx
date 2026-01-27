@@ -10,9 +10,12 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Modal,
+  ScrollView,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { chatApi } from '@ozar/shared/apiClient';
+import { Ionicons } from '@expo/vector-icons';
+import { chatApi, templatesApi } from '@ozar/shared/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
 import { ChatMessage } from '../../components/ChatMessage';
@@ -51,6 +54,13 @@ interface Conversation {
   };
 }
 
+interface QuickMessage {
+  id: string;
+  message: string;
+  category: string;
+  usageCount: number;
+}
+
 export default function ChatDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
@@ -64,9 +74,14 @@ export default function ChatDetailScreen() {
   const [sending, setSending] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [otherUserTyping, setOtherUserTyping] = useState(false);
+  const [showQuickMessages, setShowQuickMessages] = useState(false);
+  const [quickMessages, setQuickMessages] = useState<QuickMessage[]>([]);
+  const [loadingQuickMessages, setLoadingQuickMessages] = useState(false);
   
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const isPro = user?.role === 'PRO';
 
   useEffect(() => {
     loadConversation();
@@ -136,6 +151,37 @@ export default function ChatDetailScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadQuickMessages = async () => {
+    if (!isPro) return;
+    
+    setLoadingQuickMessages(true);
+    try {
+      const result = await templatesApi.getQuickMessages();
+      setQuickMessages(result || []);
+    } catch (error) {
+      console.error('Failed to load quick messages:', error);
+    } finally {
+      setLoadingQuickMessages(false);
+    }
+  };
+
+  const handleQuickMessagePress = () => {
+    if (quickMessages.length === 0) {
+      loadQuickMessages();
+    }
+    setShowQuickMessages(true);
+  };
+
+  const handleSelectQuickMessage = (message: QuickMessage) => {
+    setMessageText(message.message);
+    setShowQuickMessages(false);
+    // Increment usage count
+    templatesApi.updateQuickMessage(message.id, {
+      ...message,
+      usageCount: message.usageCount + 1,
+    }).catch(console.error);
   };
 
   const handleSendMessage = async () => {
@@ -233,12 +279,19 @@ export default function ChatDetailScreen() {
     );
   }
 
-  const isPro = user?.role === 'PRO';
   const otherUser = isPro ? conversation.customer : conversation.pro.user;
   const displayName = isPro
     ? `${otherUser.firstName} ${otherUser.lastName}`
     : conversation.pro.businessName || `${otherUser.firstName} ${otherUser.lastName}`;
   const initials = `${otherUser.firstName[0]}${otherUser.lastName[0]}`.toUpperCase();
+
+  const CATEGORY_ICONS: Record<string, string> = {
+    ON_MY_WAY: '🚗',
+    RUNNING_LATE: '⏰',
+    COMPLETED: '✅',
+    FOLLOW_UP: '📞',
+    GREETING: '👋',
+  };
 
   return (
     <KeyboardAvoidingView
@@ -290,6 +343,14 @@ export default function ChatDetailScreen() {
 
       {/* Input Area */}
       <View style={styles.inputContainer}>
+        {isPro && (
+          <TouchableOpacity
+            style={styles.quickMessageButton}
+            onPress={handleQuickMessagePress}
+          >
+            <Ionicons name="flash" size={20} color="#00BCD4" />
+          </TouchableOpacity>
+        )}
         <TextInput
           style={styles.input}
           placeholder="Type a message..."
@@ -311,6 +372,62 @@ export default function ChatDetailScreen() {
           )}
         </TouchableOpacity>
       </View>
+
+      {/* Quick Messages Modal */}
+      <Modal
+        visible={showQuickMessages}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowQuickMessages(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Quick Messages</Text>
+              <TouchableOpacity onPress={() => setShowQuickMessages(false)}>
+                <Ionicons name="close" size={24} color="#6B7280" />
+              </TouchableOpacity>
+            </View>
+
+            {loadingQuickMessages ? (
+              <View style={styles.modalLoading}>
+                <ActivityIndicator size="large" color="#00BCD4" />
+                <Text style={styles.modalLoadingText}>Loading...</Text>
+              </View>
+            ) : quickMessages.length === 0 ? (
+              <View style={styles.modalEmpty}>
+                <Text style={styles.modalEmptyIcon}>💬</Text>
+                <Text style={styles.modalEmptyText}>No quick messages yet</Text>
+                <Text style={styles.modalEmptySubtext}>
+                  Create quick messages in Professional Tools
+                </Text>
+              </View>
+            ) : (
+              <ScrollView style={styles.modalBody}>
+                {quickMessages.map((msg) => (
+                  <TouchableOpacity
+                    key={msg.id}
+                    style={styles.quickMessageItem}
+                    onPress={() => handleSelectQuickMessage(msg)}
+                  >
+                    <View style={styles.quickMessageHeader}>
+                      <Text style={styles.quickMessageIcon}>
+                        {CATEGORY_ICONS[msg.category] || '💬'}
+                      </Text>
+                      <Text style={styles.quickMessageCategory}>
+                        {msg.category.replace(/_/g, ' ')}
+                      </Text>
+                    </View>
+                    <Text style={styles.quickMessageText} numberOfLines={2}>
+                      {msg.message}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -433,6 +550,15 @@ const styles = StyleSheet.create({
     padding: 12,
     paddingBottom: Platform.OS === 'ios' ? 24 : 12,
   },
+  quickMessageButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#EFF6FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
   input: {
     flex: 1,
     backgroundColor: '#f3f4f6',
@@ -464,5 +590,88 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
     fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  modalLoading: {
+    padding: 40,
+    alignItems: 'center',
+  },
+  modalLoadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  modalEmpty: {
+    padding: 40,
+    alignItems: 'center',
+  },
+  modalEmptyIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  modalEmptyText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 4,
+  },
+  modalEmptySubtext: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+  },
+  modalBody: {
+    padding: 16,
+  },
+  quickMessageItem: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  quickMessageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  quickMessageIcon: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  quickMessageCategory: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    textTransform: 'capitalize',
+  },
+  quickMessageText: {
+    fontSize: 15,
+    color: '#111827',
+    lineHeight: 20,
   },
 });

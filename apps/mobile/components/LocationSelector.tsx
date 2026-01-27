@@ -8,7 +8,9 @@ import {
   ActivityIndicator,
   ScrollView,
   Modal,
+  Alert,
 } from 'react-native';
+import * as Location from 'expo-location';
 
 interface LocationSelectorProps {
   city: string;
@@ -44,6 +46,63 @@ export default function LocationSelector({
   const [searchingCity, setSearchingCity] = useState(false);
   const [searchingArea, setSearchingArea] = useState(false);
   const [selectedCityData, setSelectedCityData] = useState<MapboxFeature | null>(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
+
+  // Get current location
+  const getCurrentLocation = async () => {
+    setGettingLocation(true);
+    try {
+      // Request permission
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Please enable location permissions to use this feature');
+        return;
+      }
+
+      // Get current position
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      // Reverse geocode to get address
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${location.coords.longitude},${location.coords.latitude}.json?access_token=${MAPBOX_TOKEN}&limit=1`
+      );
+      const data = await response.json();
+
+      if (data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        
+        // Extract city and area from the result
+        const context = feature.context || [];
+        const cityFeature = context.find((c: any) => c.id.startsWith('place.'));
+        const neighborhoodFeature = context.find((c: any) => c.id.startsWith('neighborhood.') || c.id.startsWith('locality.'));
+        
+        const cityName = cityFeature?.text || feature.text;
+        const areaName = neighborhoodFeature?.text || feature.text;
+
+        // Set the location
+        setSelectedCityData({
+          id: feature.id,
+          text: cityName,
+          place_name: feature.place_name,
+          center: feature.center,
+          bbox: feature.bbox,
+        });
+        
+        onCityChange(cityName);
+        onAreaChange(areaName);
+        onLocationSelect(location.coords.latitude, location.coords.longitude);
+        
+        Alert.alert('Success', 'Current location detected!');
+      }
+    } catch (error) {
+      console.error('Error getting location:', error);
+      Alert.alert('Error', 'Failed to get current location. Please try again.');
+    } finally {
+      setGettingLocation(false);
+    }
+  };
 
   // Search for cities
   const searchCity = async (query: string) => {
@@ -148,6 +207,28 @@ export default function LocationSelector({
 
   return (
     <View style={styles.container}>
+      {/* Use Current Location Button */}
+      <TouchableOpacity
+        style={styles.currentLocationButton}
+        onPress={getCurrentLocation}
+        disabled={gettingLocation || disabled}
+      >
+        {gettingLocation ? (
+          <ActivityIndicator size="small" color="#00BCD4" />
+        ) : (
+          <>
+            <Text style={styles.currentLocationIcon}>📍</Text>
+            <Text style={styles.currentLocationText}>Use Current Location</Text>
+          </>
+        )}
+      </TouchableOpacity>
+
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>or enter manually</Text>
+        <View style={styles.dividerLine} />
+      </View>
+
       {/* City Input */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>City</Text>
@@ -279,6 +360,42 @@ export default function LocationSelector({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+  },
+  currentLocationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E0F2F1',
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#00BCD4',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  currentLocationIcon: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  currentLocationText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#00BCD4',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E5E7EB',
+  },
+  dividerText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginHorizontal: 12,
   },
   inputGroup: {
     marginBottom: 18,

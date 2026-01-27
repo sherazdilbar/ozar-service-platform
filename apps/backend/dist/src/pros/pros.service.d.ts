@@ -45,6 +45,7 @@ export declare class ProsService {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         }[];
         portfolio: {
@@ -117,6 +118,7 @@ export declare class ProsService {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         }[];
         portfolio: {
@@ -190,6 +192,7 @@ export declare class ProsService {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         }[];
         portfolio: {
@@ -243,10 +246,12 @@ export declare class ProsService {
             rating: number;
             proId: string;
             bookingId: string;
+            images: string[];
             customerId: string;
             comment: string;
             responseText: string | null;
             responseAt: Date | null;
+            helpfulCount: number;
         })[];
         pagination: {
             page: number;
@@ -279,6 +284,7 @@ export declare class ProsService {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         }[];
         portfolio: {
@@ -340,6 +346,7 @@ export declare class ProsService {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         }[];
         portfolio: {

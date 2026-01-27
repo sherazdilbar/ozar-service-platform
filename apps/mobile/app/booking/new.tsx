@@ -72,7 +72,7 @@ export default function NewBookingScreen() {
 
     setSubmitting(true);
     try {
-      await bookingsApi.createBooking({
+      const result = await bookingsApi.createBooking({
         proId: proId as string,
         serviceId: serviceId as string,
         isASAP,
@@ -87,8 +87,8 @@ export default function NewBookingScreen() {
         },
       });
 
-      // Navigate immediately
-      router.push('/(tabs)/bookings');
+      // Navigate to confirmation screen
+      router.push(`/booking/confirmation?id=${result.id}`);
       
       // Reset state
       setSubmitting(false);

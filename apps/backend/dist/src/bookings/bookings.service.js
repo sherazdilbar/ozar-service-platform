@@ -338,6 +338,31 @@ let BookingsService = class BookingsService {
         });
         return updated;
     }
+    async cancelByCustomer(id, userId, reason) {
+        const booking = await this.findOne(id, userId, 'CUSTOMER');
+        this.stateMachine.validateTransition(booking.status, 'CANCELLED_BY_CUSTOMER', reason);
+        const updated = await this.updateStatus(id, userId, 'CUSTOMER', {
+            status: 'CANCELLED_BY_CUSTOMER',
+            reason,
+        });
+        await this.notificationsService.notifyBookingCancelled(booking.pro.userId, id, `${booking.customer.firstName} ${booking.customer.lastName}`, {
+            serviceName: booking.service.name,
+            customerName: `${booking.customer.firstName} ${booking.customer.lastName}`,
+            reason: reason,
+            bookingId: booking.id,
+        });
+        return updated;
+    }
+    async updateCustomerNotes(id, userId, notes) {
+        const booking = await this.findOne(id, userId, 'CUSTOMER');
+        const updated = await this.prisma.booking.update({
+            where: { id },
+            data: {
+                customerNotes: notes,
+            },
+        });
+        return updated;
+    }
     async getAvailableSlots(proId, date, serviceId) {
         const service = await this.prisma.service.findUnique({
             where: { id: serviceId },
@@ -402,7 +427,7 @@ let BookingsService = class BookingsService {
         });
         return updated;
     }
-    async createReview(bookingId, userId, rating, comment) {
+    async createReview(bookingId, userId, rating, comment, images) {
         const booking = await this.prisma.booking.findUnique({
             where: { id: bookingId },
             include: {
@@ -436,6 +461,7 @@ let BookingsService = class BookingsService {
                 customerId: userId,
                 rating,
                 comment,
+                images: images || [],
             },
         });
         const reviews = await this.prisma.review.findMany({

@@ -50,6 +50,7 @@ export declare class ServicesController {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
         proId: string;
     })[]>;
     getMyServices(req: any, categoryId?: string): Promise<({
@@ -99,6 +100,7 @@ export declare class ServicesController {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
         proId: string;
     })[]>;
     create(req: any, dto: CreateServiceDto): Promise<{
@@ -112,6 +114,7 @@ export declare class ServicesController {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
         proId: string;
     }>;
     delete(id: string, req: any): Promise<{
@@ -154,6 +157,7 @@ export declare class ServicesController {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
         proId: string;
     }>;
     update(id: string, req: any, dto: CreateServiceDto): Promise<{
@@ -167,6 +171,21 @@ export declare class ServicesController {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
+        proId: string;
+    }>;
+    toggleStatus(id: string, req: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        currency: string;
+        description: string;
+        category: import(".prisma/client").$Enums.ServiceCategory;
+        pricingModel: import(".prisma/client").$Enums.PricingModel;
+        price: number;
+        duration: number;
+        isActive: boolean;
         proId: string;
     }>;
 }

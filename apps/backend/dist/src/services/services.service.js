@@ -116,6 +116,27 @@ let ServicesService = class ServicesService {
         await this.updateProPricing(service.proId);
         return updated;
     }
+    async toggleStatus(serviceId, userId) {
+        const service = await this.prisma.service.findUnique({
+            where: { id: serviceId },
+            include: {
+                pro: true,
+            },
+        });
+        if (!service) {
+            throw new common_1.NotFoundException('Service not found');
+        }
+        if (service.pro.userId !== userId) {
+            throw new common_1.ForbiddenException('You can only update your own services');
+        }
+        const updated = await this.prisma.service.update({
+            where: { id: serviceId },
+            data: {
+                isActive: !service.isActive,
+            },
+        });
+        return updated;
+    }
     async updateProPricing(proId) {
         const services = await this.prisma.service.findMany({
             where: { proId },

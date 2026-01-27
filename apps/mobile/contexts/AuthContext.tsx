@@ -64,20 +64,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loadUser = async () => {
     try {
-      // Temporarily disabled auto-login - uncomment to enable persistent sessions
-      // const accessToken = await AsyncStorage.getItem('accessToken');
-      // const refreshToken = await AsyncStorage.getItem('refreshToken');
-      // const userData = await AsyncStorage.getItem('user');
+      console.log('[AuthContext] Loading user from storage...');
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      const userData = await AsyncStorage.getItem('user');
       
-      // if (accessToken && userData) {
-      //   // Set tokens in the API client
-      //   const { setTokens } = require('@ozar/shared/apiClient');
-      //   setTokens(accessToken, refreshToken || '');
-      //   
-      //   setUser(JSON.parse(userData));
-      // }
+      console.log('[AuthContext] Token found:', !!accessToken);
+      console.log('[AuthContext] User data found:', !!userData);
+      
+      if (accessToken && userData) {
+        // Set tokens in the API client
+        const { setTokens } = require('@ozar/shared/apiClient');
+        setTokens(accessToken, refreshToken || '');
+        
+        const parsedUser = JSON.parse(userData);
+        console.log('[AuthContext] User restored:', parsedUser.email, parsedUser.role);
+        setUser(parsedUser);
+      } else {
+        console.log('[AuthContext] No stored session found');
+      }
     } catch (error) {
-      console.error('Failed to load user:', error);
+      console.error('[AuthContext] Failed to load user:', error);
     } finally {
       setLoading(false);
     }
@@ -85,16 +92,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
+      console.log('[AuthContext] Logging in...');
       const result = await authApi.login(email, password);
       
+      console.log('[AuthContext] Login successful, storing tokens...');
       // Store tokens in AsyncStorage
       await AsyncStorage.setItem('accessToken', result.accessToken);
       await AsyncStorage.setItem('refreshToken', result.refreshToken);
       await AsyncStorage.setItem('user', JSON.stringify(result.user));
       
-      // Tokens are already set in API client by authApi.login
+      // Explicitly set tokens in API client (authApi.login already does this, but being explicit)
+      const { setTokens } = require('@ozar/shared/apiClient');
+      setTokens(result.accessToken, result.refreshToken);
+      
+      console.log('[AuthContext] Tokens stored, user:', result.user.email);
       setUser(result.user);
     } catch (error: any) {
+      console.error('[AuthContext] Login failed:', error);
       throw new Error(error.message || 'Login failed');
     }
   };
@@ -108,7 +122,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.setItem('refreshToken', result.refreshToken);
       await AsyncStorage.setItem('user', JSON.stringify(result.user));
       
-      // Tokens are already set in API client by authApi.register
+      // Explicitly set tokens in API client (authApi.register already does this, but being explicit)
+      const { setTokens } = require('@ozar/shared/apiClient');
+      setTokens(result.accessToken, result.refreshToken);
+      
       setUser(result.user);
     } catch (error: any) {
       throw new Error(error.message || 'Registration failed');

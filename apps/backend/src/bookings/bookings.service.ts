@@ -442,6 +442,53 @@ export class BookingsService {
   }
 
   /**
+   * Customer cancels booking
+   */
+  async cancelByCustomer(id: string, userId: string, reason: string) {
+    const booking = await this.findOne(id, userId, 'CUSTOMER');
+
+    // Validate transition
+    this.stateMachine.validateTransition(
+      booking.status as BookingStatus,
+      'CANCELLED_BY_CUSTOMER' as BookingStatus,
+      reason,
+    );
+
+    const updated = await this.updateStatus(id, userId, 'CUSTOMER', {
+      status: 'CANCELLED_BY_CUSTOMER',
+      reason,
+    });
+
+    // Send notification to pro
+    await this.notificationsService.notifyBookingCancelled(
+      booking.pro.userId,
+      id,
+      `${booking.customer.firstName} ${booking.customer.lastName}`,
+      {
+        serviceName: booking.service.name,
+        customerName: `${booking.customer.firstName} ${booking.customer.lastName}`,
+        reason: reason,
+        bookingId: booking.id,
+      },
+    );
+
+    return updated;
+  }
+
+  async updateCustomerNotes(id: string, userId: string, notes: string) {
+    const booking = await this.findOne(id, userId, 'CUSTOMER');
+
+    const updated = await this.prisma.booking.update({
+      where: { id },
+      data: {
+        customerNotes: notes,
+      },
+    });
+
+    return updated;
+  }
+
+  /**
    * Get available time slots for a pro on a given date
    */
   async getAvailableSlots(proId: string, date: string, serviceId: string) {
@@ -568,6 +615,7 @@ export class BookingsService {
     userId: string,
     rating: number,
     comment: string,
+    images?: string[],
   ) {
     // Get booking and verify it's completed
     const booking = await this.prisma.booking.findUnique({
@@ -610,6 +658,7 @@ export class BookingsService {
         customerId: userId,
         rating,
         comment,
+        images: images || [],
       },
     });
 

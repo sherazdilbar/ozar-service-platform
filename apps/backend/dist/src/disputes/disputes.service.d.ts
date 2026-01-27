@@ -61,6 +61,7 @@ export declare class DisputesService {
             isASAP: boolean;
             completedAt: Date | null;
             cancellationReason: string | null;
+            customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
@@ -141,6 +142,7 @@ export declare class DisputesService {
             isASAP: boolean;
             completedAt: Date | null;
             cancellationReason: string | null;
+            customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
@@ -260,6 +262,7 @@ export declare class DisputesService {
             isASAP: boolean;
             completedAt: Date | null;
             cancellationReason: string | null;
+            customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;

@@ -26,6 +26,14 @@ const disputes_module_1 = require("./disputes/disputes.module");
 const notifications_module_1 = require("./notifications/notifications.module");
 const upload_module_1 = require("./upload/upload.module");
 const email_module_1 = require("./email/email.module");
+const favorites_module_1 = require("./favorites/favorites.module");
+const reviews_module_1 = require("./reviews/reviews.module");
+const analytics_module_1 = require("./analytics/analytics.module");
+const availability_module_1 = require("./availability/availability.module");
+const certifications_module_1 = require("./certifications/certifications.module");
+const templates_module_1 = require("./templates/templates.module");
+const service_area_module_1 = require("./service-area/service-area.module");
+const health_module_1 = require("./health/health.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -56,6 +64,14 @@ exports.AppModule = AppModule = __decorate([
             notifications_module_1.NotificationsModule,
             upload_module_1.UploadModule,
             email_module_1.EmailModule,
+            favorites_module_1.FavoritesModule,
+            reviews_module_1.ReviewsModule,
+            analytics_module_1.AnalyticsModule,
+            availability_module_1.AvailabilityModule,
+            certifications_module_1.CertificationsModule,
+            templates_module_1.TemplatesModule,
+            service_area_module_1.ServiceAreaModule,
+            health_module_1.HealthModule,
         ],
         providers: [
             {

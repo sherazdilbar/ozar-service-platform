@@ -54,6 +54,9 @@ let ServicesController = class ServicesController {
     async update(id, req, dto) {
         return this.servicesService.update(id, req.user.userId, dto);
     }
+    async toggleStatus(id, req) {
+        return this.servicesService.toggleStatus(id, req.user.userId);
+    }
 };
 exports.ServicesController = ServicesController;
 __decorate([
@@ -102,6 +105,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, dto_1.CreateServiceDto]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "update", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Put)(':id/toggle-status'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "toggleStatus", null);
 exports.ServicesController = ServicesController = __decorate([
     (0, common_1.Controller)('services'),
     __metadata("design:paramtypes", [services_service_1.ServicesService])

@@ -38,6 +38,9 @@ export declare class UpdateProDto {
     categories?: string[];
     availabilityStatus?: string;
     yearsExperience?: number;
+    startingPrice?: number;
+    onboardingCompleted?: boolean;
+    onboardingStep?: string;
     serviceAreaCity?: string;
     serviceAreaRadius?: number;
     locationCity?: string;

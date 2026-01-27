@@ -52,6 +52,7 @@ export declare class BookingsController {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         };
         customer: {
@@ -80,6 +81,7 @@ export declare class BookingsController {
         isASAP: boolean;
         completedAt: Date | null;
         cancellationReason: string | null;
+        customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
@@ -138,6 +140,7 @@ export declare class BookingsController {
                 pricingModel: import(".prisma/client").$Enums.PricingModel;
                 price: number;
                 duration: number;
+                isActive: boolean;
                 proId: string;
             };
             customer: {
@@ -166,6 +169,7 @@ export declare class BookingsController {
             isASAP: boolean;
             completedAt: Date | null;
             cancellationReason: string | null;
+            customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
@@ -230,6 +234,7 @@ export declare class BookingsController {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         };
         customer: {
@@ -265,6 +270,7 @@ export declare class BookingsController {
         isASAP: boolean;
         completedAt: Date | null;
         cancellationReason: string | null;
+        customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
@@ -322,6 +328,7 @@ export declare class BookingsController {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         };
         customer: {
@@ -350,6 +357,7 @@ export declare class BookingsController {
         isASAP: boolean;
         completedAt: Date | null;
         cancellationReason: string | null;
+        customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
@@ -407,6 +415,7 @@ export declare class BookingsController {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         };
         customer: {
@@ -435,6 +444,7 @@ export declare class BookingsController {
         isASAP: boolean;
         completedAt: Date | null;
         cancellationReason: string | null;
+        customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
@@ -492,6 +502,7 @@ export declare class BookingsController {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         };
         customer: {
@@ -520,6 +531,7 @@ export declare class BookingsController {
         isASAP: boolean;
         completedAt: Date | null;
         cancellationReason: string | null;
+        customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
@@ -585,6 +597,7 @@ export declare class BookingsController {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         };
         customer: {
@@ -613,6 +626,7 @@ export declare class BookingsController {
         isASAP: boolean;
         completedAt: Date | null;
         cancellationReason: string | null;
+        customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
@@ -670,6 +684,7 @@ export declare class BookingsController {
             pricingModel: import(".prisma/client").$Enums.PricingModel;
             price: number;
             duration: number;
+            isActive: boolean;
             proId: string;
         };
         customer: {
@@ -698,6 +713,7 @@ export declare class BookingsController {
         isASAP: boolean;
         completedAt: Date | null;
         cancellationReason: string | null;
+        customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
@@ -709,15 +725,136 @@ export declare class BookingsController {
     createReview(id: string, req: any, body: {
         rating: number;
         comment: string;
+        images?: string[];
     }): Promise<{
         id: string;
         createdAt: Date;
         rating: number;
         proId: string;
         bookingId: string;
+        images: string[];
         customerId: string;
         comment: string;
         responseText: string | null;
         responseAt: Date | null;
+        helpfulCount: number;
+    }>;
+    cancelByCustomer(id: string, req: any, body: {
+        reason: string;
+    }): Promise<{
+        pro: {
+            user: {
+                id: string;
+                email: string;
+                firstName: string;
+                lastName: string;
+                phone: string;
+                avatar: string;
+            };
+        } & {
+            id: string;
+            locationCity: string;
+            locationArea: string;
+            locationLat: number;
+            locationLng: number;
+            createdAt: Date;
+            updatedAt: Date;
+            businessName: string | null;
+            bio: string | null;
+            categories: import(".prisma/client").$Enums.ServiceCategory[];
+            rating: number;
+            reviewCount: number;
+            jobsCompleted: number;
+            yearsExperience: number;
+            verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
+            availabilityStatus: import(".prisma/client").$Enums.AvailabilityStatus;
+            startingPrice: number;
+            currency: string;
+            responseTime: number;
+            serviceAreaCity: string;
+            serviceAreaRadius: number;
+            onboardingCompleted: boolean;
+            onboardingStep: string | null;
+            onboardingStartedAt: Date | null;
+            onboardingCompletedAt: Date | null;
+            userId: string;
+        };
+        service: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            currency: string;
+            description: string;
+            category: import(".prisma/client").$Enums.ServiceCategory;
+            pricingModel: import(".prisma/client").$Enums.PricingModel;
+            price: number;
+            duration: number;
+            isActive: boolean;
+            proId: string;
+        };
+        customer: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
+            phone: string;
+            avatar: string;
+        };
+    } & {
+        id: string;
+        locationCity: string;
+        locationLat: number;
+        locationLng: number;
+        createdAt: Date;
+        updatedAt: Date;
+        currency: string;
+        description: string;
+        proId: string;
+        images: string[];
+        customerId: string;
+        status: import(".prisma/client").$Enums.BookingStatus;
+        serviceId: string;
+        scheduledFor: Date | null;
+        isASAP: boolean;
+        completedAt: Date | null;
+        cancellationReason: string | null;
+        customerNotes: string | null;
+        locationAddr: string;
+        servicePrice: number;
+        platformFee: number;
+        total: number;
+        cancelledBy: string | null;
+        cancellationFee: number | null;
+        refundAmount: number | null;
+    }>;
+    updateCustomerNotes(id: string, req: any, body: {
+        notes: string;
+    }): Promise<{
+        id: string;
+        locationCity: string;
+        locationLat: number;
+        locationLng: number;
+        createdAt: Date;
+        updatedAt: Date;
+        currency: string;
+        description: string;
+        proId: string;
+        images: string[];
+        customerId: string;
+        status: import(".prisma/client").$Enums.BookingStatus;
+        serviceId: string;
+        scheduledFor: Date | null;
+        isASAP: boolean;
+        completedAt: Date | null;
+        cancellationReason: string | null;
+        customerNotes: string | null;
+        locationAddr: string;
+        servicePrice: number;
+        platformFee: number;
+        total: number;
+        cancelledBy: string | null;
+        cancellationFee: number | null;
+        refundAmount: number | null;
     }>;
 }

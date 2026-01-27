@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,6 +19,8 @@ export default function ProDashboard() {
     weekEarnings: 0,
     weekGrowth: 0,
   });
+  const [availabilityStatus, setAvailabilityStatus] = useState<'AVAILABLE_NOW' | 'BUSY' | 'OFFLINE'>('OFFLINE');
+  const [updatingAvailability, setUpdatingAvailability] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -36,6 +38,19 @@ export default function ProDashboard() {
       // Load profile data
       const profileData = await prosApi.getMyProfile();
       setProfile(profileData);
+      setAvailabilityStatus(profileData.availabilityStatus || 'OFFLINE');
+      
+      // Check if onboarding is completed
+      if (!profileData.onboardingCompleted) {
+        router.replace('/pro/onboarding');
+        return;
+      }
+      
+      // Check verification status - if PENDING, show pending screen
+      if (profileData.verificationStatus === 'PENDING') {
+        setLoading(false);
+        return; // Don't load bookings, just show pending state
+      }
       
       // Load today's scheduled bookings
       const bookingsData = await bookingsApi.getBookings();
@@ -93,10 +108,129 @@ export default function ProDashboard() {
     return amount.toFixed(0);
   };
 
+  const toggleAvailability = async () => {
+    const newStatus = availabilityStatus === 'AVAILABLE_NOW' ? 'OFFLINE' : 'AVAILABLE_NOW';
+    setUpdatingAvailability(true);
+    try {
+      await prosApi.updateProfile({ availabilityStatus: newStatus });
+      setAvailabilityStatus(newStatus);
+    } catch (error) {
+      console.error('Failed to update availability:', error);
+      Alert.alert('Error', 'Failed to update availability status');
+    } finally {
+      setUpdatingAvailability(false);
+    }
+  };
+
+  const getAvailabilityColor = () => {
+    return availabilityStatus === 'AVAILABLE_NOW' ? '#10B981' : '#6B7280';
+  };
+
+  const getAvailabilityText = () => {
+    return availabilityStatus === 'AVAILABLE_NOW' ? 'Available Now' : 'Offline';
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00BCD4" />
+      </View>
+    );
+  }
+
+  // Show pending approval screen
+  if (profile && profile.verificationStatus === 'PENDING') {
+    return (
+      <View style={styles.container}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Text style={styles.greeting}>
+                Welcome,{'\n'}
+                <Text style={styles.userName}>{user?.firstName || 'User'}!</Text>
+              </Text>
+              <Text style={styles.subtitle}>Your professional journey begins here</Text>
+            </View>
+          </View>
+
+          {/* Pending Approval Card */}
+          <View style={styles.pendingContainer}>
+            <View style={styles.pendingIconCircle}>
+              <Text style={styles.pendingIcon}>⏳</Text>
+            </View>
+            <Text style={styles.pendingTitle}>Application Under Review</Text>
+            <Text style={styles.pendingMessage}>
+              Thank you for submitting your professional application! Our team is currently reviewing your profile.
+            </Text>
+            <Text style={styles.pendingSubtext}>
+              You'll receive a notification once your application is approved. This usually takes 24-48 hours.
+            </Text>
+
+            {/* What's Next Section */}
+            <View style={styles.whatsNextCard}>
+              <Text style={styles.whatsNextTitle}>While You Wait</Text>
+              <View style={styles.whatsNextList}>
+                <View style={styles.whatsNextItem}>
+                  <Text style={styles.whatsNextIcon}>✓</Text>
+                  <Text style={styles.whatsNextText}>Your profile has been created</Text>
+                </View>
+                <View style={styles.whatsNextItem}>
+                  <Text style={styles.whatsNextIcon}>✓</Text>
+                  <Text style={styles.whatsNextText}>Application submitted successfully</Text>
+                </View>
+                <View style={styles.whatsNextItem}>
+                  <Text style={styles.whatsNextIcon}>⏳</Text>
+                  <Text style={styles.whatsNextText}>Admin review in progress</Text>
+                </View>
+                <View style={styles.whatsNextItem}>
+                  <Text style={styles.whatsNextIcon}>📧</Text>
+                  <Text style={styles.whatsNextText}>You'll be notified via email</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Profile Summary */}
+            <View style={styles.profileSummaryCard}>
+              <Text style={styles.profileSummaryTitle}>Your Profile</Text>
+              <View style={styles.profileSummaryRow}>
+                <Text style={styles.profileSummaryLabel}>Business Name:</Text>
+                <Text style={styles.profileSummaryValue}>{profile.businessName || 'Not set'}</Text>
+              </View>
+              <View style={styles.profileSummaryRow}>
+                <Text style={styles.profileSummaryLabel}>Experience:</Text>
+                <Text style={styles.profileSummaryValue}>{profile.yearsExperience} years</Text>
+              </View>
+              <View style={styles.profileSummaryRow}>
+                <Text style={styles.profileSummaryLabel}>Services:</Text>
+                <Text style={styles.profileSummaryValue}>{profile.categories?.length || 0} categories</Text>
+              </View>
+              <View style={styles.profileSummaryRow}>
+                <Text style={styles.profileSummaryLabel}>Location:</Text>
+                <Text style={styles.profileSummaryValue}>{profile.locationCity}</Text>
+              </View>
+            </View>
+
+            {/* Action Buttons */}
+            <TouchableOpacity 
+              style={styles.editProfileButton}
+              onPress={() => router.push('/pro/profile-edit')}
+            >
+              <Ionicons name="create-outline" size={20} color="#3B82F6" />
+              <Text style={styles.editProfileButtonText}>Edit Profile</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.contactSupportButton}
+              onPress={() => Alert.alert('Support', 'Contact us at support@ozar.com')}
+            >
+              <Ionicons name="help-circle-outline" size={20} color="#6B7280" />
+              <Text style={styles.contactSupportButtonText}>Contact Support</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ height: 100 }} />
+        </ScrollView>
       </View>
     );
   }
@@ -119,12 +253,48 @@ export default function ProDashboard() {
             </Text>
             <Text style={styles.subtitle}>Here's your business overview</Text>
           </View>
-          <TouchableOpacity 
-            style={styles.notificationButton}
-            onPress={() => router.push('/notifications')}
+          <View style={styles.headerRight}>
+            <TouchableOpacity 
+              style={styles.notificationButton}
+              onPress={() => router.push('/notifications')}
+            >
+              <Ionicons name="notifications-outline" size={24} color="#111827" />
+              <View style={styles.notificationDot} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Availability Toggle Card */}
+        <View style={styles.availabilityCard}>
+          <View style={styles.availabilityLeft}>
+            <View style={[styles.availabilityDot, { backgroundColor: getAvailabilityColor() }]} />
+            <View>
+              <Text style={styles.availabilityLabel}>Status</Text>
+              <Text style={styles.availabilityStatus}>{getAvailabilityText()}</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={[
+              styles.availabilityToggle,
+              availabilityStatus === 'AVAILABLE_NOW' && styles.availabilityToggleActive
+            ]}
+            onPress={toggleAvailability}
+            disabled={updatingAvailability}
           >
-            <Ionicons name="notifications-outline" size={24} color="#111827" />
-            <View style={styles.notificationDot} />
+            {updatingAvailability ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <>
+                <Ionicons 
+                  name={availabilityStatus === 'AVAILABLE_NOW' ? 'checkmark-circle' : 'power'} 
+                  size={20} 
+                  color="#FFFFFF" 
+                />
+                <Text style={styles.availabilityToggleText}>
+                  {availabilityStatus === 'AVAILABLE_NOW' ? 'Go Offline' : 'Go Online'}
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -183,6 +353,78 @@ export default function ProDashboard() {
               <Text style={styles.weekAmount}>{formatEarnings(stats.weekEarnings)} Ft</Text>
               <Text style={styles.weekGrowth}>{stats.weekGrowth}% vs last week</Text>
             </View>
+          </View>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.quickActionsGrid}>
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => router.push('/pro/services')}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: '#DBEAFE' }]}>
+                <Ionicons name="briefcase-outline" size={24} color="#3B82F6" />
+              </View>
+              <Text style={styles.quickActionTitle}>Services</Text>
+              <Text style={styles.quickActionSubtitle}>Manage offerings</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => router.push('/pro/portfolio')}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: '#FEF3C7' }]}>
+                <Ionicons name="images-outline" size={24} color="#F59E0B" />
+              </View>
+              <Text style={styles.quickActionTitle}>Portfolio</Text>
+              <Text style={styles.quickActionSubtitle}>Showcase work</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => router.push('/pro/customers')}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: '#FCE7F3' }]}>
+                <Ionicons name="people-outline" size={24} color="#EC4899" />
+              </View>
+              <Text style={styles.quickActionTitle}>Customers</Text>
+              <Text style={styles.quickActionSubtitle}>Manage clients</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => router.push('/pro/reviews')}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: '#FEF3C7' }]}>
+                <Ionicons name="star-outline" size={24} color="#F59E0B" />
+              </View>
+              <Text style={styles.quickActionTitle}>Reviews</Text>
+              <Text style={styles.quickActionSubtitle}>Manage feedback</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => router.push('/pro/profile-edit')}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: '#E0E7FF' }]}>
+                <Ionicons name="person-outline" size={24} color="#6366F1" />
+              </View>
+              <Text style={styles.quickActionTitle}>Profile</Text>
+              <Text style={styles.quickActionSubtitle}>Edit details</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionCard}
+              onPress={() => router.push('/pro/analytics')}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: '#D1FAE5' }]}>
+                <Ionicons name="stats-chart-outline" size={24} color="#10B981" />
+              </View>
+              <Text style={styles.quickActionTitle}>Analytics</Text>
+              <Text style={styles.quickActionSubtitle}>View insights</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -257,11 +499,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 24,
+    paddingBottom: 20,
     backgroundColor: '#FFFFFF',
   },
   headerLeft: {
     flex: 1,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    gap: 12,
   },
   greeting: {
     fontSize: 24,
@@ -297,6 +543,55 @@ const styles = StyleSheet.create({
     backgroundColor: '#EF4444',
     borderWidth: 2,
     borderColor: '#FFFFFF',
+  },
+  availabilityCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    padding: 16,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  availabilityLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  availabilityDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  availabilityLabel: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 2,
+  },
+  availabilityStatus: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  availabilityToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#6B7280',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  availabilityToggleActive: {
+    backgroundColor: '#10B981',
+  },
+  availabilityToggleText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   statsCard: {
     backgroundColor: '#F9FAFB',
@@ -422,6 +717,39 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9CA3AF',
   },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 12,
+  },
+  quickActionCard: {
+    width: '48%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    alignItems: 'center',
+  },
+  quickActionIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  quickActionTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  quickActionSubtitle: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
   emptySchedule: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
@@ -499,5 +827,132 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#3B82F6',
+  },
+  pendingContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  pendingIconCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#FEF3C7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: 24,
+  },
+  pendingIcon: {
+    fontSize: 64,
+  },
+  pendingTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  pendingMessage: {
+    fontSize: 16,
+    color: '#374151',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 12,
+  },
+  pendingSubtext: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 32,
+  },
+  whatsNextCard: {
+    backgroundColor: '#EFF6FF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+  },
+  whatsNextTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1E40AF',
+    marginBottom: 16,
+  },
+  whatsNextList: {
+    gap: 12,
+  },
+  whatsNextItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  whatsNextIcon: {
+    fontSize: 20,
+    marginRight: 12,
+    width: 24,
+  },
+  whatsNextText: {
+    fontSize: 14,
+    color: '#1E40AF',
+    flex: 1,
+  },
+  profileSummaryCard: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  profileSummaryTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  profileSummaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  profileSummaryLabel: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  profileSummaryValue: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  editProfileButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EFF6FF',
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginBottom: 12,
+    gap: 8,
+  },
+  editProfileButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#3B82F6',
+  },
+  contactSupportButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    paddingVertical: 14,
+    gap: 8,
+  },
+  contactSupportButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6B7280',
   },
 });

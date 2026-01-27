@@ -16,6 +16,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ServiceCategory, CATEGORY_LABELS, CATEGORY_ICONS } from '@ozar/shared';
 import PortfolioGallery from '../../components/PortfolioGallery';
 import ReviewsList from '../../components/ReviewsList';
+import FavoriteButton from '../../components/FavoriteButton';
 
 interface ProProfile {
   id: string;
@@ -211,14 +212,7 @@ export default function ProDetailScreen() {
     <View style={styles.container}>
       {/* Header Actions */}
       <View style={styles.headerActions}>
-        <TouchableOpacity 
-          style={styles.iconButton}
-          onPress={toggleFavorite}
-        >
-          <Text style={styles.iconButtonText}>
-            {isFavorite ? '❤️' : '🤍'}
-          </Text>
-        </TouchableOpacity>
+        <FavoriteButton proId={pro.id} size={28} />
         <TouchableOpacity 
           style={styles.iconButton}
           onPress={handleShare}

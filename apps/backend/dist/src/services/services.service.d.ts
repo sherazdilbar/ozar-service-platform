@@ -50,6 +50,7 @@ export declare class ServicesService {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
         proId: string;
     })[]>;
     getProByUserId(userId: string): Promise<{
@@ -91,6 +92,7 @@ export declare class ServicesService {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
         proId: string;
     }>;
     delete(serviceId: string, userId: string): Promise<{
@@ -133,6 +135,7 @@ export declare class ServicesService {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
         proId: string;
     }>;
     update(serviceId: string, userId: string, dto: CreateServiceDto): Promise<{
@@ -146,6 +149,21 @@ export declare class ServicesService {
         pricingModel: import(".prisma/client").$Enums.PricingModel;
         price: number;
         duration: number;
+        isActive: boolean;
+        proId: string;
+    }>;
+    toggleStatus(serviceId: string, userId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        currency: string;
+        description: string;
+        category: import(".prisma/client").$Enums.ServiceCategory;
+        pricingModel: import(".prisma/client").$Enums.PricingModel;
+        price: number;
+        duration: number;
+        isActive: boolean;
         proId: string;
     }>;
     private updateProPricing;

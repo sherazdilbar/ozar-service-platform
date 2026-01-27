@@ -57,4 +57,10 @@ export class ServicesController {
   async update(@Param('id') id: string, @Req() req, @Body() dto: CreateServiceDto) {
     return this.servicesService.update(id, req.user.userId, dto);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id/toggle-status')
+  async toggleStatus(@Param('id') id: string, @Req() req) {
+    return this.servicesService.toggleStatus(id, req.user.userId);
+  }
 }
