@@ -159,7 +159,6 @@ let ChatService = class ChatService {
             where: {
                 customerId: dto.customerId,
                 proId: dto.proId,
-                bookingId: dto.bookingId || undefined,
             },
             include: {
                 customer: {
@@ -186,6 +185,35 @@ let ChatService = class ChatService {
             },
         });
         if (existing) {
+            if (dto.bookingId && !existing.bookingId) {
+                return this.prisma.conversation.update({
+                    where: { id: existing.id },
+                    data: { bookingId: dto.bookingId },
+                    include: {
+                        customer: {
+                            select: {
+                                id: true,
+                                firstName: true,
+                                lastName: true,
+                                avatar: true,
+                            },
+                        },
+                        pro: {
+                            include: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        firstName: true,
+                                        lastName: true,
+                                        avatar: true,
+                                    },
+                                },
+                            },
+                        },
+                        booking: true,
+                    },
+                });
+            }
             return existing;
         }
         return this.prisma.conversation.create({

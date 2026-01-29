@@ -446,10 +446,15 @@ let ProsService = class ProsService {
             updateData.serviceAreaRadius = dto.serviceArea.radiusKm;
         }
         console.log('Update data being saved:', updateData);
-        if (dto.phone !== undefined) {
+        const userUpdateData = {};
+        if (dto.phone !== undefined)
+            userUpdateData.phone = dto.phone;
+        if (dto.avatar !== undefined)
+            userUpdateData.avatar = dto.avatar;
+        if (Object.keys(userUpdateData).length > 0) {
             await this.prisma.user.update({
                 where: { id: userId },
-                data: { phone: dto.phone },
+                data: userUpdateData,
             });
         }
         try {

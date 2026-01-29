@@ -15,9 +15,9 @@ export declare class ChatController {
             } & {
                 id: string;
                 createdAt: Date;
-                text: string;
                 read: boolean;
                 imageUrl: string | null;
+                text: string;
                 conversationId: string;
                 senderId: string;
             };
@@ -30,6 +30,7 @@ export declare class ChatController {
                 };
             } & {
                 id: string;
+                bio: string | null;
                 locationCity: string;
                 locationArea: string;
                 locationLat: number;
@@ -37,7 +38,6 @@ export declare class ChatController {
                 createdAt: Date;
                 updatedAt: Date;
                 businessName: string | null;
-                bio: string | null;
                 categories: import(".prisma/client").$Enums.ServiceCategory[];
                 rating: number;
                 reviewCount: number;
@@ -75,9 +75,9 @@ export declare class ChatController {
             } & {
                 id: string;
                 createdAt: Date;
-                text: string;
                 read: boolean;
                 imageUrl: string | null;
+                text: string;
                 conversationId: string;
                 senderId: string;
             })[];
@@ -107,6 +107,7 @@ export declare class ChatController {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -114,7 +115,6 @@ export declare class ChatController {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -143,19 +143,19 @@ export declare class ChatController {
             currency: string;
             description: string;
             proId: string;
-            images: string[];
             status: import(".prisma/client").$Enums.BookingStatus;
             customerId: string;
+            images: string[];
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;
-            completedAt: Date | null;
-            cancellationReason: string | null;
             customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
             total: number;
+            completedAt: Date | null;
+            cancellationReason: string | null;
             cancelledBy: string | null;
             cancellationFee: number | null;
             refundAmount: number | null;
@@ -184,6 +184,7 @@ export declare class ChatController {
                 lastName: string;
                 phone: string;
                 avatar: string | null;
+                bio: string | null;
                 role: import(".prisma/client").$Enums.UserRole;
                 preferredLanguage: string;
                 emailVerified: boolean;
@@ -200,6 +201,7 @@ export declare class ChatController {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -207,7 +209,6 @@ export declare class ChatController {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -236,19 +237,19 @@ export declare class ChatController {
             currency: string;
             description: string;
             proId: string;
-            images: string[];
             status: import(".prisma/client").$Enums.BookingStatus;
             customerId: string;
+            images: string[];
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;
-            completedAt: Date | null;
-            cancellationReason: string | null;
             customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
             total: number;
+            completedAt: Date | null;
+            cancellationReason: string | null;
             cancelledBy: string | null;
             cancellationFee: number | null;
             refundAmount: number | null;
@@ -261,6 +262,7 @@ export declare class ChatController {
             lastName: string;
             phone: string;
             avatar: string | null;
+            bio: string | null;
             role: import(".prisma/client").$Enums.UserRole;
             preferredLanguage: string;
             emailVerified: boolean;
@@ -294,9 +296,9 @@ export declare class ChatController {
         } & {
             id: string;
             createdAt: Date;
-            text: string;
             read: boolean;
             imageUrl: string | null;
+            text: string;
             conversationId: string;
             senderId: string;
         })[];
@@ -317,9 +319,9 @@ export declare class ChatController {
     } & {
         id: string;
         createdAt: Date;
-        text: string;
         read: boolean;
         imageUrl: string | null;
+        text: string;
         conversationId: string;
         senderId: string;
     }>;

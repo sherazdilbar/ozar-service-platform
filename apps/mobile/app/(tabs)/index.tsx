@@ -45,6 +45,7 @@ export default function HomeScreen() {
 
 function CustomerHome() {
   const router = useRouter();
+  const { user } = useAuth();
   const { unreadCount } = useNotifications();
   const { searchHistory, addToHistory } = useSearch();
   const [searchText, setSearchText] = useState('');
@@ -318,6 +319,28 @@ function CustomerHome() {
                   </TouchableOpacity>
                 )}
               </View>
+
+              {/* Post a Job Button */}
+              <TouchableOpacity 
+                style={styles.postJobButton}
+                onPress={() => {
+                  try {
+                    console.log('🔥 POST JOB BUTTON CLICKED');
+                    router.push('/job-post');
+                    console.log('🔥 Navigation call completed');
+                  } catch (error) {
+                    console.error('❌ ERROR in Post Job button:', error);
+                  }
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.postJobIcon}>📝</Text>
+                <View style={styles.postJobTextContainer}>
+                  <Text style={styles.postJobTitle}>Can't find what you need?</Text>
+                  <Text style={styles.postJobSubtitle}>Post a job and get bids from pros</Text>
+                </View>
+                <Text style={styles.postJobArrow}>→</Text>
+              </TouchableOpacity>
             </View>
 
             {/* Search History - Now in normal flow */}
@@ -957,6 +980,38 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#9CA3AF',
     padding: 4,
+  },
+  postJobButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E0F7FA',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 12,
+    borderWidth: 2,
+    borderColor: '#00BCD4',
+  },
+  postJobIcon: {
+    fontSize: 32,
+    marginRight: 12,
+  },
+  postJobTextContainer: {
+    flex: 1,
+  },
+  postJobTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 2,
+  },
+  postJobSubtitle: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  postJobArrow: {
+    fontSize: 24,
+    color: '#00BCD4',
+    fontWeight: 'bold',
   },
   section: {
     paddingHorizontal: 20,

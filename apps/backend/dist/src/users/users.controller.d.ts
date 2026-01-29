@@ -11,6 +11,7 @@ export declare class UsersController {
         lastName: string;
         phone: string;
         avatar: string;
+        bio: string;
         role: import(".prisma/client").$Enums.UserRole;
         createdAt: Date;
     }>;
@@ -18,6 +19,8 @@ export declare class UsersController {
         firstName?: string;
         lastName?: string;
         phone?: string;
+        bio?: string;
+        avatar?: string;
     }): Promise<{
         id: string;
         email: string;
@@ -25,6 +28,7 @@ export declare class UsersController {
         lastName: string;
         phone: string;
         avatar: string;
+        bio: string;
         role: import(".prisma/client").$Enums.UserRole;
         createdAt: Date;
     }>;
@@ -36,6 +40,7 @@ export declare class UsersController {
             lastName: string;
             phone: string;
             avatar: string;
+            bio: string;
             role: import(".prisma/client").$Enums.UserRole;
             createdAt: Date;
         };

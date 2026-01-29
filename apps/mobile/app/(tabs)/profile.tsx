@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'expo-router';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
@@ -78,7 +78,13 @@ export default function ProfileScreen() {
     );
   }
 
+  console.log('👤 Profile Screen - User:', user);
+  console.log('🖼️ Profile Screen - Avatar:', user.avatar);
+
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+  const avatarUrl = user.avatar ? `http://localhost:4000${user.avatar}` : null;
+  
+  console.log('🔗 Avatar URL:', avatarUrl);
 
   return (
     <ScrollView style={styles.container}>
@@ -99,7 +105,16 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{initials}</Text>
+          {avatarUrl ? (
+            <Image 
+              source={{ uri: avatarUrl }} 
+              style={styles.avatarImage}
+              onError={(e) => console.error('❌ Image load error:', e.nativeEvent.error)}
+              onLoad={() => console.log('✅ Image loaded successfully')}
+            />
+          ) : (
+            <Text style={styles.avatarText}>{initials}</Text>
+          )}
         </View>
         <Text style={styles.name}>{user.firstName} {user.lastName}</Text>
         <Text style={styles.email}>{user.email}</Text>
@@ -130,6 +145,11 @@ export default function ProfileScreen() {
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')}>
           <Text style={styles.menuIcon}>❤️</Text>
           <Text style={styles.menuText}>Favorites</Text>
+          <Text style={styles.menuArrow}>›</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/my-jobs')}>
+          <Text style={styles.menuIcon}>📋</Text>
+          <Text style={styles.menuText}>My Jobs</Text>
           <Text style={styles.menuArrow}>›</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>
@@ -268,6 +288,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     fontSize: 32,

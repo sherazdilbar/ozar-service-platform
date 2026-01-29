@@ -9,11 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationsEnhancedService = void 0;
+exports.NotificationsEnhancedService = exports.NotificationType = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const email_service_1 = require("../email/email.service");
 const notifications_service_1 = require("./notifications.service");
+Object.defineProperty(exports, "NotificationType", { enumerable: true, get: function () { return notifications_service_1.NotificationType; } });
 let NotificationsEnhancedService = class NotificationsEnhancedService extends notifications_service_1.NotificationsService {
     constructor(prisma, emailService) {
         super(prisma);

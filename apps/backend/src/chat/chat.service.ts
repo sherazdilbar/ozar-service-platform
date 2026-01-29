@@ -177,12 +177,12 @@ export class ChatService {
       throw new ForbiddenException('You can only create conversations for yourself');
     }
 
-    // Check if conversation already exists
+    // Check if conversation already exists between this customer and pro
+    // (regardless of bookingId - we want to reuse the same conversation)
     const existing = await this.prisma.conversation.findFirst({
       where: {
         customerId: dto.customerId,
         proId: dto.proId,
-        bookingId: dto.bookingId || undefined,
       },
       include: {
         customer: {
@@ -210,6 +210,36 @@ export class ChatService {
     });
 
     if (existing) {
+      // If a bookingId is provided and the conversation doesn't have one, update it
+      if (dto.bookingId && !existing.bookingId) {
+        return this.prisma.conversation.update({
+          where: { id: existing.id },
+          data: { bookingId: dto.bookingId },
+          include: {
+            customer: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+            pro: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+            booking: true,
+          },
+        });
+      }
       return existing;
     }
 

@@ -3,6 +3,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { NotificationsService, NotificationType } from './notifications.service';
 
+// Re-export NotificationType for convenience
+export { NotificationType };
+
 @Injectable()
 export class NotificationsEnhancedService extends NotificationsService {
   constructor(

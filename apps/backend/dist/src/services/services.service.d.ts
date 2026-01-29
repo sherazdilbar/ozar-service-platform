@@ -13,6 +13,7 @@ export declare class ServicesService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -20,7 +21,6 @@ export declare class ServicesService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -55,6 +55,7 @@ export declare class ServicesService {
     })[]>;
     getProByUserId(userId: string): Promise<{
         id: string;
+        bio: string | null;
         locationCity: string;
         locationArea: string;
         locationLat: number;
@@ -62,7 +63,6 @@ export declare class ServicesService {
         createdAt: Date;
         updatedAt: Date;
         businessName: string | null;
-        bio: string | null;
         categories: import(".prisma/client").$Enums.ServiceCategory[];
         rating: number;
         reviewCount: number;
@@ -98,6 +98,7 @@ export declare class ServicesService {
     delete(serviceId: string, userId: string): Promise<{
         pro: {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -105,7 +106,6 @@ export declare class ServicesService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;

@@ -10,8 +10,11 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Security headers
-  app.use(helmet());
+  // Security headers - Configure helmet to allow images
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false,
+  }));
 
   // Serve static files from uploads directory
   app.useStaticAssets(join(process.cwd(), 'uploads'), {

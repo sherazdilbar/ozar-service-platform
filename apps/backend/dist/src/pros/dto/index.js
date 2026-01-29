@@ -234,6 +234,11 @@ __decorate([
 ], UpdateProDto.prototype, "phone", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateProDto.prototype, "avatar", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.ValidateNested)(),
     (0, class_transformer_1.Type)(() => ServiceAreaDto),
     __metadata("design:type", ServiceAreaDto)

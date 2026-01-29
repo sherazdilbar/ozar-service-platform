@@ -185,6 +185,10 @@ export class UpdateProDto {
   @IsString()
   phone?: string;
 
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+
   // Support nested objects for convenience
   @IsOptional()
   @ValidateNested()

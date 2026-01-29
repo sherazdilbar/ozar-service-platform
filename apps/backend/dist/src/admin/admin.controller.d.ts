@@ -46,6 +46,7 @@ export declare class AdminController {
             }[];
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -53,7 +54,6 @@ export declare class AdminController {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -91,6 +91,7 @@ export declare class AdminController {
             lastName: string;
             phone: string;
             avatar: string | null;
+            bio: string | null;
             role: import(".prisma/client").$Enums.UserRole;
             preferredLanguage: string;
             emailVerified: boolean;
@@ -107,6 +108,7 @@ export declare class AdminController {
         };
     } & {
         id: string;
+        bio: string | null;
         locationCity: string;
         locationArea: string;
         locationLat: number;
@@ -114,7 +116,6 @@ export declare class AdminController {
         createdAt: Date;
         updatedAt: Date;
         businessName: string | null;
-        bio: string | null;
         categories: import(".prisma/client").$Enums.ServiceCategory[];
         rating: number;
         reviewCount: number;
@@ -144,6 +145,7 @@ export declare class AdminController {
                 };
             } & {
                 id: string;
+                bio: string | null;
                 locationCity: string;
                 locationArea: string;
                 locationLat: number;
@@ -151,7 +153,6 @@ export declare class AdminController {
                 createdAt: Date;
                 updatedAt: Date;
                 businessName: string | null;
-                bio: string | null;
                 categories: import(".prisma/client").$Enums.ServiceCategory[];
                 rating: number;
                 reviewCount: number;
@@ -200,19 +201,19 @@ export declare class AdminController {
             currency: string;
             description: string;
             proId: string;
-            images: string[];
             status: import(".prisma/client").$Enums.BookingStatus;
             customerId: string;
+            images: string[];
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;
-            completedAt: Date | null;
-            cancellationReason: string | null;
             customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
             total: number;
+            completedAt: Date | null;
+            cancellationReason: string | null;
             cancelledBy: string | null;
             cancellationFee: number | null;
             refundAmount: number | null;
@@ -235,6 +236,7 @@ export declare class AdminController {
                     };
                 } & {
                     id: string;
+                    bio: string | null;
                     locationCity: string;
                     locationArea: string;
                     locationLat: number;
@@ -242,7 +244,6 @@ export declare class AdminController {
                     createdAt: Date;
                     updatedAt: Date;
                     businessName: string | null;
-                    bio: string | null;
                     categories: import(".prisma/client").$Enums.ServiceCategory[];
                     rating: number;
                     reviewCount: number;
@@ -277,19 +278,19 @@ export declare class AdminController {
                 currency: string;
                 description: string;
                 proId: string;
-                images: string[];
                 status: import(".prisma/client").$Enums.BookingStatus;
                 customerId: string;
+                images: string[];
                 serviceId: string;
                 scheduledFor: Date | null;
                 isASAP: boolean;
-                completedAt: Date | null;
-                cancellationReason: string | null;
                 customerNotes: string | null;
                 locationAddr: string;
                 servicePrice: number;
                 platformFee: number;
                 total: number;
+                completedAt: Date | null;
+                cancellationReason: string | null;
                 cancelledBy: string | null;
                 cancellationFee: number | null;
                 refundAmount: number | null;
@@ -310,10 +311,10 @@ export declare class AdminController {
             createdAt: Date;
             updatedAt: Date;
             description: string;
-            bookingId: string;
-            reason: string;
             status: import(".prisma/client").$Enums.DisputeStatus;
+            bookingId: string;
             raisedBy: string;
+            reason: string;
             resolution: string | null;
             resolvedBy: string | null;
             resolvedAt: Date | null;
@@ -339,19 +340,19 @@ export declare class AdminController {
             currency: string;
             description: string;
             proId: string;
-            images: string[];
             status: import(".prisma/client").$Enums.BookingStatus;
             customerId: string;
+            images: string[];
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;
-            completedAt: Date | null;
-            cancellationReason: string | null;
             customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
             total: number;
+            completedAt: Date | null;
+            cancellationReason: string | null;
             cancelledBy: string | null;
             cancellationFee: number | null;
             refundAmount: number | null;
@@ -361,10 +362,10 @@ export declare class AdminController {
         createdAt: Date;
         updatedAt: Date;
         description: string;
-        bookingId: string;
-        reason: string;
         status: import(".prisma/client").$Enums.DisputeStatus;
+        bookingId: string;
         raisedBy: string;
+        reason: string;
         resolution: string | null;
         resolvedBy: string | null;
         resolvedAt: Date | null;

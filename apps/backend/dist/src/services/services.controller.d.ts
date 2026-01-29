@@ -13,6 +13,7 @@ export declare class ServicesController {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -20,7 +21,6 @@ export declare class ServicesController {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -63,6 +63,7 @@ export declare class ServicesController {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -70,7 +71,6 @@ export declare class ServicesController {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -120,6 +120,7 @@ export declare class ServicesController {
     delete(id: string, req: any): Promise<{
         pro: {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -127,7 +128,6 @@ export declare class ServicesController {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;

@@ -21,6 +21,7 @@ export declare class BookingsService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -28,7 +29,6 @@ export declare class BookingsService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -79,19 +79,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -109,6 +109,7 @@ export declare class BookingsService {
                 };
             } & {
                 id: string;
+                bio: string | null;
                 locationCity: string;
                 locationArea: string;
                 locationLat: number;
@@ -116,7 +117,6 @@ export declare class BookingsService {
                 createdAt: Date;
                 updatedAt: Date;
                 businessName: string | null;
-                bio: string | null;
                 categories: import(".prisma/client").$Enums.ServiceCategory[];
                 rating: number;
                 reviewCount: number;
@@ -167,19 +167,19 @@ export declare class BookingsService {
             currency: string;
             description: string;
             proId: string;
-            images: string[];
             status: import(".prisma/client").$Enums.BookingStatus;
             customerId: string;
+            images: string[];
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;
-            completedAt: Date | null;
-            cancellationReason: string | null;
             customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
             total: number;
+            completedAt: Date | null;
+            cancellationReason: string | null;
             cancelledBy: string | null;
             cancellationFee: number | null;
             refundAmount: number | null;
@@ -203,6 +203,7 @@ export declare class BookingsService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -210,7 +211,6 @@ export declare class BookingsService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -254,8 +254,8 @@ export declare class BookingsService {
         events: {
             id: string;
             createdAt: Date;
-            bookingId: string;
             status: import(".prisma/client").$Enums.BookingStatus;
+            bookingId: string;
             note: string | null;
         }[];
     } & {
@@ -268,19 +268,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -297,6 +297,7 @@ export declare class BookingsService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -304,7 +305,6 @@ export declare class BookingsService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -355,19 +355,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -384,6 +384,7 @@ export declare class BookingsService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -391,7 +392,6 @@ export declare class BookingsService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -442,19 +442,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -471,6 +471,7 @@ export declare class BookingsService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -478,7 +479,6 @@ export declare class BookingsService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -529,19 +529,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -558,6 +558,7 @@ export declare class BookingsService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -565,7 +566,6 @@ export declare class BookingsService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -616,19 +616,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -643,19 +643,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -680,6 +680,7 @@ export declare class BookingsService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -687,7 +688,6 @@ export declare class BookingsService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -738,19 +738,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -767,6 +767,7 @@ export declare class BookingsService {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -774,7 +775,6 @@ export declare class BookingsService {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -825,19 +825,19 @@ export declare class BookingsService {
         currency: string;
         description: string;
         proId: string;
-        images: string[];
         status: import(".prisma/client").$Enums.BookingStatus;
         customerId: string;
+        images: string[];
         serviceId: string;
         scheduledFor: Date | null;
         isASAP: boolean;
-        completedAt: Date | null;
-        cancellationReason: string | null;
         customerNotes: string | null;
         locationAddr: string;
         servicePrice: number;
         platformFee: number;
         total: number;
+        completedAt: Date | null;
+        cancellationReason: string | null;
         cancelledBy: string | null;
         cancellationFee: number | null;
         refundAmount: number | null;
@@ -848,9 +848,9 @@ export declare class BookingsService {
         rating: number;
         proId: string;
         bookingId: string;
-        images: string[];
         customerId: string;
         comment: string;
+        images: string[];
         responseText: string | null;
         responseAt: Date | null;
         helpfulCount: number;

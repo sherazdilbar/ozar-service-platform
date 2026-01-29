@@ -159,6 +159,7 @@ model User {
   lastName          String
   phone             String
   avatar            String?
+  bio               String?
   role              UserRole @default(CUSTOMER)
   preferredLanguage String   @default("en")
   
@@ -192,6 +193,7 @@ model User {
   sentMessages         Message[]        @relation("SentMessages")
   favorites            Favorite[]       @relation("CustomerFavorites")
   reviewHelpfulVotes   ReviewHelpfulVote[]
+  jobs                 Job[]            @relation("CustomerJobs")
 
   @@index([email])
   @@index([emailVerificationToken])
@@ -254,6 +256,7 @@ model ProProfile {
   favoritedBy   Favorite[]     @relation("ProFavorites")
   certifications Certification[]
   badges        Badge[]
+  bids          Bid[]
 
   @@index([userId])
   @@index([verificationStatus])
@@ -714,3 +717,108 @@ model BookingPhoto {
   @@index([bookingId])
   @@map("booking_photos")
 }
+
+// Job Posting & Bidding System
+enum JobStatus {
+  OPEN
+  BIDDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum JobUrgency {
+  ASAP
+  THIS_WEEK
+  FLEXIBLE
+}
+
+enum BidStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+model Job {
+  id          String          @id @default(cuid())
+  customerId  String
+  title       String
+  description String
+  category    ServiceCategory
+  urgency     JobUrgency      @default(FLEXIBLE)
+  status      JobStatus       @default(OPEN)
+  
+  // Location
+  locationAddr String
+  locationCity String
+  locationArea String?
+  locationLat  Float
+  locationLng  Float
+  
+  // Budget
+  budgetMin   Int?
+  budgetMax   Int?
+  currency    String          @default("HUF")
+  
+  // Media
+  images      String[]        @default([])
+  
+  // Scheduling
+  preferredDate DateTime?
+  
+  // Limits
+  maxBids     Int             @default(10)
+  expiresAt   DateTime?
+  
+  // Accepted bid
+  acceptedBidId String?       @unique
+  
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  // Relations
+  customer    User            @relation("CustomerJobs", fields: [customerId], references: [id], onDelete: Cascade)
+  bids        Bid[]
+  acceptedBid Bid?            @relation("AcceptedBid", fields: [acceptedBidId], references: [id])
+
+  @@index([customerId])
+  @@index([category])
+  @@index([status])
+  @@index([locationLat, locationLng])
+  @@index([createdAt])
+  @@map("jobs")
+}
+
+model Bid {
+  id          String    @id @default(cuid())
+  jobId       String
+  proId       String
+  status      BidStatus @default(PENDING)
+  
+  // Offer details
+  proposedPrice Int
+  currency      String    @default("HUF")
+  estimatedDuration Int   // in minutes
+  message       String
+  
+  // Availability
+  availableFrom DateTime?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  job         Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  pro         ProProfile @relation(fields: [proId], references: [id], onDelete: Cascade)
+  acceptedJob Job?      @relation("AcceptedBid")
+
+  @@unique([jobId, proId])
+  @@index([jobId])
+  @@index([proId])
+  @@index([status])
+  @@map("bids")
+}
+

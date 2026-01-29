@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'expo-router';
@@ -13,7 +13,7 @@ export default function ProProfile() {
 
   useEffect(() => {
     loadProfile();
-  }, []);
+  }, [user]); // Reload when user changes (e.g., after avatar update)
 
   const loadProfile = async () => {
     try {
@@ -42,6 +42,7 @@ export default function ProProfile() {
   const jobsCompleted = profile?.jobsCompleted || 0;
   const reviewCount = profile?.reviewCount || 0;
   const rating = profile?.rating || 0;
+  const avatarUrl = user?.avatar ? `http://localhost:4000${user.avatar}` : null;
 
   return (
     <View style={styles.container}>
@@ -55,7 +56,15 @@ export default function ProProfile() {
         >
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarIcon}>👤</Text>
+              {avatarUrl ? (
+                <Image 
+                  source={{ uri: avatarUrl }} 
+                  style={styles.avatarImage}
+                  onError={(e) => console.error('❌ Pro avatar load error:', e.nativeEvent.error)}
+                />
+              ) : (
+                <Text style={styles.avatarIcon}>👤</Text>
+              )}
             </View>
           </View>
           <Text style={styles.name}>{user?.firstName} {user?.lastName}</Text>
@@ -84,6 +93,17 @@ export default function ProProfile() {
         {/* Professional Tools Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Professional Tools</Text>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pro-available-jobs')}
+          >
+            <View style={styles.menuIconContainer}>
+              <Text style={styles.menuIcon}>💼</Text>
+            </View>
+            <Text style={styles.menuText}>Available Jobs</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuItem}
@@ -293,6 +313,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarIcon: {
     fontSize: 40,

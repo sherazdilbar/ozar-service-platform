@@ -474,6 +474,7 @@ export class ProsService {
     
     // Array fields
     if (dto.categories !== undefined) updateData.categories = dto.categories as any;
+    // Note: portfolioImages are handled separately through the portfolio relation
     
     // Numeric fields (use !== undefined to allow 0 values)
     if (dto.yearsExperience !== undefined) updateData.yearsExperience = dto.yearsExperience;
@@ -510,11 +511,15 @@ export class ProsService {
 
     console.log('Update data being saved:', updateData);
 
-    // Update user phone if provided
-    if (dto.phone !== undefined) {
+    // Update user phone and avatar if provided
+    const userUpdateData: any = {};
+    if (dto.phone !== undefined) userUpdateData.phone = dto.phone;
+    if (dto.avatar !== undefined) userUpdateData.avatar = dto.avatar;
+    
+    if (Object.keys(userUpdateData).length > 0) {
       await this.prisma.user.update({
         where: { id: userId },
-        data: { phone: dto.phone },
+        data: userUpdateData,
       });
     }
 

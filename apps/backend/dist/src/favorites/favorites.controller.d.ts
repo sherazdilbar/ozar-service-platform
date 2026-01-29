@@ -18,6 +18,7 @@ export declare class FavoritesController {
         }[];
     } & {
         id: string;
+        bio: string | null;
         locationCity: string;
         locationArea: string;
         locationLat: number;
@@ -25,7 +26,6 @@ export declare class FavoritesController {
         createdAt: Date;
         updatedAt: Date;
         businessName: string | null;
-        bio: string | null;
         categories: import(".prisma/client").$Enums.ServiceCategory[];
         rating: number;
         reviewCount: number;

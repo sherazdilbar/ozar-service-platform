@@ -1,6 +1,7 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
-import { NotificationsService } from './notifications.service';
+import { NotificationsService, NotificationType } from './notifications.service';
+export { NotificationType };
 export declare class NotificationsEnhancedService extends NotificationsService {
     private emailService;
     constructor(prisma: PrismaService, emailService: EmailService);

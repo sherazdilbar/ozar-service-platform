@@ -14,9 +14,11 @@ import { prosApi } from '@ozar/shared/apiClient';
 import { ServiceCategory, CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_GROUPS } from '@ozar/shared';
 import { ImagePicker } from '../../components/ImagePicker';
 import { MultiImagePicker } from '../../components/MultiImagePicker';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function ProProfileEditScreen() {
   const router = useRouter();
+  const { refreshUser } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -105,10 +107,13 @@ export default function ProProfileEditScreen() {
         bio: bio.trim(),
         categories: selectedCategories,
         yearsExperience: parseInt(yearsExperience),
-        portfolioImages,
+        avatar: avatar || undefined,
         locationCity,
         locationArea: locationArea.trim(),
       });
+
+      // Refresh user data to update avatar in context
+      await refreshUser();
 
       Alert.alert('Success', 'Profile updated successfully', [
         { text: 'OK', onPress: () => router.back() },

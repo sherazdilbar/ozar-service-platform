@@ -48,6 +48,7 @@ export declare class UpdateProDto {
     locationLat?: number;
     locationLng?: number;
     phone?: string;
+    avatar?: string;
     serviceArea?: ServiceAreaDto;
     location?: LocationDto;
 }

@@ -51,6 +51,12 @@ function RootLayoutNav() {
       <Stack.Screen name="pro/services" options={{ headerShown: true, title: 'My Services' }} />
       <Stack.Screen name="pro/profile-edit" options={{ headerShown: true, title: 'Edit Profile' }} />
       <Stack.Screen name="profile/edit" options={{ headerShown: true, title: 'Edit Profile' }} />
+      <Stack.Screen name="favorites" options={{ headerShown: true, title: 'Favorites' }} />
+      <Stack.Screen name="job-post" options={{ headerShown: false }} />
+      <Stack.Screen name="job-success" options={{ headerShown: false }} />
+      <Stack.Screen name="my-jobs" options={{ headerShown: false }} />
+      <Stack.Screen name="job-details" options={{ headerShown: false }} />
+      <Stack.Screen name="pro-available-jobs" options={{ headerShown: false }} />
     </Stack>
   );
 }

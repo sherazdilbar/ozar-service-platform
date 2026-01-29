@@ -25,6 +25,7 @@ import { CertificationsModule } from './certifications/certifications.module';
 import { TemplatesModule } from './templates/templates.module';
 import { ServiceAreaModule } from './service-area/service-area.module';
 import { HealthModule } from './health/health.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { HealthModule } from './health/health.module';
     TemplatesModule,
     ServiceAreaModule,
     HealthModule,
+    JobsModule,
   ],
   providers: [
     {

@@ -30,7 +30,7 @@ export class UsersController {
   @Put('me')
   async updateProfile(
     @Request() req,
-    @Body() data: { firstName?: string; lastName?: string; phone?: string },
+    @Body() data: { firstName?: string; lastName?: string; phone?: string; bio?: string; avatar?: string },
   ) {
     return this.usersService.updateProfile(req.user.userId, data);
   }

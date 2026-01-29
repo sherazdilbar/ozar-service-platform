@@ -26,43 +26,43 @@ export declare class ProsService {
         };
         user: {
             id: string;
+            createdAt: Date;
             email: string;
             firstName: string;
             lastName: string;
             phone: string;
             avatar: string;
             role: import(".prisma/client").$Enums.UserRole;
-            createdAt: Date;
         };
         services: {
             id: string;
+            currency: string;
             createdAt: Date;
             updatedAt: Date;
+            proId: string;
             name: string;
-            currency: string;
             description: string;
+            price: number;
             category: import(".prisma/client").$Enums.ServiceCategory;
             pricingModel: import(".prisma/client").$Enums.PricingModel;
-            price: number;
             duration: number;
             isActive: boolean;
-            proId: string;
         }[];
         portfolio: {
             id: string;
             createdAt: Date;
+            proId: string;
             description: string;
             category: import(".prisma/client").$Enums.ServiceCategory;
-            proId: string;
-            title: string;
             imageUrl: string;
+            title: string;
         }[];
         certifications: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             proId: string;
+            name: string;
             issueDate: Date;
             issuingOrg: string;
             expiryDate: Date | null;
@@ -73,20 +73,15 @@ export declare class ProsService {
         }[];
         badges: {
             id: string;
+            earnedAt: Date;
+            proId: string;
+            badgeType: string;
             name: string;
             description: string;
-            proId: string;
-            earnedAt: Date;
-            badgeType: string;
             icon: string;
         }[];
         id: string;
-        locationCity: string;
-        locationArea: string;
-        locationLat: number;
-        locationLng: number;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
         businessName: string | null;
         bio: string | null;
         categories: import(".prisma/client").$Enums.ServiceCategory[];
@@ -101,15 +96,27 @@ export declare class ProsService {
         responseTime: number;
         serviceAreaCity: string;
         serviceAreaRadius: number;
+        locationCity: string;
+        locationArea: string;
+        locationLat: number;
+        locationLng: number;
         onboardingCompleted: boolean;
         onboardingStep: string | null;
         onboardingStartedAt: Date | null;
         onboardingCompletedAt: Date | null;
-        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     create(userId: string, dto: CreateProDto): Promise<{
         user: {
             id: string;
+            bio: string | null;
+            locationCity: string | null;
+            locationArea: string | null;
+            locationLat: number | null;
+            locationLng: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             email: string;
             password: string;
             firstName: string;
@@ -123,44 +130,33 @@ export declare class ProsService {
             emailVerificationExpires: Date | null;
             passwordResetToken: string | null;
             passwordResetExpires: Date | null;
-            locationCity: string | null;
-            locationArea: string | null;
-            locationLat: number | null;
-            locationLng: number | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         services: {
             id: string;
+            currency: string;
             createdAt: Date;
             updatedAt: Date;
+            proId: string;
             name: string;
-            currency: string;
             description: string;
+            price: number;
             category: import(".prisma/client").$Enums.ServiceCategory;
             pricingModel: import(".prisma/client").$Enums.PricingModel;
-            price: number;
             duration: number;
             isActive: boolean;
-            proId: string;
         }[];
         portfolio: {
             id: string;
             createdAt: Date;
+            proId: string;
             description: string;
             category: import(".prisma/client").$Enums.ServiceCategory;
-            proId: string;
-            title: string;
             imageUrl: string;
+            title: string;
         }[];
     } & {
         id: string;
-        locationCity: string;
-        locationArea: string;
-        locationLat: number;
-        locationLng: number;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
         businessName: string | null;
         bio: string | null;
         categories: import(".prisma/client").$Enums.ServiceCategory[];
@@ -175,15 +171,27 @@ export declare class ProsService {
         responseTime: number;
         serviceAreaCity: string;
         serviceAreaRadius: number;
+        locationCity: string;
+        locationArea: string;
+        locationLat: number;
+        locationLng: number;
         onboardingCompleted: boolean;
         onboardingStep: string | null;
         onboardingStartedAt: Date | null;
         onboardingCompletedAt: Date | null;
-        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, userId: string, dto: UpdateProDto): Promise<{
         user: {
             id: string;
+            bio: string | null;
+            locationCity: string | null;
+            locationArea: string | null;
+            locationLat: number | null;
+            locationLng: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             email: string;
             password: string;
             firstName: string;
@@ -197,44 +205,33 @@ export declare class ProsService {
             emailVerificationExpires: Date | null;
             passwordResetToken: string | null;
             passwordResetExpires: Date | null;
-            locationCity: string | null;
-            locationArea: string | null;
-            locationLat: number | null;
-            locationLng: number | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         services: {
             id: string;
+            currency: string;
             createdAt: Date;
             updatedAt: Date;
+            proId: string;
             name: string;
-            currency: string;
             description: string;
+            price: number;
             category: import(".prisma/client").$Enums.ServiceCategory;
             pricingModel: import(".prisma/client").$Enums.PricingModel;
-            price: number;
             duration: number;
             isActive: boolean;
-            proId: string;
         }[];
         portfolio: {
             id: string;
             createdAt: Date;
+            proId: string;
             description: string;
             category: import(".prisma/client").$Enums.ServiceCategory;
-            proId: string;
-            title: string;
             imageUrl: string;
+            title: string;
         }[];
     } & {
         id: string;
-        locationCity: string;
-        locationArea: string;
-        locationLat: number;
-        locationLng: number;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
         businessName: string | null;
         bio: string | null;
         categories: import(".prisma/client").$Enums.ServiceCategory[];
@@ -249,11 +246,16 @@ export declare class ProsService {
         responseTime: number;
         serviceAreaCity: string;
         serviceAreaRadius: number;
+        locationCity: string;
+        locationArea: string;
+        locationLat: number;
+        locationLng: number;
         onboardingCompleted: boolean;
         onboardingStep: string | null;
         onboardingStartedAt: Date | null;
         onboardingCompletedAt: Date | null;
-        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     getReviews(proId: string, page?: number, limit?: number): Promise<{
         data: ({
@@ -265,13 +267,13 @@ export declare class ProsService {
             };
         } & {
             id: string;
-            createdAt: Date;
             rating: number;
+            createdAt: Date;
             proId: string;
             bookingId: string;
-            images: string[];
             customerId: string;
             comment: string;
+            images: string[];
             responseText: string | null;
             responseAt: Date | null;
             helpfulCount: number;
@@ -288,45 +290,40 @@ export declare class ProsService {
     getMyProfile(userId: string): Promise<{
         user: {
             id: string;
+            createdAt: Date;
             email: string;
             firstName: string;
             lastName: string;
             phone: string;
             avatar: string;
             role: import(".prisma/client").$Enums.UserRole;
-            createdAt: Date;
         };
         services: {
             id: string;
+            currency: string;
             createdAt: Date;
             updatedAt: Date;
+            proId: string;
             name: string;
-            currency: string;
             description: string;
+            price: number;
             category: import(".prisma/client").$Enums.ServiceCategory;
             pricingModel: import(".prisma/client").$Enums.PricingModel;
-            price: number;
             duration: number;
             isActive: boolean;
-            proId: string;
         }[];
         portfolio: {
             id: string;
             createdAt: Date;
+            proId: string;
             description: string;
             category: import(".prisma/client").$Enums.ServiceCategory;
-            proId: string;
-            title: string;
             imageUrl: string;
+            title: string;
         }[];
     } & {
         id: string;
-        locationCity: string;
-        locationArea: string;
-        locationLat: number;
-        locationLng: number;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
         businessName: string | null;
         bio: string | null;
         categories: import(".prisma/client").$Enums.ServiceCategory[];
@@ -341,54 +338,54 @@ export declare class ProsService {
         responseTime: number;
         serviceAreaCity: string;
         serviceAreaRadius: number;
+        locationCity: string;
+        locationArea: string;
+        locationLat: number;
+        locationLng: number;
         onboardingCompleted: boolean;
         onboardingStep: string | null;
         onboardingStartedAt: Date | null;
         onboardingCompletedAt: Date | null;
-        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     updateMyProfile(userId: string, dto: UpdateProDto): Promise<{
         user: {
             id: string;
+            createdAt: Date;
             email: string;
             firstName: string;
             lastName: string;
             phone: string;
             avatar: string;
             role: import(".prisma/client").$Enums.UserRole;
-            createdAt: Date;
         };
         services: {
             id: string;
+            currency: string;
             createdAt: Date;
             updatedAt: Date;
+            proId: string;
             name: string;
-            currency: string;
             description: string;
+            price: number;
             category: import(".prisma/client").$Enums.ServiceCategory;
             pricingModel: import(".prisma/client").$Enums.PricingModel;
-            price: number;
             duration: number;
             isActive: boolean;
-            proId: string;
         }[];
         portfolio: {
             id: string;
             createdAt: Date;
+            proId: string;
             description: string;
             category: import(".prisma/client").$Enums.ServiceCategory;
-            proId: string;
-            title: string;
             imageUrl: string;
+            title: string;
         }[];
     } & {
         id: string;
-        locationCity: string;
-        locationArea: string;
-        locationLat: number;
-        locationLng: number;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
         businessName: string | null;
         bio: string | null;
         categories: import(".prisma/client").$Enums.ServiceCategory[];
@@ -403,11 +400,16 @@ export declare class ProsService {
         responseTime: number;
         serviceAreaCity: string;
         serviceAreaRadius: number;
+        locationCity: string;
+        locationArea: string;
+        locationLat: number;
+        locationLng: number;
         onboardingCompleted: boolean;
         onboardingStep: string | null;
         onboardingStartedAt: Date | null;
         onboardingCompletedAt: Date | null;
-        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     addPortfolioItem(proId: string, userId: string, data: {
         imageUrl: string;
@@ -417,29 +419,29 @@ export declare class ProsService {
     }): Promise<{
         id: string;
         createdAt: Date;
+        proId: string;
         description: string;
         category: import(".prisma/client").$Enums.ServiceCategory;
-        proId: string;
-        title: string;
         imageUrl: string;
+        title: string;
     }>;
     getPortfolio(proId: string): Promise<{
         id: string;
         createdAt: Date;
+        proId: string;
         description: string;
         category: import(".prisma/client").$Enums.ServiceCategory;
-        proId: string;
-        title: string;
         imageUrl: string;
+        title: string;
     }[]>;
     deletePortfolioItem(itemId: string, userId: string): Promise<{
         id: string;
         createdAt: Date;
+        proId: string;
         description: string;
         category: import(".prisma/client").$Enums.ServiceCategory;
-        proId: string;
-        title: string;
         imageUrl: string;
+        title: string;
     }>;
     getOnboardingStatus(userId: string): Promise<{
         completed: boolean;

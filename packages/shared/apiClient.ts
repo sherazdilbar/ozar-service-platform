@@ -87,9 +87,13 @@ async function apiRequest<T>(
   console.log(`[API Client] Has token:`, !!token);
   console.log(`[API Client] Token value:`, token ? `${token.substring(0, 20)}...` : 'null');
   
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
+  const headers: Record<string, string> = {};
+
+  // Only set Content-Type if not FormData (FormData sets its own with boundary)
+  const isFormData = options.body instanceof FormData;
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (options.headers) {
     Object.assign(headers, options.headers);
@@ -115,6 +119,22 @@ async function apiRequest<T>(
 
   return response.json();
 }
+
+// Users API
+export const usersApi = {
+  async updateProfile(data: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    bio?: string;
+    avatar?: string;
+  }) {
+    return apiRequest<any>('/users/me', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+};
 
 // Auth API
 export const authApi = {
@@ -737,27 +757,192 @@ export const bookingPhotosApi = {
 
 // Upload API
 export const uploadApi = {
-  async uploadImage(file: File | Blob): Promise<{ url: string }> {
+  async uploadImage(fileOrUri: File | Blob | string): Promise<string> {
     const formData = new FormData();
-    formData.append('file', file);
     
-    return apiRequest('/upload/image', {
+    // Handle React Native URI
+    if (typeof fileOrUri === 'string') {
+      const filename = fileOrUri.split('/').pop() || 'image.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+      
+      formData.append('file', {
+        uri: fileOrUri,
+        name: filename,
+        type,
+      } as any);
+    } else {
+      // Handle web File/Blob
+      formData.append('file', fileOrUri);
+    }
+    
+    const result = await apiRequest<{ url: string }>('/upload/image', {
       method: 'POST',
       body: formData,
-      headers: {}, // Let browser set Content-Type with boundary
+      headers: {}, // Let browser/RN set Content-Type with boundary
     });
+    
+    return result.url;
   },
   
-  async uploadImages(files: (File | Blob)[]): Promise<{ urls: string[] }> {
+  async uploadImages(filesOrUris: (File | Blob | string)[]): Promise<string[]> {
     const formData = new FormData();
-    files.forEach(file => {
-      formData.append('files', file);
+    
+    filesOrUris.forEach((fileOrUri) => {
+      if (typeof fileOrUri === 'string') {
+        const filename = fileOrUri.split('/').pop() || 'image.jpg';
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
+        
+        formData.append('files', {
+          uri: fileOrUri,
+          name: filename,
+          type,
+        } as any);
+      } else {
+        formData.append('files', fileOrUri);
+      }
     });
     
-    return apiRequest('/upload/images', {
+    const result = await apiRequest<{ urls: string[] }>('/upload/images', {
       method: 'POST',
       body: formData,
-      headers: {}, // Let browser set Content-Type with boundary
+      headers: {}, // Let browser/RN set Content-Type with boundary
+    });
+    
+    return result.urls;
+  },
+};
+
+// Jobs API (Job Posting & Bidding System)
+export const jobsApi = {
+  // Customer: Create a job posting
+  async createJob(data: {
+    title: string;
+    description: string;
+    category: string;
+    urgency?: 'ASAP' | 'THIS_WEEK' | 'FLEXIBLE';
+    locationAddr: string;
+    locationCity: string;
+    locationArea?: string;
+    locationLat: number;
+    locationLng: number;
+    budgetMin?: number;
+    budgetMax?: number;
+    images?: string[];
+    preferredDate?: string;
+  }) {
+    return apiRequest<any>('/jobs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Customer: Get my job postings
+  async getMyJobs(status?: string) {
+    const params = status ? `?status=${status}` : '';
+    return apiRequest<any>(`/jobs/my-jobs${params}`);
+  },
+
+  // Pro: Get available jobs to bid on
+  async getAvailableJobs(filters?: {
+    category?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.category) params.append('category', filters.category);
+    
+    const query = params.toString();
+    return apiRequest<any>(`/jobs/available${query ? `?${query}` : ''}`);
+  },
+
+  // Get single job details
+  async getJobById(jobId: string) {
+    return apiRequest<any>(`/jobs/${jobId}`);
+  },
+
+  // Get single job details (alias for compatibility)
+  async getJob(jobId: string) {
+    return apiRequest<any>(`/jobs/${jobId}`);
+  },
+
+  // Customer: Update a job
+  async updateJob(jobId: string, data: {
+    description?: string;
+    urgency?: 'ASAP' | 'THIS_WEEK' | 'FLEXIBLE';
+    budgetMin?: number;
+    budgetMax?: number;
+    images?: string[];
+    preferredDate?: string;
+  }) {
+    return apiRequest<any>(`/jobs/${jobId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Customer: Cancel a job
+  async cancelJob(jobId: string) {
+    return apiRequest<any>(`/jobs/${jobId}/cancel`, {
+      method: 'POST',
+    });
+  },
+
+  // Pro: Submit a bid
+  async createBid(data: {
+    jobId: string;
+    proposedPrice: number;
+    estimatedDuration: number;
+    message: string;
+    availableFrom?: string;
+  }) {
+    return apiRequest<any>('/jobs/bids', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Pro: Get my bids
+  async getMyBids(status?: string) {
+    const params = status ? `?status=${status}` : '';
+    return apiRequest<any>(`/jobs/bids/my-bids${params}`);
+  },
+
+  // Get single bid details
+  async getBid(bidId: string) {
+    return apiRequest<any>(`/jobs/bids/${bidId}`);
+  },
+
+  // Pro: Update a bid
+  async updateBid(bidId: string, data: {
+    proposedPrice?: number;
+    estimatedDuration?: number;
+    message?: string;
+    availableFrom?: string;
+  }) {
+    return apiRequest<any>(`/jobs/bids/${bidId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Pro: Withdraw a bid
+  async withdrawBid(bidId: string) {
+    return apiRequest<any>(`/jobs/bids/${bidId}/withdraw`, {
+      method: 'POST',
+    });
+  },
+
+  // Customer: Accept a bid
+  async acceptBid(bidId: string) {
+    return apiRequest<any>(`/jobs/bids/${bidId}/accept`, {
+      method: 'POST',
+    });
+  },
+
+  // Customer: Reject a bid
+  async rejectBid(bidId: string) {
+    return apiRequest<any>(`/jobs/bids/${bidId}/reject`, {
+      method: 'POST',
     });
   },
 };

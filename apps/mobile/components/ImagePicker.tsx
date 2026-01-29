@@ -13,6 +13,7 @@ import {
 import * as ImagePickerExpo from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '../contexts/LanguageContext';
+import { uploadApi } from '@ozar/shared/apiClient';
 
 interface ImagePickerProps {
   onImageSelected: (uri: string) => void;
@@ -96,17 +97,51 @@ export function ImagePicker({
       }
 
       if (!result.canceled && result.assets[0]) {
-        onImageSelected(result.assets[0].uri);
+        const imageUri = result.assets[0].uri;
+        
+        // Upload the image to the backend
+        console.log('📤 Uploading image:', imageUri);
+        const uploadedUrl = await uploadApi.uploadImage(imageUri);
+        console.log('✅ Image uploaded:', uploadedUrl);
+        
+        onImageSelected(uploadedUrl);
       }
-    } catch (error) {
-      console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+    } catch (error: any) {
+      console.error('Error picking/uploading image:', error);
+      Alert.alert('Error', error.message || 'Failed to upload image. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const showImageOptions = () => {
+    // On web, use file input directly
+    if (Platform.OS === 'web') {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async (e: any) => {
+        const file = e.target?.files?.[0];
+        if (file) {
+          setLoading(true);
+          try {
+            console.log('📤 Uploading image from web:', file.name);
+            const uploadedUrl = await uploadApi.uploadImage(file);
+            console.log('✅ Image uploaded:', uploadedUrl);
+            onImageSelected(uploadedUrl);
+          } catch (error: any) {
+            console.error('Error uploading image:', error);
+            alert(error.message || 'Failed to upload image. Please try again.');
+          } finally {
+            setLoading(false);
+          }
+        }
+      };
+      input.click();
+      return;
+    }
+
+    // On mobile, show camera/library options
     Alert.alert(
       'Choose Image Source',
       'Select where you want to pick the image from',

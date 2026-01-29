@@ -19,7 +19,7 @@ import { ImagePicker } from '../../components/ImagePicker';
 
 export default function ProfileEditScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   
@@ -34,13 +34,15 @@ export default function ProfileEditScreen() {
 
   useEffect(() => {
     if (user) {
+      console.log('👤 User data in profile edit:', user);
+      console.log('🖼️ Avatar URL:', user.avatar);
       setFormData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         email: user.email || '',
         phone: user.phone || '',
         bio: user.bio || '',
-        profileImage: user.profileImage || '',
+        profileImage: user.avatar || '',
       });
     }
   }, [user]);
@@ -63,17 +65,29 @@ export default function ProfileEditScreen() {
         lastName: formData.lastName.trim(),
         phone: formData.phone.trim(),
         bio: formData.bio.trim(),
-        profileImage: formData.profileImage,
+        avatar: formData.profileImage || undefined,
       });
 
-      Alert.alert('Success', 'Profile updated successfully', [
-        {
-          text: 'OK',
-          onPress: () => router.back(),
-        },
-      ]);
+      // Refresh user data in context
+      await refreshUser();
+
+      if (Platform.OS === 'web') {
+        window.alert('Profile updated successfully');
+        router.back();
+      } else {
+        Alert.alert('Success', 'Profile updated successfully', [
+          {
+            text: 'OK',
+            onPress: () => router.back(),
+          },
+        ]);
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to update profile');
+      if (Platform.OS === 'web') {
+        window.alert(error.message || 'Failed to update profile');
+      } else {
+        Alert.alert('Error', error.message || 'Failed to update profile');
+      }
     } finally {
       setSaving(false);
     }
@@ -107,19 +121,12 @@ export default function ProfileEditScreen() {
           style={styles.header}
         >
           <View style={styles.avatarContainer}>
-            {formData.profileImage ? (
-              <View style={styles.avatar}>
-                {/* TODO: Add Image component when image URL is available */}
-                <Text style={styles.avatarText}>{initials}</Text>
-              </View>
-            ) : (
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{initials}</Text>
-              </View>
-            )}
-            <TouchableOpacity style={styles.cameraButton}>
-              <Text style={styles.cameraIcon}>📷</Text>
-            </TouchableOpacity>
+            <ImagePicker
+              currentImage={formData.profileImage || undefined}
+              onImageSelected={(url) => setFormData({ ...formData, profileImage: url })}
+              circular={true}
+              size={100}
+            />
           </View>
           <Text style={styles.headerTitle}>Edit Profile</Text>
           <Text style={styles.headerSubtitle}>Update your personal information</Text>

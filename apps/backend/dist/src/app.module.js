@@ -34,6 +34,7 @@ const certifications_module_1 = require("./certifications/certifications.module"
 const templates_module_1 = require("./templates/templates.module");
 const service_area_module_1 = require("./service-area/service-area.module");
 const health_module_1 = require("./health/health.module");
+const jobs_module_1 = require("./jobs/jobs.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -72,6 +73,7 @@ exports.AppModule = AppModule = __decorate([
             templates_module_1.TemplatesModule,
             service_area_module_1.ServiceAreaModule,
             health_module_1.HealthModule,
+            jobs_module_1.JobsModule,
         ],
         providers: [
             {

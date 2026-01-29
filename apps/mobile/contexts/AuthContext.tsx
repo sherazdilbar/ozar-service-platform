@@ -34,6 +34,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -155,6 +156,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     authApi.logout().catch((e) => console.log('Backend logout error (ignored):', e));
   };
 
+  const refreshUser = async () => {
+    try {
+      console.log('[AuthContext] Refreshing user data...');
+      const result = await authApi.getProfile();
+      console.log('[AuthContext] User refreshed:', result);
+      setUser(result);
+      await AsyncStorage.setItem('user', JSON.stringify(result));
+    } catch (error: any) {
+      console.error('[AuthContext] Failed to refresh user:', error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -163,6 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
+        refreshUser,
         isAuthenticated: !!user,
       }}
     >

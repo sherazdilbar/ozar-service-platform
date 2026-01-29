@@ -19,9 +19,9 @@ export declare class ReviewsController {
             rating: number;
             proId: string;
             bookingId: string;
-            images: string[];
             customerId: string;
             comment: string;
+            images: string[];
             responseText: string | null;
             responseAt: Date | null;
             helpfulCount: number;
@@ -49,19 +49,19 @@ export declare class ReviewsController {
                 currency: string;
                 description: string;
                 proId: string;
-                images: string[];
                 status: import(".prisma/client").$Enums.BookingStatus;
                 customerId: string;
+                images: string[];
                 serviceId: string;
                 scheduledFor: Date | null;
                 isASAP: boolean;
-                completedAt: Date | null;
-                cancellationReason: string | null;
                 customerNotes: string | null;
                 locationAddr: string;
                 servicePrice: number;
                 platformFee: number;
                 total: number;
+                completedAt: Date | null;
+                cancellationReason: string | null;
                 cancelledBy: string | null;
                 cancellationFee: number | null;
                 refundAmount: number | null;
@@ -78,9 +78,9 @@ export declare class ReviewsController {
             rating: number;
             proId: string;
             bookingId: string;
-            images: string[];
             customerId: string;
             comment: string;
+            images: string[];
             responseText: string | null;
             responseAt: Date | null;
             helpfulCount: number;
@@ -95,6 +95,7 @@ export declare class ReviewsController {
             };
         } & {
             id: string;
+            bio: string | null;
             locationCity: string;
             locationArea: string;
             locationLat: number;
@@ -102,7 +103,6 @@ export declare class ReviewsController {
             createdAt: Date;
             updatedAt: Date;
             businessName: string | null;
-            bio: string | null;
             categories: import(".prisma/client").$Enums.ServiceCategory[];
             rating: number;
             reviewCount: number;
@@ -136,9 +136,9 @@ export declare class ReviewsController {
         rating: number;
         proId: string;
         bookingId: string;
-        images: string[];
         customerId: string;
         comment: string;
+        images: string[];
         responseText: string | null;
         responseAt: Date | null;
         helpfulCount: number;
@@ -156,9 +156,9 @@ export declare class ReviewsController {
         rating: number;
         proId: string;
         bookingId: string;
-        images: string[];
         customerId: string;
         comment: string;
+        images: string[];
         responseText: string | null;
         responseAt: Date | null;
         helpfulCount: number;
