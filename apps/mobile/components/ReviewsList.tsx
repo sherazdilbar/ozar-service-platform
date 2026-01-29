@@ -65,6 +65,9 @@ export default function ReviewsList({
   const [viewingImages, setViewingImages] = useState<string[]>([]);
   const [showImageViewer, setShowImageViewer] = useState(false);
 
+  // Safety check: ensure reviews is always an array
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+
   const handleSubmit = async () => {
     if (!comment.trim()) {
       Alert.alert('Required', 'Please write a review');
@@ -140,32 +143,8 @@ export default function ReviewsList({
 
   return (
     <View style={styles.container}>
-      {/* Rating Summary */}
-      <View style={styles.summary}>
-        <View style={styles.summaryLeft}>
-          <Text style={styles.averageRating}>{averageRating.toFixed(1)}</Text>
-          <View style={styles.starsRow}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Text key={star} style={styles.star}>
-                {star <= Math.round(averageRating) ? '★' : '☆'}
-              </Text>
-            ))}
-          </View>
-          <Text style={styles.totalReviews}>{totalReviews} reviews</Text>
-        </View>
-
-        {canLeaveReview && (
-          <TouchableOpacity
-            style={styles.writeReviewButton}
-            onPress={() => setShowReviewModal(true)}
-          >
-            <Text style={styles.writeReviewText}>Write Review</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
       {/* Reviews List */}
-      {reviews.length === 0 ? (
+      {safeReviews.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyIcon}>⭐</Text>
           <Text style={styles.emptyTitle}>No Reviews Yet</Text>
@@ -173,7 +152,7 @@ export default function ReviewsList({
         </View>
       ) : (
         <View style={styles.reviewsList}>
-          {reviews.map((review) => (
+          {safeReviews.map((review) => (
             <View key={review.id} style={styles.reviewCard}>
               <View style={styles.reviewHeader}>
                 <View style={styles.avatar}>

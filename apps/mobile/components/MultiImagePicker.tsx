@@ -103,6 +103,13 @@ export function MultiImagePicker({
   };
 
   const showImageOptions = () => {
+    // On web, directly open file picker
+    if (Platform.OS === 'web') {
+      pickImages('library');
+      return;
+    }
+
+    // On mobile, show options
     Alert.alert(
       'Add Photos',
       'Choose where you want to pick photos from',
@@ -266,3 +273,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default MultiImagePicker;

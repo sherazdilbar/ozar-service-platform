@@ -57,6 +57,29 @@ export declare class ProsController {
             title: string;
             imageUrl: string;
         }[];
+        certifications: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            proId: string;
+            issueDate: Date;
+            issuingOrg: string;
+            expiryDate: Date | null;
+            certificateUrl: string | null;
+            status: import(".prisma/client").$Enums.CertificationStatus;
+            verifiedAt: Date | null;
+            verifiedBy: string | null;
+        }[];
+        badges: {
+            id: string;
+            name: string;
+            description: string;
+            proId: string;
+            earnedAt: Date;
+            badgeType: string;
+            icon: string;
+        }[];
         id: string;
         locationCity: string;
         locationArea: string;

@@ -201,8 +201,8 @@ export declare class AdminController {
             description: string;
             proId: string;
             images: string[];
-            customerId: string;
             status: import(".prisma/client").$Enums.BookingStatus;
+            customerId: string;
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;
@@ -278,8 +278,8 @@ export declare class AdminController {
                 description: string;
                 proId: string;
                 images: string[];
-                customerId: string;
                 status: import(".prisma/client").$Enums.BookingStatus;
+                customerId: string;
                 serviceId: string;
                 scheduledFor: Date | null;
                 isASAP: boolean;
@@ -340,8 +340,8 @@ export declare class AdminController {
             description: string;
             proId: string;
             images: string[];
-            customerId: string;
             status: import(".prisma/client").$Enums.BookingStatus;
+            customerId: string;
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;

@@ -152,6 +152,100 @@ export class ChatService {
     });
   }
 
+  async getOrCreateConversation(userId: string, dto: CreateConversationDto) {
+    // Verify the user exists
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Verify the pro exists
+    const pro = await this.prisma.proProfile.findUnique({
+      where: { id: dto.proId },
+      include: { user: true },
+    });
+
+    if (!pro) {
+      throw new NotFoundException('Professional not found');
+    }
+
+    // For customers, verify they're creating conversation for themselves
+    if (user.role === 'CUSTOMER' && dto.customerId !== userId) {
+      throw new ForbiddenException('You can only create conversations for yourself');
+    }
+
+    // Check if conversation already exists
+    const existing = await this.prisma.conversation.findFirst({
+      where: {
+        customerId: dto.customerId,
+        proId: dto.proId,
+        bookingId: dto.bookingId || undefined,
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+        pro: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+        booking: true,
+      },
+    });
+
+    if (existing) {
+      return existing;
+    }
+
+    // Create new conversation
+    return this.prisma.conversation.create({
+      data: {
+        customerId: dto.customerId,
+        proId: dto.proId,
+        bookingId: dto.bookingId,
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+        pro: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+        booking: true,
+      },
+    });
+  }
+
   async getConversation(conversationId: string, userId: string) {
     const conversation = await this.prisma.conversation.findUnique({
       where: { id: conversationId },

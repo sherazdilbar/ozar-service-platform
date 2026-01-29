@@ -462,6 +462,17 @@ export const chatApi = {
     });
   },
 
+  async getOrCreateConversation(data: {
+    customerId: string;
+    proId: string;
+    bookingId?: string;
+  }) {
+    return apiRequest<any>('/chat/conversations/get-or-create', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
   async getConversation(id: string) {
     return apiRequest<any>(`/chat/conversations/${id}`);
   },
@@ -722,4 +733,31 @@ export const bookingPhotosApi = {
     body: JSON.stringify(data),
   }),
   getPhotos: (bookingId: string) => apiRequest(`/bookings/${bookingId}/photos`, { method: 'GET' }),
+};
+
+// Upload API
+export const uploadApi = {
+  async uploadImage(file: File | Blob): Promise<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return apiRequest('/upload/image', {
+      method: 'POST',
+      body: formData,
+      headers: {}, // Let browser set Content-Type with boundary
+    });
+  },
+  
+  async uploadImages(files: (File | Blob)[]): Promise<{ urls: string[] }> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    
+    return apiRequest('/upload/images', {
+      method: 'POST',
+      body: formData,
+      headers: {}, // Let browser set Content-Type with boundary
+    });
+  },
 };

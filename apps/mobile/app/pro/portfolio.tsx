@@ -20,6 +20,7 @@ import MultiImagePicker from '../../components/MultiImagePicker';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = (width - 48) / 2;
+const ITEM_HEIGHT = ITEM_WIDTH * 1.2; // Slightly taller than wide for card aspect ratio
 
 interface PortfolioItem {
   id: string;
@@ -53,7 +54,7 @@ export default function ProPortfolioScreen() {
   const loadPortfolio = async () => {
     try {
       const profile = await prosApi.getMyProfile();
-      setPortfolio(profile.portfolioItems || []);
+      setPortfolio(profile.portfolio || []);
     } catch (error) {
       console.error('Failed to load portfolio:', error);
       Alert.alert('Error', 'Failed to load portfolio');
@@ -87,9 +88,12 @@ export default function ProPortfolioScreen() {
 
     setSubmitting(true);
     try {
+      // Get pro profile to get the proId
+      const profile = await prosApi.getMyProfile();
+      
       // Upload images and create portfolio items
       for (const imageUri of images) {
-        await prosApi.addPortfolioItem({
+        await prosApi.addPortfolioItem(profile.id, {
           imageUrl: imageUri, // In production, upload to server first
           title: title.trim(),
           description: description.trim(),
@@ -151,7 +155,7 @@ export default function ProPortfolioScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.push('/(tabs)/profile')} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#111827" />
         </TouchableOpacity>
         <View style={styles.headerContent}>
@@ -163,8 +167,8 @@ export default function ProPortfolioScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Category Filter */}
-      {portfolio.length > 0 && (
+      {/* Category Filter - Only show if there are multiple categories */}
+      {portfolio.length > 0 && categories.length > 2 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -444,11 +448,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
+    maxHeight: 60,
   },
   filterContent: {
     paddingHorizontal: 20,
     paddingVertical: 12,
     gap: 8,
+    alignItems: 'center',
   },
   filterChip: {
     paddingHorizontal: 16,
@@ -456,6 +462,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#F3F4F6',
     marginRight: 8,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterChipActive: {
     backgroundColor: '#3B82F6',
@@ -523,7 +532,7 @@ const styles = StyleSheet.create({
   },
   itemImage: {
     width: '100%',
-    height: ITEM_WIDTH,
+    height: ITEM_HEIGHT,
     backgroundColor: '#F3F4F6',
   },
   itemOverlay: {

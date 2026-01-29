@@ -318,34 +318,34 @@ function CustomerHome() {
                   </TouchableOpacity>
                 )}
               </View>
-
-              {/* Search History */}
-              {showSearchHistory && searchHistory.length > 0 && !showResults && (
-                <View style={styles.searchHistoryContainer}>
-                  <View style={styles.searchHistoryHeader}>
-                    <Text style={styles.searchHistoryTitle}>Recent Searches</Text>
-                    <TouchableOpacity onPress={() => {}}>
-                      <Text style={styles.clearHistoryText}>Clear</Text>
-                    </TouchableOpacity>
-                  </View>
-                  {searchHistory.slice(0, 5).map((item, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.searchHistoryItem}
-                      onPress={() => {
-                        setSearchText(item);
-                        setShowSearchHistory(false);
-                        handleSearch();
-                      }}
-                    >
-                      <Text style={styles.searchHistoryIcon}>🕐</Text>
-                      <Text style={styles.searchHistoryText}>{item}</Text>
-                      <Text style={styles.searchHistoryArrow}>↗</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
             </View>
+
+            {/* Search History - Now in normal flow */}
+            {showSearchHistory && searchHistory.length > 0 && !showResults && searchText.length === 0 && (
+              <View style={styles.searchHistoryContainer}>
+                <View style={styles.searchHistoryHeader}>
+                  <Text style={styles.searchHistoryTitle}>Recent Searches</Text>
+                  <TouchableOpacity onPress={() => {}}>
+                    <Text style={styles.clearHistoryText}>Clear</Text>
+                  </TouchableOpacity>
+                </View>
+                {searchHistory.slice(0, 5).map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.searchHistoryItem}
+                    onPress={() => {
+                      setSearchText(item);
+                      setShowSearchHistory(false);
+                      handleSearch();
+                    }}
+                  >
+                    <Text style={styles.searchHistoryIcon}>🕐</Text>
+                    <Text style={styles.searchHistoryText}>{item}</Text>
+                    <Text style={styles.searchHistoryArrow}>↗</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </>
         )}
 
@@ -670,44 +670,60 @@ function CustomerHome() {
                 const isVerified = pro.verificationStatus === 'APPROVED';
                 
                 return (
-                  <TouchableOpacity
-                    key={pro.id}
-                    style={styles.proCard}
-                    onPress={() => router.push(`/pro/${pro.id}`)}
-                  >
-                    <View style={styles.cardRow}>
-                      {/* Left: Avatar with verified badge */}
-                      <View style={styles.avatarContainer}>
-                        <View style={styles.proAvatar}>
-                          <Text style={styles.proAvatarText}>{initials}</Text>
-                        </View>
-                        {isVerified && (
-                          <View style={styles.verifiedBadgeBottom}>
-                            <Text style={styles.verifiedIcon}>✓</Text>
+                  <View key={pro.id} style={styles.proCard}>
+                    <TouchableOpacity
+                      onPress={() => router.push(`/pro/${pro.id}`)}
+                    >
+                      <View style={styles.cardRow}>
+                        {/* Left: Avatar with verified badge */}
+                        <View style={styles.avatarContainer}>
+                          <View style={styles.proAvatar}>
+                            <Text style={styles.proAvatarText}>{initials}</Text>
                           </View>
-                        )}
-                      </View>
-
-                      {/* Middle: Info */}
-                      <View style={styles.cardMiddle}>
-                        <Text style={styles.proNameNew}>{personName}</Text>
-                        <Text style={styles.proLocationNew}>
-                          📍 {pro.locationArea} • {pro.jobsCompleted} jobs
-                        </Text>
-                        <Text style={styles.categoryText}>{workType}</Text>
-                      </View>
-
-                      {/* Right: Rating and Price */}
-                      <View style={styles.cardRight}>
-                        <View style={styles.ratingBadgeNew}>
-                          <Text style={styles.ratingStarNew}>⭐</Text>
-                          <Text style={styles.ratingValueNew}>{pro.rating.toFixed(1)}</Text>
-                          <Text style={styles.ratingCountNew}>({pro.reviewCount})</Text>
+                          {isVerified && (
+                            <View style={styles.verifiedBadgeBottom}>
+                              <Text style={styles.verifiedIcon}>✓</Text>
+                            </View>
+                          )}
                         </View>
-                        <Text style={styles.priceNew}>{pro.startingPrice} Ft/hr</Text>
+
+                        {/* Middle: Info */}
+                        <View style={styles.cardMiddle}>
+                          <Text style={styles.proNameNew}>{personName}</Text>
+                          <Text style={styles.proLocationNew}>
+                            📍 {pro.locationArea} • {pro.jobsCompleted} jobs
+                          </Text>
+                          <Text style={styles.categoryText}>{workType}</Text>
+                        </View>
+
+                        {/* Right: Rating and Price */}
+                        <View style={styles.cardRight}>
+                          <View style={styles.ratingBadgeNew}>
+                            <Text style={styles.ratingStarNew}>⭐</Text>
+                            <Text style={styles.ratingValueNew}>{pro.rating.toFixed(1)}</Text>
+                            <Text style={styles.ratingCountNew}>({pro.reviewCount})</Text>
+                          </View>
+                          <Text style={styles.priceNew}>{pro.startingPrice} Ft/hr</Text>
+                        </View>
                       </View>
+                    </TouchableOpacity>
+
+                    {/* Action Buttons */}
+                    <View style={styles.cardActions}>
+                      <TouchableOpacity 
+                        style={styles.viewProfileButton}
+                        onPress={() => router.push(`/pro/${pro.id}`)}
+                      >
+                        <Text style={styles.viewProfileText}>👤 View Full Profile</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity 
+                        style={styles.bookNowButton}
+                        onPress={() => router.push(`/booking/new?proId=${pro.id}`)}
+                      >
+                        <Text style={styles.bookNowText}>Book Now</Text>
+                      </TouchableOpacity>
                     </View>
-                  </TouchableOpacity>
+                  </View>
                 );
               })
             )}
@@ -741,44 +757,60 @@ function CustomerHome() {
                 const isVerified = pro.verificationStatus === 'APPROVED';
                 
                 return (
-                  <TouchableOpacity
-                    key={pro.id}
-                    style={styles.proCard}
-                    onPress={() => router.push(`/pro/${pro.id}`)}
-                  >
-                    <View style={styles.cardRow}>
-                      {/* Left: Avatar with verified badge */}
-                      <View style={styles.avatarContainer}>
-                        <View style={styles.proAvatar}>
-                          <Text style={styles.proAvatarText}>{initials}</Text>
-                        </View>
-                        {isVerified && (
-                          <View style={styles.verifiedBadgeBottom}>
-                            <Text style={styles.verifiedIcon}>✓</Text>
+                  <View key={pro.id} style={styles.proCard}>
+                    <TouchableOpacity
+                      onPress={() => router.push(`/pro/${pro.id}`)}
+                    >
+                      <View style={styles.cardRow}>
+                        {/* Left: Avatar with verified badge */}
+                        <View style={styles.avatarContainer}>
+                          <View style={styles.proAvatar}>
+                            <Text style={styles.proAvatarText}>{initials}</Text>
                           </View>
-                        )}
-                      </View>
-
-                      {/* Middle: Info */}
-                      <View style={styles.cardMiddle}>
-                        <Text style={styles.proNameNew}>{personName}</Text>
-                        <Text style={styles.proLocationNew}>
-                          📍 {pro.locationArea} • {pro.jobsCompleted} jobs
-                        </Text>
-                        <Text style={styles.categoryText}>{workType}</Text>
-                      </View>
-
-                      {/* Right: Rating and Price */}
-                      <View style={styles.cardRight}>
-                        <View style={styles.ratingBadgeNew}>
-                          <Text style={styles.ratingStarNew}>⭐</Text>
-                          <Text style={styles.ratingValueNew}>{pro.rating.toFixed(1)}</Text>
-                          <Text style={styles.ratingCountNew}>({pro.reviewCount})</Text>
+                          {isVerified && (
+                            <View style={styles.verifiedBadgeBottom}>
+                              <Text style={styles.verifiedIcon}>✓</Text>
+                            </View>
+                          )}
                         </View>
-                        <Text style={styles.priceNew}>{pro.startingPrice} Ft/hr</Text>
+
+                        {/* Middle: Info */}
+                        <View style={styles.cardMiddle}>
+                          <Text style={styles.proNameNew}>{personName}</Text>
+                          <Text style={styles.proLocationNew}>
+                            📍 {pro.locationArea} • {pro.jobsCompleted} jobs
+                          </Text>
+                          <Text style={styles.categoryText}>{workType}</Text>
+                        </View>
+
+                        {/* Right: Rating and Price */}
+                        <View style={styles.cardRight}>
+                          <View style={styles.ratingBadgeNew}>
+                            <Text style={styles.ratingStarNew}>⭐</Text>
+                            <Text style={styles.ratingValueNew}>{pro.rating.toFixed(1)}</Text>
+                            <Text style={styles.ratingCountNew}>({pro.reviewCount})</Text>
+                          </View>
+                          <Text style={styles.priceNew}>{pro.startingPrice} Ft/hr</Text>
+                        </View>
                       </View>
+                    </TouchableOpacity>
+
+                    {/* Action Buttons */}
+                    <View style={styles.cardActions}>
+                      <TouchableOpacity 
+                        style={styles.viewProfileButton}
+                        onPress={() => router.push(`/pro/${pro.id}`)}
+                      >
+                        <Text style={styles.viewProfileText}>👤 View Full Profile</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity 
+                        style={styles.bookNowButton}
+                        onPress={() => router.push(`/booking/new?proId=${pro.id}`)}
+                      >
+                        <Text style={styles.bookNowText}>Book Now</Text>
+                      </TouchableOpacity>
                     </View>
-                  </TouchableOpacity>
+                  </View>
                 );
               })
             )}
@@ -1198,21 +1230,58 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#00BCD4',
   },
+  cardActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  viewProfileButton: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  viewProfileText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  bookNowButton: {
+    flex: 1,
+    backgroundColor: '#00BCD4',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    shadowColor: '#00BCD4',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  bookNowText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'white',
+  },
   searchHistoryContainer: {
-    position: 'absolute',
-    top: 60,
-    left: 0,
-    right: 0,
     backgroundColor: 'white',
     borderRadius: 12,
     marginHorizontal: 20,
+    marginTop: 8,
+    marginBottom: 16,
     padding: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 8,
-    zIndex: 1000,
+    maxHeight: 300,
   },
   searchHistoryHeader: {
     flexDirection: 'row',

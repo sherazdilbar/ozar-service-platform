@@ -22,23 +22,26 @@ let ChatController = class ChatController {
         this.chatService = chatService;
     }
     async getConversations(req) {
-        const conversations = await this.chatService.getConversations(req.user.userId);
+        const conversations = await this.chatService.getConversations(req.user.id);
         return { data: conversations };
     }
     createConversation(req, dto) {
-        return this.chatService.createConversation(req.user.userId, dto);
+        return this.chatService.createConversation(req.user.id, dto);
+    }
+    getOrCreateConversation(req, dto) {
+        return this.chatService.getOrCreateConversation(req.user.id, dto);
     }
     getConversation(id, req) {
-        return this.chatService.getConversation(id, req.user.userId);
+        return this.chatService.getConversation(id, req.user.id);
     }
     getMessages(id, req, page, limit) {
-        return this.chatService.getMessages(id, req.user.userId, page, limit);
+        return this.chatService.getMessages(id, req.user.id, page, limit);
     }
     sendMessage(id, req, dto) {
-        return this.chatService.sendMessage(id, req.user.userId, dto);
+        return this.chatService.sendMessage(id, req.user.id, dto);
     }
     markAsRead(id, req) {
-        return this.chatService.markAsRead(id, req.user.userId);
+        return this.chatService.markAsRead(id, req.user.id);
     }
 };
 exports.ChatController = ChatController;
@@ -57,6 +60,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, dto_1.CreateConversationDto]),
     __metadata("design:returntype", void 0)
 ], ChatController.prototype, "createConversation", null);
+__decorate([
+    (0, common_1.Post)('conversations/get-or-create'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, dto_1.CreateConversationDto]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "getOrCreateConversation", null);
 __decorate([
     (0, common_1.Get)('conversations/:id'),
     __param(0, (0, common_1.Param)('id')),

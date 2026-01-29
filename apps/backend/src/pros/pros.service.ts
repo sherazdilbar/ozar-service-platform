@@ -194,6 +194,10 @@ export class ProsService {
         },
         services: true,
         portfolio: true,
+        badges: {
+          orderBy: { earnedAt: 'desc' },
+          take: 5,
+        },
       },
       orderBy: sortBy !== 'distance' ? orderBy : undefined,
       skip: (page - 1) * limit,
@@ -266,6 +270,13 @@ export class ProsService {
         },
         services: true,
         portfolio: true,
+        certifications: {
+          where: { status: 'VERIFIED' },
+          orderBy: { issueDate: 'desc' },
+        },
+        badges: {
+          orderBy: { earnedAt: 'desc' },
+        },
       },
     });
 

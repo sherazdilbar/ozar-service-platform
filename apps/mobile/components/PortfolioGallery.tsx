@@ -29,6 +29,16 @@ export default function PortfolioGallery({ items, apiUrl = process.env.EXPO_PUBL
   const [selectedImage, setSelectedImage] = useState<PortfolioItem | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Helper function to get the full image URL
+  const getImageUrl = (imageUrl: string) => {
+    // If it's already a full URL (http/https), a local file URI, blob, or data URI, return as is
+    if (imageUrl.startsWith('http') || imageUrl.startsWith('file://') || imageUrl.startsWith('blob:') || imageUrl.startsWith('data:')) {
+      return imageUrl;
+    }
+    // Otherwise, prepend the API URL
+    return `${apiUrl}${imageUrl}`;
+  };
+
   if (!items || items.length === 0) {
     return (
       <View style={styles.emptyState}>
@@ -75,7 +85,7 @@ export default function PortfolioGallery({ items, apiUrl = process.env.EXPO_PUBL
             activeOpacity={0.8}
           >
             <Image
-              source={{ uri: `${apiUrl}${item.imageUrl}` }}
+              source={{ uri: getImageUrl(item.imageUrl) }}
               style={styles.thumbnail}
               resizeMode="cover"
             />
@@ -112,7 +122,7 @@ export default function PortfolioGallery({ items, apiUrl = process.env.EXPO_PUBL
           <View style={styles.imageContainer}>
             {selectedImage && (
               <Image
-                source={{ uri: `${apiUrl}${selectedImage.imageUrl}` }}
+                source={{ uri: getImageUrl(selectedImage.imageUrl) }}
                 style={styles.fullImage}
                 resizeMode="contain"
               />

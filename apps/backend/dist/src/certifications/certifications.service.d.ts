@@ -8,11 +8,11 @@ export declare class CertificationsService {
         updatedAt: Date;
         name: string;
         proId: string;
-        status: import(".prisma/client").$Enums.CertificationStatus;
-        issuingOrg: string;
         issueDate: Date;
+        issuingOrg: string;
         expiryDate: Date | null;
         certificateUrl: string | null;
+        status: import(".prisma/client").$Enums.CertificationStatus;
         verifiedAt: Date | null;
         verifiedBy: string | null;
     }[]>;
@@ -22,11 +22,11 @@ export declare class CertificationsService {
         updatedAt: Date;
         name: string;
         proId: string;
-        status: import(".prisma/client").$Enums.CertificationStatus;
-        issuingOrg: string;
         issueDate: Date;
+        issuingOrg: string;
         expiryDate: Date | null;
         certificateUrl: string | null;
+        status: import(".prisma/client").$Enums.CertificationStatus;
         verifiedAt: Date | null;
         verifiedBy: string | null;
     }>;
@@ -36,11 +36,11 @@ export declare class CertificationsService {
         updatedAt: Date;
         name: string;
         proId: string;
-        status: import(".prisma/client").$Enums.CertificationStatus;
-        issuingOrg: string;
         issueDate: Date;
+        issuingOrg: string;
         expiryDate: Date | null;
         certificateUrl: string | null;
+        status: import(".prisma/client").$Enums.CertificationStatus;
         verifiedAt: Date | null;
         verifiedBy: string | null;
     }>;
@@ -52,18 +52,18 @@ export declare class CertificationsService {
         name: string;
         description: string;
         proId: string;
-        icon: string;
-        badgeType: string;
         earnedAt: Date;
+        badgeType: string;
+        icon: string;
     }[]>;
     awardBadge(proId: string, badgeType: string): Promise<{
         id: string;
         name: string;
         description: string;
         proId: string;
-        icon: string;
-        badgeType: string;
         earnedAt: Date;
+        badgeType: string;
+        icon: string;
     }>;
     private getBadgeConfig;
 }

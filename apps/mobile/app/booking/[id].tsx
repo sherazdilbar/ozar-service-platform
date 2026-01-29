@@ -12,7 +12,7 @@ import {
   Modal,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { bookingsApi } from '@ozar/shared/apiClient';
+import { bookingsApi, chatApi } from '@ozar/shared/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 import BookingTimeline from '../../components/BookingTimeline';
 
@@ -270,9 +270,30 @@ export default function BookingDetailScreen() {
     }
   };
 
-  const handleMessage = () => {
-    // Navigate to chat - create conversation if needed
-    router.push(`/chat/${booking?.id}`);
+  const handleMessage = async () => {
+    if (!user) {
+      Alert.alert('Login Required', 'Please login to send messages');
+      return;
+    }
+
+    setActionLoading(true);
+    try {
+      const conversation = await chatApi.getOrCreateConversation({
+        customerId: user.id,
+        proId: booking!.pro.id,
+        bookingId: booking!.id,
+      });
+      
+      console.log('Conversation created/found:', conversation);
+      
+      // Navigate to the chat screen with the conversation ID
+      router.push(`/chat/${conversation.id}`);
+    } catch (error: any) {
+      console.error('Failed to get or create conversation:', error);
+      Alert.alert('Error', error.message || 'Failed to start conversation');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleLeaveReview = async () => {

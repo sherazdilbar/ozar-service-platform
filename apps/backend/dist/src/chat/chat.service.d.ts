@@ -97,6 +97,83 @@ export declare class ChatService {
         bookingId: string | null;
         customerId: string;
     }>;
+    getOrCreateConversation(userId: string, dto: CreateConversationDto): Promise<{
+        pro: {
+            user: {
+                id: string;
+                firstName: string;
+                lastName: string;
+                avatar: string;
+            };
+        } & {
+            id: string;
+            locationCity: string;
+            locationArea: string;
+            locationLat: number;
+            locationLng: number;
+            createdAt: Date;
+            updatedAt: Date;
+            businessName: string | null;
+            bio: string | null;
+            categories: import(".prisma/client").$Enums.ServiceCategory[];
+            rating: number;
+            reviewCount: number;
+            jobsCompleted: number;
+            yearsExperience: number;
+            verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
+            availabilityStatus: import(".prisma/client").$Enums.AvailabilityStatus;
+            startingPrice: number;
+            currency: string;
+            responseTime: number;
+            serviceAreaCity: string;
+            serviceAreaRadius: number;
+            onboardingCompleted: boolean;
+            onboardingStep: string | null;
+            onboardingStartedAt: Date | null;
+            onboardingCompletedAt: Date | null;
+            userId: string;
+        };
+        booking: {
+            id: string;
+            locationCity: string;
+            locationLat: number;
+            locationLng: number;
+            createdAt: Date;
+            updatedAt: Date;
+            currency: string;
+            description: string;
+            proId: string;
+            images: string[];
+            status: import(".prisma/client").$Enums.BookingStatus;
+            customerId: string;
+            serviceId: string;
+            scheduledFor: Date | null;
+            isASAP: boolean;
+            completedAt: Date | null;
+            cancellationReason: string | null;
+            customerNotes: string | null;
+            locationAddr: string;
+            servicePrice: number;
+            platformFee: number;
+            total: number;
+            cancelledBy: string | null;
+            cancellationFee: number | null;
+            refundAmount: number | null;
+        };
+        customer: {
+            id: string;
+            firstName: string;
+            lastName: string;
+            avatar: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        proId: string;
+        bookingId: string | null;
+        customerId: string;
+    }>;
     getConversation(conversationId: string, userId: string): Promise<{
         pro: {
             user: {
@@ -160,8 +237,8 @@ export declare class ChatService {
             description: string;
             proId: string;
             images: string[];
-            customerId: string;
             status: import(".prisma/client").$Enums.BookingStatus;
+            customerId: string;
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;

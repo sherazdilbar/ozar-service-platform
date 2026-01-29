@@ -53,6 +53,22 @@ interface ProProfile {
     title: string;
     description?: string;
   }>;
+  certifications?: Array<{
+    id: string;
+    name: string;
+    issuingOrg: string;
+    issueDate: string;
+    expiryDate?: string;
+    status: string;
+  }>;
+  badges?: Array<{
+    id: string;
+    badgeType: string;
+    name: string;
+    description: string;
+    icon: string;
+    earnedAt: string;
+  }>;
 }
 
 export default function ProDetailScreen() {
@@ -64,8 +80,22 @@ export default function ProDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [creatingConversation, setCreatingConversation] = useState(false);
   const [selectedService, setSelectedService] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'services' | 'portfolio' | 'reviews'>('services');
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [activeTab, setActiveTab] = useState<'about' | 'services' | 'portfolio' | 'reviews'>('about');
+
+  // Calculate acceptance rate (mock for now - should come from backend)
+  const acceptanceRate = pro ? Math.min(95, Math.round((pro.jobsCompleted / (pro.jobsCompleted + 5)) * 100)) : 0;
+  const completionRate = pro ? Math.min(98, Math.round((pro.jobsCompleted / (pro.jobsCompleted + 2)) * 100)) : 0;
+
+  // Working hours (mock - should come from availability API)
+  const workingHours = [
+    { day: 'Mon', hours: '9:00 AM - 6:00 PM', available: true },
+    { day: 'Tue', hours: '9:00 AM - 6:00 PM', available: true },
+    { day: 'Wed', hours: '9:00 AM - 6:00 PM', available: true },
+    { day: 'Thu', hours: '9:00 AM - 6:00 PM', available: true },
+    { day: 'Fri', hours: '9:00 AM - 5:00 PM', available: true },
+    { day: 'Sat', hours: '10:00 AM - 2:00 PM', available: true },
+    { day: 'Sun', hours: 'Closed', available: false },
+  ];
 
   useEffect(() => {
     loadProDetails();
@@ -79,9 +109,21 @@ export default function ProDetailScreen() {
       // Load reviews
       try {
         const reviewsResult = await prosApi.getProReviews(id as string);
-        setReviews(reviewsResult.data || []);
+        const reviewsData = reviewsResult.data || reviewsResult || [];
+        
+        // Transform reviews to match component expectations
+        const transformedReviews = Array.isArray(reviewsData) ? reviewsData.map((review: any) => ({
+          ...review,
+          customerName: review.customer 
+            ? `${review.customer.firstName} ${review.customer.lastName}`
+            : 'Anonymous',
+          customerAvatar: review.customer?.avatar,
+        })) : [];
+        
+        setReviews(transformedReviews);
       } catch (err) {
         console.error('Failed to load reviews:', err);
+        setReviews([]); // Set empty array on error
       }
     } catch (error) {
       console.error('Failed to load pro details:', error);
@@ -100,15 +142,6 @@ export default function ProDetailScreen() {
     } catch (error) {
       console.error('Error sharing:', error);
     }
-  };
-
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    // TODO: Implement API call to save favorite
-    Alert.alert(
-      isFavorite ? 'Removed from Favorites' : 'Added to Favorites',
-      isFavorite ? 'Professional removed from your favorites' : 'Professional added to your favorites'
-    );
   };
 
   const handleCall = () => {
@@ -130,36 +163,30 @@ export default function ProDetailScreen() {
 
     setCreatingConversation(true);
     try {
-      const conversation = await chatApi.createConversation({
+      console.log('Creating conversation with:', {
         customerId: user.id,
         proId: pro!.id,
       });
       
-      console.log('Conversation created:', conversation);
+      const conversation = await chatApi.getOrCreateConversation({
+        customerId: user.id,
+        proId: pro!.id,
+      });
+      
+      console.log('Conversation response:', JSON.stringify(conversation, null, 2));
+      
+      if (!conversation || !conversation.id) {
+        throw new Error('Invalid conversation response - no ID returned');
+      }
+      
+      // Small delay to ensure database transaction is complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       // Navigate to the chat screen with the conversation ID
       router.push(`/chat/${conversation.id}`);
     } catch (error: any) {
-      console.error('Failed to create conversation:', error);
-      
-      // If conversation already exists, try to find it and navigate
-      if (error.message?.includes('already exists')) {
-        try {
-          const conversations = await chatApi.getConversations();
-          const existing = conversations.data?.find(
-            (conv: any) => conv.customerId === user.id && conv.proId === pro!.id
-          );
-          
-          if (existing) {
-            router.push(`/chat/${existing.id}`);
-            return;
-          }
-        } catch (findError) {
-          console.error('Failed to find existing conversation:', findError);
-        }
-      }
-      
-      Alert.alert('Error', error.message || 'Failed to start conversation');
+      console.error('Failed to get or create conversation:', error);
+      Alert.alert('Error', error.message || 'Failed to start conversation. Please try again.');
     } finally {
       setCreatingConversation(false);
     }
@@ -261,41 +288,16 @@ export default function ProDetailScreen() {
           </View>
         </View>
 
-        {/* Categories */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Services</Text>
-          <View style={styles.categoriesRow}>
-            {pro.categories.map((category, index) => (
-              <View key={index} style={styles.categoryChip}>
-                <Text style={styles.categoryChipText}>
-                  {CATEGORY_ICONS[category as ServiceCategory]} {CATEGORY_LABELS[category as ServiceCategory]}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        {/* Bio */}
-        {pro.bio && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>About</Text>
-            <Text style={styles.bioText}>{pro.bio}</Text>
-          </View>
-        )}
-
-        {/* Location */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location</Text>
-          <View style={styles.locationRow}>
-            <Text style={styles.locationIcon}>📍</Text>
-            <Text style={styles.locationText}>
-              {pro.locationArea}, {pro.locationCity}
-            </Text>
-          </View>
-        </View>
-
         {/* Tabs */}
         <View style={styles.tabs}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'about' && styles.tabActive]}
+            onPress={() => setActiveTab('about')}
+          >
+            <Text style={[styles.tabText, activeTab === 'about' && styles.tabTextActive]}>
+              About
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tab, activeTab === 'services' && styles.tabActive]}
             onPress={() => setActiveTab('services')}
@@ -323,6 +325,123 @@ export default function ProDetailScreen() {
         </View>
 
         {/* Tab Content */}
+        {activeTab === 'about' && (
+          <>
+            {/* Performance Metrics */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>📊 Performance</Text>
+              <View style={styles.metricsGrid}>
+                <View style={styles.metricCard}>
+                  <Text style={styles.metricValue}>{acceptanceRate}%</Text>
+                  <Text style={styles.metricLabel}>Acceptance Rate</Text>
+                </View>
+                <View style={styles.metricCard}>
+                  <Text style={styles.metricValue}>{pro.responseTime}m</Text>
+                  <Text style={styles.metricLabel}>Response Time</Text>
+                </View>
+                <View style={styles.metricCard}>
+                  <Text style={styles.metricValue}>{completionRate}%</Text>
+                  <Text style={styles.metricLabel}>Completion Rate</Text>
+                </View>
+                <View style={styles.metricCard}>
+                  <Text style={styles.metricValue}>{pro.jobsCompleted}</Text>
+                  <Text style={styles.metricLabel}>Jobs Completed</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Bio */}
+            {pro.bio && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>About</Text>
+                <Text style={styles.bioText}>{pro.bio}</Text>
+              </View>
+            )}
+
+            {/* Categories */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Services Offered</Text>
+              <View style={styles.categoriesRow}>
+                {pro.categories.map((category, index) => (
+                  <View key={index} style={styles.categoryChip}>
+                    <Text style={styles.categoryChipText}>
+                      {CATEGORY_ICONS[category as ServiceCategory]} {CATEGORY_LABELS[category as ServiceCategory]}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* Working Hours */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>🗓️ Working Hours</Text>
+              {workingHours.map((schedule, index) => (
+                <View key={index} style={styles.scheduleRow}>
+                  <Text style={[styles.scheduleDay, !schedule.available && styles.scheduleDayOff]}>
+                    {schedule.day}
+                  </Text>
+                  <Text style={[styles.scheduleHours, !schedule.available && styles.scheduleHoursOff]}>
+                    {schedule.hours}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            {/* Certifications */}
+            {pro.certifications && pro.certifications.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>🏆 Certifications</Text>
+                {pro.certifications.map((cert) => (
+                  <View key={cert.id} style={styles.certCard}>
+                    <View style={styles.certHeader}>
+                      <View style={styles.certIcon}>
+                        <Text style={styles.certIconText}>📜</Text>
+                      </View>
+                      <View style={styles.certInfo}>
+                        <Text style={styles.certName}>{cert.name}</Text>
+                        <Text style={styles.certOrg}>{cert.issuingOrg}</Text>
+                        <Text style={styles.certDate}>
+                          Issued: {new Date(cert.issueDate).toLocaleDateString()}
+                        </Text>
+                      </View>
+                      <View style={styles.verifiedBadgeSmall}>
+                        <Text style={styles.verifiedBadgeText}>✓</Text>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Badges */}
+            {pro.badges && pro.badges.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>🎖️ Badges Earned</Text>
+                <View style={styles.badgesGrid}>
+                  {pro.badges.map((badge) => (
+                    <View key={badge.id} style={styles.badgeCard}>
+                      <Text style={styles.badgeIcon}>{badge.icon}</Text>
+                      <Text style={styles.badgeName}>{badge.name}</Text>
+                      <Text style={styles.badgeDescription}>{badge.description}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            {/* Location */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>📍 Location</Text>
+              <View style={styles.locationRow}>
+                <Text style={styles.locationIcon}>📍</Text>
+                <Text style={styles.locationText}>
+                  {pro.locationArea}, {pro.locationCity}
+                </Text>
+              </View>
+            </View>
+          </>
+        )}
+
         {activeTab === 'services' && pro.services && pro.services.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Available Services</Text>
@@ -362,12 +481,12 @@ export default function ProDetailScreen() {
           </View>
         )}
 
-        {activeTab === 'reviews' && (
+        {activeTab === 'reviews' && pro && (
           <View style={styles.section}>
             <ReviewsList
-              reviews={reviews}
-              averageRating={pro.rating}
-              totalReviews={pro.reviewCount}
+              reviews={Array.isArray(reviews) ? reviews : []}
+              averageRating={pro.rating || 0}
+              totalReviews={pro.reviewCount || 0}
               canLeaveReview={false}
             />
           </View>
@@ -381,17 +500,6 @@ export default function ProDetailScreen() {
         <View style={styles.bottomActions}>
           <TouchableOpacity style={styles.callButton} onPress={handleCall}>
             <Text style={styles.callButtonText}>📞 Call</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.messageButton, creatingConversation && styles.messageButtonDisabled]} 
-            onPress={handleMessage}
-            disabled={creatingConversation}
-          >
-            {creatingConversation ? (
-              <ActivityIndicator size="small" color="#374151" />
-            ) : (
-              <Text style={styles.messageButtonText}>💬 Message</Text>
-            )}
           </TouchableOpacity>
           <TouchableOpacity style={styles.bookButton} onPress={handleBookService}>
             <Text style={styles.bookButtonText}>Book Now</Text>
@@ -449,13 +557,151 @@ const styles = StyleSheet.create({
     borderBottomColor: '#00BCD4',
   },
   tabText: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#6b7280',
     fontWeight: '500',
   },
   tabTextActive: {
     color: '#00BCD4',
     fontWeight: '600',
+  },
+  // Performance Metrics
+  metricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  metricCard: {
+    width: '47%',
+    backgroundColor: '#f9fafb',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  metricValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#00BCD4',
+    marginBottom: 4,
+  },
+  metricLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+  // Working Hours
+  scheduleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  scheduleDay: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    width: 50,
+  },
+  scheduleDayOff: {
+    color: '#9ca3af',
+  },
+  scheduleHours: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  scheduleHoursOff: {
+    color: '#9ca3af',
+    fontStyle: 'italic',
+  },
+  // Certifications
+  certCard: {
+    backgroundColor: '#f9fafb',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  certHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  certIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#EFF6FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  certIconText: {
+    fontSize: 20,
+  },
+  certInfo: {
+    flex: 1,
+  },
+  certName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 2,
+  },
+  certOrg: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginBottom: 2,
+  },
+  certDate: {
+    fontSize: 11,
+    color: '#9ca3af',
+  },
+  verifiedBadgeSmall: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#10B981',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  verifiedBadgeText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  // Badges
+  badgesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  badgeCard: {
+    width: '47%',
+    backgroundColor: '#FFF7ED',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FFEDD5',
+  },
+  badgeIcon: {
+    fontSize: 36,
+    marginBottom: 8,
+  },
+  badgeName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  badgeDescription: {
+    fontSize: 11,
+    color: '#6b7280',
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,

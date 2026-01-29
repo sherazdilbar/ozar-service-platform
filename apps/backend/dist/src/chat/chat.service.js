@@ -138,6 +138,87 @@ let ChatService = class ChatService {
             },
         });
     }
+    async getOrCreateConversation(userId, dto) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        const pro = await this.prisma.proProfile.findUnique({
+            where: { id: dto.proId },
+            include: { user: true },
+        });
+        if (!pro) {
+            throw new common_1.NotFoundException('Professional not found');
+        }
+        if (user.role === 'CUSTOMER' && dto.customerId !== userId) {
+            throw new common_1.ForbiddenException('You can only create conversations for yourself');
+        }
+        const existing = await this.prisma.conversation.findFirst({
+            where: {
+                customerId: dto.customerId,
+                proId: dto.proId,
+                bookingId: dto.bookingId || undefined,
+            },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        avatar: true,
+                    },
+                },
+                pro: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                firstName: true,
+                                lastName: true,
+                                avatar: true,
+                            },
+                        },
+                    },
+                },
+                booking: true,
+            },
+        });
+        if (existing) {
+            return existing;
+        }
+        return this.prisma.conversation.create({
+            data: {
+                customerId: dto.customerId,
+                proId: dto.proId,
+                bookingId: dto.bookingId,
+            },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        avatar: true,
+                    },
+                },
+                pro: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                firstName: true,
+                                lastName: true,
+                                avatar: true,
+                            },
+                        },
+                    },
+                },
+                booking: true,
+            },
+        });
+    }
     async getConversation(conversationId, userId) {
         const conversation = await this.prisma.conversation.findUnique({
             where: { id: conversationId },

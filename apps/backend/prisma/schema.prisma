@@ -252,6 +252,8 @@ model ProProfile {
   bookings      Booking[]
   conversations Conversation[]
   favoritedBy   Favorite[]     @relation("ProFavorites")
+  certifications Certification[]
+  badges        Badge[]
 
   @@index([userId])
   @@index([verificationStatus])
@@ -583,6 +585,9 @@ model Certification {
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
+  // Relations
+  pro ProProfile @relation(fields: [proId], references: [id], onDelete: Cascade)
+
   @@index([proId])
   @@index([status])
   @@map("certifications")
@@ -596,6 +601,9 @@ model Badge {
   description String
   icon        String
   earnedAt    DateTime @default(now())
+
+  // Relations
+  pro ProProfile @relation(fields: [proId], references: [id], onDelete: Cascade)
 
   @@index([proId])
   @@map("badges")
