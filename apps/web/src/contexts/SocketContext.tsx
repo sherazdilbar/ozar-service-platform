@@ -1,13 +1,13 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
-  onlineUsers: Set<string>;
+  onlineUsers: string[];
   joinConversation: (conversationId: string) => void;
   leaveConversation: (conversationId: string) => void;
   sendTypingStart: (conversationId: string) => void;
@@ -15,31 +15,17 @@ interface SocketContextType {
   markAsRead: (conversationId: string) => void;
 }
 
-const SocketContext = createContext<SocketContextType>({
-  socket: null,
-  isConnected: false,
-  onlineUsers: new Set(),
-  joinConversation: () => {},
-  leaveConversation: () => {},
-  sendTypingStart: () => {},
-  sendTypingStop: () => {},
-  markAsRead: () => {},
-});
+const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
-export const useSocket = () => useContext(SocketContext);
-
-export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+export function SocketProvider({ children }: { children: ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
-  const reconnectAttempts = useRef(0);
-  const maxReconnectAttempts = 5;
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const { user, token } = useAuth();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!user || !token) {
       if (socket) {
-        console.log('🔌 Disconnecting WebSocket (user not authenticated)');
         socket.disconnect();
         setSocket(null);
         setIsConnected(false);
@@ -47,124 +33,89 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Get token from localStorage
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      console.warn('⚠️ No access token found for WebSocket connection');
-      return;
-    }
-
-    console.log('🔌 Connecting to WebSocket...');
-
-    // Connect to WebSocket server
-    const newSocket = io('http://localhost:4000/chat', {
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    
+    const newSocket = io(socketUrl, {
       auth: { token },
       transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: maxReconnectAttempts,
     });
 
     newSocket.on('connect', () => {
-      console.log('✅ WebSocket connected');
+      console.log('Socket connected');
       setIsConnected(true);
-      reconnectAttempts.current = 0;
     });
 
-    newSocket.on('disconnect', (reason) => {
-      console.log('❌ WebSocket disconnected:', reason);
+    newSocket.on('disconnect', () => {
+      console.log('Socket disconnected');
       setIsConnected(false);
-      
-      if (reason === 'io server disconnect') {
-        // Server disconnected us (probably auth issue), try to reconnect with fresh token
-        console.log('🔄 Server disconnected, will retry with fresh token...');
-        setTimeout(() => {
-          const freshToken = localStorage.getItem('accessToken');
-          if (freshToken && freshToken !== token) {
-            newSocket.auth = { token: freshToken };
-            newSocket.connect();
-          }
-        }, 1000);
-      }
     });
 
     newSocket.on('connect_error', (error) => {
-      console.error('❌ WebSocket connection error:', error.message);
-      reconnectAttempts.current++;
-      
-      if (reconnectAttempts.current >= maxReconnectAttempts) {
-        console.error('❌ Max reconnection attempts reached. Please refresh the page or log in again.');
-      }
+      console.error('Socket connection error:', error);
+      setIsConnected(false);
     });
 
-    // Listen for user status updates
-    newSocket.on('user_status', (data: { userId: string; status: 'online' | 'offline' }) => {
-      setOnlineUsers((prev) => {
-        const updated = new Set(prev);
-        if (data.status === 'online') {
-          updated.add(data.userId);
-        } else {
-          updated.delete(data.userId);
-        }
-        return updated;
-      });
+    newSocket.on('onlineUsers', (users: string[]) => {
+      setOnlineUsers(users);
     });
 
     setSocket(newSocket);
 
     return () => {
-      console.log('🔌 Cleaning up WebSocket connection');
       newSocket.disconnect();
     };
-  }, [isAuthenticated]);
+  }, [user, token]);
 
-  const joinConversation = useCallback((conversationId: string) => {
-    if (socket && isConnected) {
-      socket.emit('join_conversation', { conversationId });
-      console.log('📥 Joined conversation:', conversationId);
+  const joinConversation = (conversationId: string) => {
+    if (socket) {
+      socket.emit('joinConversation', conversationId);
     }
-  }, [socket, isConnected]);
+  };
 
-  const leaveConversation = useCallback((conversationId: string) => {
-    if (socket && isConnected) {
-      socket.emit('leave_conversation', { conversationId });
-      console.log('📤 Left conversation:', conversationId);
+  const leaveConversation = (conversationId: string) => {
+    if (socket) {
+      socket.emit('leaveConversation', conversationId);
     }
-  }, [socket, isConnected]);
+  };
 
-  const sendTypingStart = useCallback((conversationId: string) => {
-    if (socket && isConnected) {
-      socket.emit('typing_start', { conversationId });
+  const sendTypingStart = (conversationId: string) => {
+    if (socket) {
+      socket.emit('typingStart', conversationId);
     }
-  }, [socket, isConnected]);
+  };
 
-  const sendTypingStop = useCallback((conversationId: string) => {
-    if (socket && isConnected) {
-      socket.emit('typing_stop', { conversationId });
+  const sendTypingStop = (conversationId: string) => {
+    if (socket) {
+      socket.emit('typingStop', conversationId);
     }
-  }, [socket, isConnected]);
+  };
 
-  const markAsRead = useCallback((conversationId: string) => {
-    if (socket && isConnected) {
-      socket.emit('mark_read', { conversationId });
+  const markAsRead = (conversationId: string) => {
+    if (socket) {
+      socket.emit('markAsRead', conversationId);
     }
-  }, [socket, isConnected]);
+  };
 
   return (
-    <SocketContext.Provider
-      value={{
-        socket,
-        isConnected,
-        onlineUsers,
-        joinConversation,
-        leaveConversation,
-        sendTypingStart,
-        sendTypingStop,
-        markAsRead,
-      }}
-    >
+    <SocketContext.Provider value={{ 
+      socket, 
+      isConnected, 
+      onlineUsers,
+      joinConversation,
+      leaveConversation,
+      sendTypingStart,
+      sendTypingStop,
+      markAsRead
+    }}>
       {children}
     </SocketContext.Provider>
   );
+}
+
+export function useSocket() {
+  const context = useContext(SocketContext);
+  if (context === undefined) {
+    throw new Error('useSocket must be used within a SocketProvider');
+  }
+  return context;
 }

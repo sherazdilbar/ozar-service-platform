@@ -21,6 +21,7 @@ import { useSocket } from '../../contexts/SocketContext';
 import { ChatMessage } from '../../components/ChatMessage';
 import { TypingIndicator } from '../../components/TypingIndicator';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { Avatar } from '../../components/Avatar';
 
 interface Message {
   id: string;
@@ -42,6 +43,7 @@ interface Conversation {
     id: string;
     firstName: string;
     lastName: string;
+    avatar?: string;
   };
   pro: {
     id: string;
@@ -50,6 +52,7 @@ interface Conversation {
       id: string;
       firstName: string;
       lastName: string;
+      avatar?: string;
     };
   };
 }
@@ -283,7 +286,7 @@ export default function ChatDetailScreen() {
   const displayName = isPro
     ? `${otherUser.firstName} ${otherUser.lastName}`
     : conversation.pro.businessName || `${otherUser.firstName} ${otherUser.lastName}`;
-  const initials = `${otherUser.firstName[0]}${otherUser.lastName[0]}`.toUpperCase();
+  const avatarUrl = otherUser.avatar;
 
   const CATEGORY_ICONS: Record<string, string> = {
     ON_MY_WAY: '🚗',
@@ -301,9 +304,12 @@ export default function ChatDetailScreen() {
     >
       {/* Chat Header Info - No back button, Expo provides it */}
       <View style={styles.chatInfo}>
-        <View style={[styles.avatar, isPro && styles.avatarCustomer]}>
-          <Text style={styles.avatarText}>{initials}</Text>
-        </View>
+        <Avatar 
+          imageUrl={avatarUrl}
+          name={displayName}
+          size={40}
+          style={isPro ? styles.avatarCustomer : undefined}
+        />
         <View style={styles.headerInfo}>
           <Text style={styles.headerName}>{displayName}</Text>
           {otherUserTyping && (

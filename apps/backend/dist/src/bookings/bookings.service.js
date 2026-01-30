@@ -330,6 +330,21 @@ let BookingsService = class BookingsService {
             status: 'CANCELLED_BY_PRO',
             reason,
         });
+        const relatedJob = await this.prisma.job.findFirst({
+            where: {
+                customerId: booking.customerId,
+                status: 'ACCEPTED',
+                acceptedBid: {
+                    proId: booking.proId,
+                },
+            },
+        });
+        if (relatedJob) {
+            await this.prisma.job.update({
+                where: { id: relatedJob.id },
+                data: { status: 'CANCELLED' },
+            });
+        }
         await this.notificationsService.notifyBookingCancelled(booking.customerId, id, `${proProfile.user.firstName} ${proProfile.user.lastName}`, {
             serviceName: booking.service.name,
             proName: proProfile.businessName || `${proProfile.user.firstName} ${proProfile.user.lastName}`,
@@ -345,6 +360,21 @@ let BookingsService = class BookingsService {
             status: 'CANCELLED_BY_CUSTOMER',
             reason,
         });
+        const relatedJob = await this.prisma.job.findFirst({
+            where: {
+                customerId: booking.customerId,
+                status: 'ACCEPTED',
+                acceptedBid: {
+                    proId: booking.proId,
+                },
+            },
+        });
+        if (relatedJob) {
+            await this.prisma.job.update({
+                where: { id: relatedJob.id },
+                data: { status: 'CANCELLED' },
+            });
+        }
         await this.notificationsService.notifyBookingCancelled(booking.pro.userId, id, `${booking.customer.firstName} ${booking.customer.lastName}`, {
             serviceName: booking.service.name,
             customerName: `${booking.customer.firstName} ${booking.customer.lastName}`,
@@ -417,6 +447,21 @@ let BookingsService = class BookingsService {
                 },
             },
         });
+        const relatedJob = await this.prisma.job.findFirst({
+            where: {
+                customerId: booking.customerId,
+                status: 'ACCEPTED',
+                acceptedBid: {
+                    proId: booking.proId,
+                },
+            },
+        });
+        if (relatedJob) {
+            await this.prisma.job.update({
+                where: { id: relatedJob.id },
+                data: { status: 'COMPLETED' },
+            });
+        }
         await this.notificationsService.notifyBookingCompleted(booking.customerId, id, `${proProfile.user.firstName} ${proProfile.user.lastName}`, {
             serviceName: booking.service.name,
             proName: proProfile.businessName || `${proProfile.user.firstName} ${proProfile.user.lastName}`,

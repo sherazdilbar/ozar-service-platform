@@ -56,7 +56,21 @@ export function getAccessToken(): string | null {
     return accessToken;
   }
   
-  console.log('[API Client] No in-memory token, check storage');
+  // Try to load from storage
+  if (storageAdapter) {
+    try {
+      const storedToken = storageAdapter.getItem('accessToken');
+      if (storedToken) {
+        console.log('[API Client] Loaded token from storage');
+        accessToken = storedToken; // Cache it in memory
+        return storedToken;
+      }
+    } catch (e) {
+      console.error('[API Client] Failed to load token from storage:', e);
+    }
+  }
+  
+  console.log('[API Client] No token available');
   return null;
 }
 
@@ -901,6 +915,22 @@ export const jobsApi = {
     });
   },
 
+  // Pro: Submit a bid (alias for web app compatibility)
+  async submitBid(jobId: string, bidData: {
+    proposedPrice: number;
+    estimatedDuration: number;
+    message: string;
+    availableFrom?: string;
+  }) {
+    return apiRequest<any>('/jobs/bids', {
+      method: 'POST',
+      body: JSON.stringify({
+        jobId,
+        ...bidData,
+      }),
+    });
+  },
+
   // Pro: Get my bids
   async getMyBids(status?: string) {
     const params = status ? `?status=${status}` : '';
@@ -933,14 +963,14 @@ export const jobsApi = {
   },
 
   // Customer: Accept a bid
-  async acceptBid(bidId: string) {
+  async acceptBid(jobId: string, bidId: string) {
     return apiRequest<any>(`/jobs/bids/${bidId}/accept`, {
       method: 'POST',
     });
   },
 
   // Customer: Reject a bid
-  async rejectBid(bidId: string) {
+  async rejectBid(jobId: string, bidId: string) {
     return apiRequest<any>(`/jobs/bids/${bidId}/reject`, {
       method: 'POST',
     });

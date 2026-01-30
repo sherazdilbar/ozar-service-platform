@@ -32,3 +32,4 @@ export declare function respondToBooking(bookingId: string, action: 'accept' | '
 export declare function updateAvailability(proId: string, slots: AvailabilitySlot[]): Promise<AvailabilitySlot[]>;
 export declare function getAvailability(proId: string): Promise<AvailabilitySlot[]>;
 export declare function submitReview(bookingId: string, proId: string, customerId: string, rating: number, comment: string): Promise<Review>;
+//# sourceMappingURL=api.d.ts.map

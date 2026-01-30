@@ -8,13 +8,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import BudapestDistrictSelector from '@/components/BudapestDistrictSelector';
 import {
   ProProfile,
   ServiceCategory,
   getPros,
   CATEGORY_LABELS,
   CATEGORY_ICONS,
+  isBudapest,
 } from '@ozar/shared';
+import { getImageUrl } from '@/utils/imageUrl';
 import {
   Search,
   MapPin,
@@ -88,9 +91,17 @@ function ProCard({ pro, userLocation }: { pro: ProProfile; userLocation: { lat: 
           <div className="flex gap-4">
             {/* Avatar with Status */}
             <div className="flex-shrink-0 relative">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-teal-400 via-teal-500 to-teal-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                {pro.user.firstName[0]}{pro.user.lastName[0]}
-              </div>
+              {pro.user.avatar ? (
+                <img
+                  src={getImageUrl(pro.user.avatar) || '/placeholder-avatar.png'}
+                  alt={`${pro.user.firstName} ${pro.user.lastName}`}
+                  className="w-24 h-24 rounded-2xl object-cover shadow-lg"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-teal-400 via-teal-500 to-teal-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                  {pro.user.firstName[0]}{pro.user.lastName[0]}
+                </div>
+              )}
               {pro.availabilityStatus === 'AVAILABLE_NOW' && (
                 <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white dark:border-gray-800 rounded-full animate-pulse" />
               )}
@@ -229,6 +240,7 @@ function SearchPageContent() {
 
   const [availableNow, setAvailableNow] = useState(false);
   const [radiusKm, setRadiusKm] = useState(10);
+  const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [minRating, setMinRating] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(0);

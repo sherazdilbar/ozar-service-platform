@@ -4,6 +4,7 @@ import { ProProfile, CATEGORY_ICONS } from '@ozar/shared';
 import Image from 'next/image';
 import Link from 'next/link';
 import FavoriteButton from './FavoriteButton';
+import { getImageUrl } from '@/utils/imageUrl';
 
 interface ProCardProps {
   pro: ProProfile;
@@ -45,7 +46,7 @@ export default function ProCard({ pro, distance }: ProCardProps) {
           <div className="flex gap-5">
             <div className="relative w-24 h-24 flex-shrink-0">
               <Image
-                src={pro.user.avatar || '/placeholder-avatar.png'}
+                src={getImageUrl(pro.user.avatar) || '/placeholder-avatar.png'}
                 alt={`${pro.user.firstName} ${pro.user.lastName}`}
                 fill
                 className="rounded-2xl object-cover ring-2 ring-gray-100 group-hover:ring-primary-200 transition-all"

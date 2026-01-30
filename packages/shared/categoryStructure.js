@@ -154,9 +154,11 @@ exports.CATEGORY_GROUPS = [
         ],
     },
 ];
+// Helper function to get group for a category
 function getCategoryGroup(category) {
     return exports.CATEGORY_GROUPS.find(group => group.subcategories.includes(category));
 }
+// Helper to get all categories flattened
 function getAllCategories() {
     return exports.CATEGORY_GROUPS.flatMap(group => group.subcategories);
 }

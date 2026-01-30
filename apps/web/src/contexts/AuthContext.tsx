@@ -11,6 +11,11 @@ interface User {
   phone: string;
   role: 'CUSTOMER' | 'PRO' | 'ADMIN';
   avatar?: string;
+  locationCity?: string;
+  locationDistrict?: string;
+  locationArea?: string;
+  locationLat?: number;
+  locationLng?: number;
   location?: {
     city: string;
     area?: string;

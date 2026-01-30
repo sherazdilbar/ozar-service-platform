@@ -19,12 +19,37 @@ let ProsService = class ProsService {
     }
     async findAll(dto) {
         console.log('🔍 Finding pros with filters:', dto);
-        const { city, categoryId, availableNow, radiusKm, lat, lng, query, searchTerm, minPrice, maxPrice, minRating, sortBy = 'rating', sortOrder = 'desc', page = 1, limit = 20 } = dto;
+        const { city, district, districts, categoryId, availableNow, radiusKm, lat, lng, query, searchTerm, minPrice, maxPrice, minRating, sortBy = 'rating', sortOrder = 'desc', page = 1, limit = 20 } = dto;
         const where = {
             verificationStatus: 'APPROVED',
         };
         if (city) {
             where.locationCity = city;
+            if (city.toLowerCase() === 'budapest') {
+                if (district) {
+                    where.serviceAreaDistricts = {
+                        has: district,
+                    };
+                    console.log('🏘️  Filtering by Budapest district:', district);
+                }
+                else if (districts && districts.length > 0) {
+                    where.serviceAreaDistricts = {
+                        hasSome: districts,
+                    };
+                    console.log('🏘️  Filtering by Budapest districts:', districts);
+                }
+                else if (query || searchTerm) {
+                    const searchQuery = (query || searchTerm || '').toLowerCase();
+                    const districtMatch = searchQuery.match(/(?:district\s+)?([ivx]+)(?:\.|kerület)?/i);
+                    if (districtMatch) {
+                        const extractedDistrict = districtMatch[1].toUpperCase();
+                        where.serviceAreaDistricts = {
+                            has: extractedDistrict,
+                        };
+                        console.log('🏘️  Filtering by Budapest district from query:', extractedDistrict);
+                    }
+                }
+            }
         }
         if (categoryId) {
             console.log('🏷️  Filtering by category:', categoryId);
@@ -273,6 +298,7 @@ let ProsService = class ProsService {
                 categories: dto.categories,
                 serviceAreaCity: dto.serviceArea.city,
                 serviceAreaRadius: dto.serviceArea.radiusKm,
+                serviceAreaDistricts: [],
                 locationCity: dto.location.city,
                 locationArea: dto.location.area,
                 locationLat: dto.location.lat,
@@ -410,12 +436,16 @@ let ProsService = class ProsService {
             updateData.serviceAreaCity = dto.serviceAreaCity;
         if (dto.locationCity !== undefined)
             updateData.locationCity = dto.locationCity;
+        if (dto.locationDistrict !== undefined)
+            updateData.locationDistrict = dto.locationDistrict;
         if (dto.locationArea !== undefined)
             updateData.locationArea = dto.locationArea;
         if (dto.onboardingStep !== undefined)
             updateData.onboardingStep = dto.onboardingStep;
         if (dto.categories !== undefined)
             updateData.categories = dto.categories;
+        if (dto.serviceAreaDistricts !== undefined)
+            updateData.serviceAreaDistricts = dto.serviceAreaDistricts;
         if (dto.yearsExperience !== undefined)
             updateData.yearsExperience = dto.yearsExperience;
         if (dto.startingPrice !== undefined)
@@ -480,20 +510,24 @@ let ProsService = class ProsService {
             });
             console.log('Updated profile location:', {
                 locationCity: result.locationCity,
+                locationDistrict: result.locationDistrict,
                 locationArea: result.locationArea,
                 locationLat: result.locationLat,
                 locationLng: result.locationLng,
                 serviceAreaCity: result.serviceAreaCity,
+                serviceAreaDistricts: result.serviceAreaDistricts,
                 serviceAreaRadius: result.serviceAreaRadius,
             });
             const verification = await this.prisma.proProfile.findUnique({
                 where: { userId },
                 select: {
                     locationCity: true,
+                    locationDistrict: true,
                     locationArea: true,
                     locationLat: true,
                     locationLng: true,
                     serviceAreaCity: true,
+                    serviceAreaDistricts: true,
                     serviceAreaRadius: true,
                 },
             });

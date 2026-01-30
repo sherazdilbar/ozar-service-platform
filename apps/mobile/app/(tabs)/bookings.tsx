@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { bookingsApi } from '@ozar/shared/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
+import { Avatar } from '../../components/Avatar';
 
 interface Booking {
   id: string;
@@ -17,6 +18,7 @@ interface Booking {
     user: {
       firstName: string;
       lastName: string;
+      avatar?: string;
     };
     businessName?: string;
   };
@@ -24,6 +26,7 @@ interface Booking {
     id: string;
     firstName: string;
     lastName: string;
+    avatar?: string;
   };
   scheduledFor?: string;
   isASAP: boolean;
@@ -506,6 +509,7 @@ export default function BookingsScreen() {
           customerDisplayBookings.map((booking) => {
             const statusColors = getStatusColor(booking.status);
             const displayName = booking.pro.businessName || `${booking.pro.user.firstName} ${booking.pro.user.lastName}`;
+            const avatarUrl = booking.pro.user.avatar;
 
             return (
               <TouchableOpacity
@@ -515,11 +519,11 @@ export default function BookingsScreen() {
               >
                 <View style={styles.bookingHeader}>
                   <View style={styles.bookingHeaderLeft}>
-                    <View style={styles.avatar}>
-                      <Text style={styles.avatarText}>
-                        {displayName.split(' ').map(n => n[0]).join('')}
-                      </Text>
-                    </View>
+                    <Avatar 
+                      imageUrl={avatarUrl}
+                      name={displayName}
+                      size={48}
+                    />
                     <View style={styles.bookingHeaderInfo}>
                       <Text style={styles.proName}>{displayName}</Text>
                       <Text style={styles.serviceName}>{booking.service.name}</Text>

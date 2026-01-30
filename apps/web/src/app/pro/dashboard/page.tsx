@@ -25,7 +25,8 @@ import {
   Bell,
   Award,
   Zap,
-  Target
+  Target,
+  Camera
 } from 'lucide-react';
 
 export default function ProDashboardPage() {
@@ -58,6 +59,14 @@ export default function ProDashboardPage() {
         router.push('/pro/onboarding');
         return;
       }
+      
+      // Check verification/approval status
+      const profile = await prosApi.getMyProfile();
+      if (profile.verificationStatus === 'PENDING') {
+        router.push('/pro/pending');
+        return;
+      }
+      
       setCheckingOnboarding(false);
       loadBookings();
     } catch (error) {
@@ -309,6 +318,125 @@ export default function ProDashboardPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400">{t('proDashboard.chatWithCustomers')}</p>
               </div>
               <ArrowRight className="w-5 h-5 text-green-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all" />
+            </div>
+          </Link>
+
+          <Link
+            href="/pro/analytics"
+            className="group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl p-6 border-2 border-orange-200 dark:border-orange-800 hover:border-orange-500 dark:hover:border-orange-500 transition-all hover:shadow-xl"
+          >
+            <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform"></div>
+            <div className="relative flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all shadow-lg">
+                <TrendingUp className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Analytics</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">View insights & stats</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-orange-400 group-hover:text-orange-600 group-hover:translate-x-1 transition-all" />
+            </div>
+          </Link>
+
+          <Link
+            href="/pro/portfolio"
+            className="group relative overflow-hidden bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 rounded-2xl p-6 border-2 border-pink-200 dark:border-pink-800 hover:border-pink-500 dark:hover:border-pink-500 transition-all hover:shadow-xl"
+          >
+            <div className="absolute top-0 right-0 w-20 h-20 bg-pink-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform"></div>
+            <div className="relative flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all shadow-lg">
+                <Camera className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Portfolio</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Showcase your work</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-pink-400 group-hover:text-pink-600 group-hover:translate-x-1 transition-all" />
+            </div>
+          </Link>
+
+          <Link
+            href="/pro/availability"
+            className="group relative overflow-hidden bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-2xl p-6 border-2 border-indigo-200 dark:border-indigo-800 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-xl"
+          >
+            <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform"></div>
+            <div className="relative flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all shadow-lg">
+                <Clock className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Availability</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Set working hours</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-indigo-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
+            </div>
+          </Link>
+
+          <Link
+            href="/pro/reviews"
+            className="group relative overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-2xl p-6 border-2 border-yellow-200 dark:border-yellow-800 hover:border-yellow-500 dark:hover:border-yellow-500 transition-all hover:shadow-xl"
+          >
+            <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform"></div>
+            <div className="relative flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all shadow-lg">
+                <Star className="w-7 h-7 text-white fill-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Reviews</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Customer feedback</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:text-yellow-600 group-hover:translate-x-1 transition-all" />
+            </div>
+          </Link>
+
+          <Link
+            href="/pro/customers"
+            className="group relative overflow-hidden bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-2xl p-6 border-2 border-cyan-200 dark:border-cyan-800 hover:border-cyan-500 dark:hover:border-cyan-500 transition-all hover:shadow-xl"
+          >
+            <div className="absolute top-0 right-0 w-20 h-20 bg-cyan-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform"></div>
+            <div className="relative flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all shadow-lg">
+                <Users className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Customers</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Manage relationships</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-cyan-400 group-hover:text-cyan-600 group-hover:translate-x-1 transition-all" />
+            </div>
+          </Link>
+
+          <Link
+            href="/pro/service-area"
+            className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl p-6 border-2 border-emerald-200 dark:border-emerald-800 hover:border-emerald-500 dark:hover:border-emerald-500 transition-all hover:shadow-xl"
+          >
+            <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform"></div>
+            <div className="relative flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all shadow-lg">
+                <MapPin className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Service Area</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Coverage settings</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-emerald-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />
+            </div>
+          </Link>
+
+          <Link
+            href="/pro/quick-messages"
+            className="group relative overflow-hidden bg-gradient-to-br from-violet-50 to-violet-100 dark:from-violet-900/20 dark:to-violet-800/20 rounded-2xl p-6 border-2 border-violet-200 dark:border-violet-800 hover:border-violet-500 dark:hover:border-violet-500 transition-all hover:shadow-xl"
+          >
+            <div className="absolute top-0 right-0 w-20 h-20 bg-violet-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform"></div>
+            <div className="relative flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all shadow-lg">
+                <MessageSquare className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Quick Messages</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Message templates</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-violet-400 group-hover:text-violet-600 group-hover:translate-x-1 transition-all" />
             </div>
           </Link>
         </div>

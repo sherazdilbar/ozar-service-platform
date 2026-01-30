@@ -7,6 +7,7 @@ import { useSocket } from '@/contexts/SocketContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { chatApi } from '@ozar/shared/apiClient';
 import ModernHeader from '@/components/ModernHeader';
+import Avatar from '@/components/Avatar';
 
 interface Conversation {
   id: string;
@@ -85,7 +86,7 @@ export default function ChatListPage() {
   };
 
   const isUserOnline = (userId: string) => {
-    return onlineUsers.has(userId);
+    return onlineUsers.includes(userId);
   };
 
   return (
@@ -146,9 +147,12 @@ export default function ChatListPage() {
                 >
                   <div className="flex gap-4">
                     <div className="relative">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-xl font-bold">
-                        {otherUser.firstName[0]}{otherUser.lastName[0]}
-                      </div>
+                      <Avatar
+                        imageUrl={otherUser.avatar}
+                        name={`${otherUser.firstName} ${otherUser.lastName}`}
+                        size={56}
+                        className="rounded-xl"
+                      />
                       {online && (
                         <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
                       )}

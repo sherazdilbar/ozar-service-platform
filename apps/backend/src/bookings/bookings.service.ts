@@ -425,6 +425,24 @@ export class BookingsService {
       reason,
     });
 
+    // Check if this booking was created from a job bid and update the job status
+    const relatedJob = await this.prisma.job.findFirst({
+      where: {
+        customerId: booking.customerId,
+        status: 'ACCEPTED',
+        acceptedBid: {
+          proId: booking.proId,
+        },
+      },
+    });
+
+    if (relatedJob) {
+      await this.prisma.job.update({
+        where: { id: relatedJob.id },
+        data: { status: 'CANCELLED' },
+      });
+    }
+
     // Send notification + email to customer
     await this.notificationsService.notifyBookingCancelled(
       booking.customerId,
@@ -458,6 +476,24 @@ export class BookingsService {
       status: 'CANCELLED_BY_CUSTOMER',
       reason,
     });
+
+    // Check if this booking was created from a job bid and update the job status
+    const relatedJob = await this.prisma.job.findFirst({
+      where: {
+        customerId: booking.customerId,
+        status: 'ACCEPTED',
+        acceptedBid: {
+          proId: booking.proId,
+        },
+      },
+    });
+
+    if (relatedJob) {
+      await this.prisma.job.update({
+        where: { id: relatedJob.id },
+        data: { status: 'CANCELLED' },
+      });
+    }
 
     // Send notification to pro
     await this.notificationsService.notifyBookingCancelled(
@@ -588,6 +624,29 @@ export class BookingsService {
         },
       },
     });
+
+    // Check if this booking was created from a job bid and update the job status
+    // Find the job by looking for a job where:
+    // 1. The customer matches
+    // 2. The pro matches
+    // 3. The job status is ACCEPTED (meaning a bid was accepted)
+    // 4. The acceptedBid exists and belongs to this pro
+    const relatedJob = await this.prisma.job.findFirst({
+      where: {
+        customerId: booking.customerId,
+        status: 'ACCEPTED',
+        acceptedBid: {
+          proId: booking.proId,
+        },
+      },
+    });
+
+    if (relatedJob) {
+      await this.prisma.job.update({
+        where: { id: relatedJob.id },
+        data: { status: 'COMPLETED' },
+      });
+    }
 
     // Send notification + email to customer
     await this.notificationsService.notifyBookingCompleted(

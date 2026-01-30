@@ -123,7 +123,7 @@ export default function BookingsPage() {
         description: t('bookings.status.cancelledByPro')
       }
     };
-    return configs[status] || configs.REQUESTED;
+    return configs[status as keyof typeof configs] || configs.REQUESTED;
   };
 
   const handleBookingClick = (booking: Booking) => {

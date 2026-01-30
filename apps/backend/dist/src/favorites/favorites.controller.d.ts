@@ -20,6 +20,7 @@ export declare class FavoritesController {
         id: string;
         bio: string | null;
         locationCity: string;
+        locationDistrict: string | null;
         locationArea: string;
         locationLat: number;
         locationLng: number;
@@ -37,6 +38,7 @@ export declare class FavoritesController {
         currency: string;
         responseTime: number;
         serviceAreaCity: string;
+        serviceAreaDistricts: string[];
         serviceAreaRadius: number;
         onboardingCompleted: boolean;
         onboardingStep: string | null;

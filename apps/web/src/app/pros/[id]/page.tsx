@@ -6,6 +6,9 @@ import { CATEGORY_ICONS } from '@ozar/shared';
 import { chatApi, prosApi } from '@ozar/shared/apiClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import Avatar from '@/components/Avatar';
+import FavoriteButton from '@/components/FavoriteButton';
+import { getImageUrl } from '@/utils/imageUrl';
 import Image from 'next/image';
 import { 
   ArrowLeft, Star, CheckCircle, MapPin, Clock, MessageCircle, 
@@ -122,16 +125,7 @@ export default function ProProfilePage() {
               <span className="font-medium">{t('proProfile.back')}</span>
             </button>
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsFavorite(!isFavorite)}
-                className={`p-2.5 rounded-xl transition-all ${
-                  isFavorite 
-                    ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' 
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-              </button>
+              <FavoriteButton proId={pro.id} size="lg" />
               <button className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
                 <Share2 className="w-5 h-5" />
               </button>
@@ -151,11 +145,11 @@ export default function ProProfilePage() {
                 {/* Avatar */}
                 <div className="relative flex-shrink-0">
                   <div className="relative w-32 h-32 sm:w-40 sm:h-40">
-                    <Image
-                      src={pro.user.avatar || '/placeholder-avatar.png'}
-                      alt={`${pro.user.firstName} ${pro.user.lastName}`}
-                      fill
-                      className="rounded-3xl object-cover shadow-2xl ring-4 ring-white dark:ring-gray-800"
+                    <Avatar
+                      imageUrl={pro.user.avatar}
+                      name={`${pro.user.firstName} ${pro.user.lastName}`}
+                      size={160}
+                      className="rounded-3xl shadow-2xl ring-4 ring-white dark:ring-gray-800"
                     />
                     {pro.verificationStatus === 'APPROVED' && (
                       <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-teal-500 to-cyan-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg ring-4 ring-white dark:ring-gray-800">
@@ -431,7 +425,7 @@ export default function ProProfilePage() {
                   <div key={item.id} className="group cursor-pointer">
                     <div className="relative aspect-square rounded-2xl overflow-hidden mb-3 shadow-lg">
                       <Image
-                        src={`${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`}
+                        src={getImageUrl(item.imageUrl) || item.imageUrl}
                         alt={item.title}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"

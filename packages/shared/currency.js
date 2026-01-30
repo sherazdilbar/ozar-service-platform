@@ -1,10 +1,15 @@
 "use strict";
+/**
+ * Currency utilities for worldwide support
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCurrencyForCountry = getCurrencyForCountry;
 exports.detectCurrencyFromPlace = detectCurrencyFromPlace;
 exports.formatPrice = formatPrice;
 exports.getAllCurrencies = getAllCurrencies;
+// Map of countries to their currencies
 const COUNTRY_CURRENCIES = {
+    // Middle East
     'Saudi Arabia': { code: 'SAR', symbol: 'ر.س', name: 'Saudi Riyal' },
     'United Arab Emirates': { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham' },
     'Kuwait': { code: 'KWD', symbol: 'د.ك', name: 'Kuwaiti Dinar' },
@@ -14,6 +19,7 @@ const COUNTRY_CURRENCIES = {
     'Jordan': { code: 'JOD', symbol: 'د.ا', name: 'Jordanian Dinar' },
     'Lebanon': { code: 'LBP', symbol: 'ل.ل', name: 'Lebanese Pound' },
     'Egypt': { code: 'EGP', symbol: 'ج.م', name: 'Egyptian Pound' },
+    // Europe
     'United Kingdom': { code: 'GBP', symbol: '£', name: 'British Pound' },
     'Switzerland': { code: 'CHF', symbol: 'Fr', name: 'Swiss Franc' },
     'Norway': { code: 'NOK', symbol: 'kr', name: 'Norwegian Krone' },
@@ -27,6 +33,7 @@ const COUNTRY_CURRENCIES = {
     'Croatia': { code: 'HRK', symbol: 'kn', name: 'Croatian Kuna' },
     'Turkey': { code: 'TRY', symbol: '₺', name: 'Turkish Lira' },
     'Russia': { code: 'RUB', symbol: '₽', name: 'Russian Ruble' },
+    // Americas
     'United States': { code: 'USD', symbol: '$', name: 'US Dollar' },
     'Canada': { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
     'Mexico': { code: 'MXN', symbol: '$', name: 'Mexican Peso' },
@@ -35,6 +42,7 @@ const COUNTRY_CURRENCIES = {
     'Chile': { code: 'CLP', symbol: '$', name: 'Chilean Peso' },
     'Colombia': { code: 'COP', symbol: '$', name: 'Colombian Peso' },
     'Peru': { code: 'PEN', symbol: 'S/', name: 'Peruvian Sol' },
+    // Asia Pacific
     'Japan': { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
     'China': { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
     'South Korea': { code: 'KRW', symbol: '₩', name: 'South Korean Won' },
@@ -49,6 +57,7 @@ const COUNTRY_CURRENCIES = {
     'Philippines': { code: 'PHP', symbol: '₱', name: 'Philippine Peso' },
     'Australia': { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
     'New Zealand': { code: 'NZD', symbol: 'NZ$', name: 'New Zealand Dollar' },
+    // Africa
     'South Africa': { code: 'ZAR', symbol: 'R', name: 'South African Rand' },
     'Nigeria': { code: 'NGN', symbol: '₦', name: 'Nigerian Naira' },
     'Kenya': { code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling' },
@@ -57,6 +66,7 @@ const COUNTRY_CURRENCIES = {
     'Tunisia': { code: 'TND', symbol: 'د.ت', name: 'Tunisian Dinar' },
     'Algeria': { code: 'DZD', symbol: 'د.ج', name: 'Algerian Dinar' },
 };
+// Eurozone countries
 const EUROZONE_COUNTRIES = [
     'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Belgium',
     'Austria', 'Portugal', 'Greece', 'Ireland', 'Finland', 'Slovakia',
@@ -64,19 +74,29 @@ const EUROZONE_COUNTRIES = [
 ];
 const EURO = { code: 'EUR', symbol: '€', name: 'Euro' };
 const DEFAULT_CURRENCY = { code: 'USD', symbol: '$', name: 'US Dollar' };
+/**
+ * Get currency info for a country
+ */
 function getCurrencyForCountry(country) {
+    // Check if it's a Eurozone country
     if (EUROZONE_COUNTRIES.includes(country)) {
         return EURO;
     }
+    // Check direct mapping
     if (COUNTRY_CURRENCIES[country]) {
         return COUNTRY_CURRENCIES[country];
     }
+    // Default to USD
     return DEFAULT_CURRENCY;
 }
+/**
+ * Detect currency from Mapbox place data
+ */
 function detectCurrencyFromPlace(placeData) {
     if (!placeData || !placeData.context) {
         return DEFAULT_CURRENCY;
     }
+    // Find country in context
     const countryContext = placeData.context.find((ctx) => ctx.id.startsWith('country.'));
     if (countryContext) {
         const country = countryContext.text;
@@ -84,12 +104,20 @@ function detectCurrencyFromPlace(placeData) {
     }
     return DEFAULT_CURRENCY;
 }
+/**
+ * Format price with currency
+ */
 function formatPrice(amount, currency) {
     return `${currency.symbol}${amount.toLocaleString()}`;
 }
+/**
+ * Get all supported currencies
+ */
 function getAllCurrencies() {
     const currencies = new Map();
+    // Add Euro
     currencies.set(EURO.code, EURO);
+    // Add all other currencies
     Object.values(COUNTRY_CURRENCIES).forEach(currency => {
         currencies.set(currency.code, currency);
     });

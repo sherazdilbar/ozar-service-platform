@@ -58,6 +58,13 @@ export default function CustomerProfilePage() {
     loadProfile();
   }, [isAuthenticated, user]);
 
+  useEffect(() => {
+    // Reload addresses when user data changes
+    if (user) {
+      loadAddresses();
+    }
+  }, [user]);
+
   const loadProfile = async () => {
     try {
       setLoading(true);
@@ -89,8 +96,10 @@ export default function CustomerProfilePage() {
       });
       if (response.ok) {
         const bookings = await response.json();
-        const completedBookings = bookings.filter((b: any) => b.status === 'COMPLETED');
-        const reviewedBookings = bookings.filter((b: any) => b.review);
+        // Ensure bookings is an array
+        const bookingsArray = Array.isArray(bookings) ? bookings : [];
+        const completedBookings = bookingsArray.filter((b: any) => b.status === 'COMPLETED');
+        const reviewedBookings = bookingsArray.filter((b: any) => b.review);
         setStats({
           servicesBooked: completedBookings.length,
           reviewsGiven: reviewedBookings.length,
@@ -103,7 +112,25 @@ export default function CustomerProfilePage() {
   };
 
   const loadAddresses = async () => {
-    setAddresses([]);
+    try {
+      // Get user location from the user object
+      if (user?.locationCity && user?.locationArea) {
+        setAddresses([{
+          id: 'primary',
+          city: user.locationCity,
+          district: user.locationDistrict,
+          area: user.locationArea,
+          lat: user.locationLat,
+          lng: user.locationLng,
+          isPrimary: true,
+        }]);
+      } else {
+        setAddresses([]);
+      }
+    } catch (error) {
+      console.error('Failed to load addresses:', error);
+      setAddresses([]);
+    }
   };
 
   const loadFavorites = async () => {
@@ -437,20 +464,63 @@ export default function CustomerProfilePage() {
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400">Manage your delivery and service addresses</p>
                       </div>
-                      <button className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition">
-                        <Plus className="w-5 h-5" />
-                        Add Address
+                      <button 
+                        onClick={() => router.push('/onboarding')}
+                        className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition"
+                      >
+                        <Edit2 className="w-5 h-5" />
+                        Edit Address
                       </button>
                     </div>
 
-                    <div className="text-center py-20 bg-gray-50 dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600">
-                      <div className="text-6xl mb-4">📍</div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No saved addresses</h3>
-                      <p className="text-gray-600 dark:text-gray-400 mb-6">Add your addresses for faster booking</p>
-                      <button className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition">
-                        Add Your First Address
-                      </button>
-                    </div>
+                    {addresses.length > 0 ? (
+                      <div className="grid gap-4">
+                        {addresses.map((address) => (
+                          <div 
+                            key={address.id}
+                            className="bg-white dark:bg-gray-800 rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-700 hover:border-teal-500 transition"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                                  <MapPin className="w-6 h-6 text-teal-600" />
+                                </div>
+                                <div>
+                                  {address.isPrimary && (
+                                    <span className="inline-block px-3 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 text-xs font-semibold rounded-full mb-2">
+                                      Primary Address
+                                    </span>
+                                  )}
+                                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                                    {address.area}
+                                  </h3>
+                                  <p className="text-gray-600 dark:text-gray-400">
+                                    {address.city}{address.district && `, District ${address.district}`}
+                                  </p>
+                                  {address.lat && address.lng && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                                      📍 {address.lat.toFixed(6)}, {address.lng.toFixed(6)}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-20 bg-gray-50 dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+                        <div className="text-6xl mb-4">📍</div>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No saved addresses</h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">Add your address for faster booking</p>
+                        <button 
+                          onClick={() => router.push('/onboarding')}
+                          className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition"
+                        >
+                          Add Your First Address
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 

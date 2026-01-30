@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/contexts/ToastContext';
-import { ServiceCategory, AvailabilityStatus, PricingModel, CATEGORY_ICONS, CATEGORY_LABELS } from '@ozar/shared';
+import { ServiceCategory, AvailabilityStatus, PricingModel, CATEGORY_ICONS, CATEGORY_LABELS, BUDAPEST_DISTRICTS, BUDAPEST_DISTRICT_COORDINATES } from '@ozar/shared';
 import { prosApi, servicesApi } from '@ozar/shared/apiClient';
 import ProfilePictureUpload from '@/components/ProfilePictureUpload';
 import ImageUpload from '@/components/ImageUpload';
+import BudapestDistrictSelector from '@/components/BudapestDistrictSelector';
 import { 
   ArrowRight, ArrowLeft, Check, Sparkles, Briefcase, MapPin, 
   Image as ImageIcon, Rocket, User, Star, CheckCircle, Camera,
@@ -42,11 +43,8 @@ export default function ProOnboardingPage() {
   });
 
   const [locationData, setLocationData] = useState({
-    city: '',
-    area: '',
-    lat: 47.4979, // Default Budapest
-    lng: 19.0402,
-    radius: 20, // Default 20km
+    baseDistrict: '', // Where the pro is based
+    serviceDistricts: [] as string[], // Which districts they serve
   });
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
@@ -125,8 +123,11 @@ export default function ProOnboardingPage() {
         await saveLocation();
       } else if (currentStep === 'categories') {
         await saveCategories();
-        // Mark onboarding as complete (simplified - just redirect)
-        router.push('/pro/dashboard');
+        // Mark onboarding as complete by updating profile
+        await prosApi.updateProfile({ onboardingCompleted: true });
+        toast.success('Profile complete!');
+        // Redirect to pending approval page instead of dashboard
+        router.push('/pro/pending');
         return;
       }
       
@@ -140,22 +141,20 @@ export default function ProOnboardingPage() {
   };
 
   const saveLocation = async () => {
-    if (!locationData.city || !locationData.area) {
-      throw new Error('Please set your location');
+    if (!locationData.baseDistrict || locationData.serviceDistricts.length === 0) {
+      throw new Error('Please select your base district and service areas');
     }
 
     try {
+      const baseCoords = BUDAPEST_DISTRICT_COORDINATES[locationData.baseDistrict as keyof typeof BUDAPEST_DISTRICT_COORDINATES];
+      
       await prosApi.updateProfile({
-        location: {
-          city: locationData.city,
-          area: locationData.area,
-          lat: locationData.lat,
-          lng: locationData.lng,
-        },
-        serviceArea: {
-          city: locationData.city,
-          radiusKm: locationData.radius,
-        },
+        locationCity: 'Budapest',
+        locationDistrict: locationData.baseDistrict,
+        locationArea: `District ${locationData.baseDistrict}`,
+        locationLat: baseCoords.lat,
+        locationLng: baseCoords.lng,
+        serviceAreaDistricts: locationData.serviceDistricts,
       });
       toast.success('Location saved!');
     } catch (error: any) {
@@ -264,7 +263,7 @@ export default function ProOnboardingPage() {
       case 'phone':
         return businessData.phone.trim().length > 0;
       case 'location':
-        return locationData.city && locationData.area;
+        return locationData.baseDistrict && locationData.serviceDistricts.length > 0;
       case 'categories':
         return categories.length > 0;
       default:
@@ -656,124 +655,121 @@ export default function ProOnboardingPage() {
               <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
                 Where do you provide services?
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-400 mb-12">
-                Set your location and service coverage area
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+                Select your base district and service coverage areas in Budapest
               </p>
 
               <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8">
-                {/* Auto-detect button */}
-                <div className="mb-6">
-                  <button
-                    onClick={detectLocation}
-                    className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center justify-center gap-3"
-                  >
-                    <MapPin className="w-6 h-6" />
-                    Auto-Detect My Location
-                  </button>
+                {/* Instructions */}
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-teal-50 dark:bg-teal-900/20 border-2 border-teal-200 dark:border-teal-800 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <MapPin className="w-6 h-6 text-teal-600" />
+                      <h3 className="font-bold text-teal-900 dark:text-teal-100">Step 1: Base District</h3>
+                    </div>
+                    <p className="text-sm text-teal-700 dark:text-teal-300">
+                      Click on the map to select where you're located
+                    </p>
+                  </div>
+                  <div className="bg-cyan-50 dark:bg-cyan-900/20 border-2 border-cyan-200 dark:border-cyan-800 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <CheckCircle className="w-6 h-6 text-cyan-600" />
+                      <h3 className="font-bold text-cyan-900 dark:text-cyan-100">Step 2: Service Areas</h3>
+                    </div>
+                    <p className="text-sm text-cyan-700 dark:text-cyan-300">
+                      Click districts you serve (multiple selection)
+                    </p>
+                  </div>
                 </div>
 
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">or enter manually</span>
-                  </div>
-                </div>
-
-                {/* Location inputs */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <label className="block text-left text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      City *
-                    </label>
-                    <input
-                      type="text"
-                      value={locationData.city}
-                      onChange={(e) => {
-                        setLocationData({ ...locationData, city: e.target.value });
+                {/* Base District Selection */}
+                {!locationData.baseDistrict && (
+                  <div className="mb-8">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                      Select Your Base District
+                    </h3>
+                    <BudapestDistrictSelector
+                      selectedDistricts={locationData.baseDistrict ? [locationData.baseDistrict] : []}
+                      onChange={(districts) => {
+                        const district = districts[0];
+                        if (district) {
+                          setLocationData({
+                            ...locationData,
+                            baseDistrict: district,
+                            serviceDistricts: [district], // Auto-add base to service districts
+                          });
+                        }
                       }}
-                      className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                      placeholder="e.g., Budapest"
+                      language="en"
+                      mode="single"
                     />
                   </div>
+                )}
+
+                {/* Service Districts Selection */}
+                {locationData.baseDistrict && (
                   <div>
-                    <label className="block text-left text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Area/District *
-                    </label>
-                    <input
-                      type="text"
-                      value={locationData.area}
-                      onChange={(e) => {
-                        setLocationData({ ...locationData, area: e.target.value });
+                    <div className="mb-4 p-4 bg-teal-50 dark:bg-teal-900/20 border-2 border-teal-200 dark:border-teal-800 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold">
+                          {locationData.baseDistrict}
+                        </div>
+                        <div className="text-left flex-1">
+                          <p className="font-bold text-teal-900 dark:text-teal-100">
+                            Base: District {locationData.baseDistrict} - {BUDAPEST_DISTRICTS[locationData.baseDistrict as keyof typeof BUDAPEST_DISTRICTS].name}
+                          </p>
+                          <p className="text-sm text-teal-700 dark:text-teal-300">
+                            Now select which districts you serve
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setLocationData({ baseDistrict: '', serviceDistricts: [] })}
+                          className="text-sm text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 font-medium"
+                        >
+                          Change
+                        </button>
+                      </div>
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                      Select Service Coverage Districts
+                    </h3>
+                    
+                    <BudapestDistrictSelector
+                      selectedDistricts={locationData.serviceDistricts}
+                      onChange={(districts) => {
+                        // Ensure base district is always included
+                        const updatedDistricts = districts.includes(locationData.baseDistrict)
+                          ? districts
+                          : [...districts, locationData.baseDistrict];
+                        setLocationData({ ...locationData, serviceDistricts: updatedDistricts });
                       }}
-                      className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                      placeholder="e.g., District V"
+                      language="en"
+                      mode="multiple"
                     />
-                  </div>
-                </div>
 
-                {/* Service radius selector */}
-                <div className="mb-6">
-                  <label className="block text-left text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    Service Coverage Radius: <span className="text-teal-600 dark:text-teal-400">{locationData.radius} km</span>
-                  </label>
-                  <input
-                    type="range"
-                    min="5"
-                    max="100"
-                    step="5"
-                    value={locationData.radius}
-                    onChange={(e) => setLocationData({ ...locationData, radius: parseInt(e.target.value) })}
-                    className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-teal-600"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
-                    <span>5 km</span>
-                    <span>25 km</span>
-                    <span>50 km</span>
-                    <span>100 km</span>
-                  </div>
-                </div>
-
-                {/* Quick radius buttons */}
-                <div className="grid grid-cols-5 gap-3 mb-6">
-                  {[5, 10, 20, 50, 100].map((radius) => (
-                    <button
-                      key={radius}
-                      type="button"
-                      onClick={() => setLocationData({ ...locationData, radius })}
-                      className={`p-3 rounded-xl border-2 transition-all transform hover:scale-105 ${
-                        locationData.radius === radius
-                          ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/30 shadow-lg'
-                          : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 hover:border-teal-300'
-                      }`}
-                    >
-                      <div className={`text-lg font-bold ${locationData.radius === radius ? 'text-teal-700 dark:text-teal-300' : 'text-gray-700 dark:text-gray-300'}`}>
-                        {radius}
-                      </div>
-                      <div className={`text-xs ${locationData.radius === radius ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                        km
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Location summary */}
-                {locationData.city && locationData.area && (
-                  <div className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-xl p-4 border-2 border-teal-200 dark:border-teal-800">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="w-6 h-6 text-teal-600 flex-shrink-0 mt-0.5" />
-                      <div className="text-left">
-                        <p className="font-bold text-gray-900 dark:text-white mb-1">
-                          Service Area Set
-                        </p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
-                          📍 <strong>{locationData.area}, {locationData.city}</strong>
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          You'll receive requests within {locationData.radius} km of your location
-                        </p>
-                      </div>
+                    {/* Quick selection buttons */}
+                    <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                      <button
+                        type="button"
+                        onClick={() => setLocationData(prev => ({
+                          ...prev,
+                          serviceDistricts: Object.keys(BUDAPEST_DISTRICTS)
+                        }))}
+                        className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                      >
+                        Select All Districts
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLocationData(prev => ({
+                          ...prev,
+                          serviceDistricts: prev.baseDistrict ? [prev.baseDistrict] : []
+                        }))}
+                        className="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+                      >
+                        Reset to Base Only
+                      </button>
                     </div>
                   </div>
                 )}

@@ -8,6 +8,7 @@ import { prosApi } from '@ozar/shared/apiClient';
 import ProfilePictureUpload from '@/components/ProfilePictureUpload';
 import ImageUpload from '@/components/ImageUpload';
 import { useToast } from '@/contexts/ToastContext';
+import { getImageUrl } from '@/utils/imageUrl';
 import { 
   User, Briefcase, MapPin, Image as ImageIcon, Award,
   Save, ArrowLeft, CheckCircle, AlertCircle, Camera, Star
@@ -1179,7 +1180,7 @@ export default function ProProfilePageNew() {
                           {portfolio.map((item: any) => (
                             <div key={item.id} className="group relative aspect-square rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-400 transition-all hover:shadow-2xl">
                               <img
-                                src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '')}${item.imageUrl}`}
+                                src={getImageUrl(item.imageUrl) || item.imageUrl}
                                 alt={item.title}
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                               />

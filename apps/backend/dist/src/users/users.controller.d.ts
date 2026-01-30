@@ -21,6 +21,11 @@ export declare class UsersController {
         phone?: string;
         bio?: string;
         avatar?: string;
+        locationCity?: string;
+        locationDistrict?: string;
+        locationArea?: string;
+        locationLat?: number;
+        locationLng?: number;
     }): Promise<{
         id: string;
         email: string;
@@ -30,6 +35,11 @@ export declare class UsersController {
         avatar: string;
         bio: string;
         role: import(".prisma/client").$Enums.UserRole;
+        locationCity: string;
+        locationDistrict: string;
+        locationArea: string;
+        locationLat: number;
+        locationLng: number;
         createdAt: Date;
     }>;
     uploadAvatar(req: any, file: Express.Multer.File): Promise<{

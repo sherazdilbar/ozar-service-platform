@@ -1,5 +1,7 @@
 export declare class GetProsDto {
     city?: string;
+    district?: string;
+    districts?: string[];
     categoryId?: string;
     availableNow?: boolean;
     radiusKm?: number;
@@ -42,8 +44,10 @@ export declare class UpdateProDto {
     onboardingCompleted?: boolean;
     onboardingStep?: string;
     serviceAreaCity?: string;
+    serviceAreaDistricts?: string[];
     serviceAreaRadius?: number;
     locationCity?: string;
+    locationDistrict?: string;
     locationArea?: string;
     locationLat?: number;
     locationLng?: number;

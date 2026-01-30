@@ -4,6 +4,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { chatApi } from '@ozar/shared/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
+import { Avatar } from '../../components/Avatar';
 
 interface Conversation {
   id: string;
@@ -155,7 +156,7 @@ export default function ChatScreen() {
             const displayName = isPro 
               ? `${otherUser.firstName} ${otherUser.lastName}`
               : conversation.pro.businessName || `${otherUser.firstName} ${otherUser.lastName}`;
-            const initials = `${otherUser.firstName[0]}${otherUser.lastName[0]}`.toUpperCase();
+            const avatarUrl = otherUser.avatar;
             const isUnread = conversation.unreadCount > 0;
             const isSentByMe = conversation.lastMessage?.senderId === user?.id;
 
@@ -166,9 +167,12 @@ export default function ChatScreen() {
                 onPress={() => router.push(`/chat/${conversation.id}`)}
               >
                 <View style={styles.avatarContainer}>
-                  <View style={[styles.avatar, isPro && styles.avatarCustomer]}>
-                    <Text style={styles.avatarText}>{initials}</Text>
-                  </View>
+                  <Avatar 
+                    imageUrl={avatarUrl}
+                    name={displayName}
+                    size={50}
+                    style={isPro ? styles.avatarCustomer : undefined}
+                  />
                   {isUnread && (
                     <View style={styles.unreadDot} />
                   )}

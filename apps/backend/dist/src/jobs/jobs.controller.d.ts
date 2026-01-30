@@ -24,9 +24,9 @@ export declare class JobsController {
         category: import(".prisma/client").$Enums.ServiceCategory;
         title: string;
         expiresAt: Date | null;
+        images: string[];
         status: import(".prisma/client").$Enums.JobStatus;
         customerId: string;
-        images: string[];
         locationAddr: string;
         urgency: import(".prisma/client").$Enums.JobUrgency;
         budgetMin: number | null;
@@ -47,6 +47,7 @@ export declare class JobsController {
                 id: string;
                 bio: string | null;
                 locationCity: string;
+                locationDistrict: string | null;
                 locationArea: string;
                 locationLat: number;
                 locationLng: number;
@@ -64,6 +65,7 @@ export declare class JobsController {
                 currency: string;
                 responseTime: number;
                 serviceAreaCity: string;
+                serviceAreaDistricts: string[];
                 serviceAreaRadius: number;
                 onboardingCompleted: boolean;
                 onboardingStep: string | null;
@@ -79,8 +81,8 @@ export declare class JobsController {
             proId: string;
             message: string;
             status: import(".prisma/client").$Enums.BidStatus;
-            proposedPrice: number;
             jobId: string;
+            proposedPrice: number;
             estimatedDuration: number;
             availableFrom: Date | null;
         })[];
@@ -100,9 +102,9 @@ export declare class JobsController {
         category: import(".prisma/client").$Enums.ServiceCategory;
         title: string;
         expiresAt: Date | null;
+        images: string[];
         status: import(".prisma/client").$Enums.JobStatus;
         customerId: string;
-        images: string[];
         locationAddr: string;
         urgency: import(".prisma/client").$Enums.JobUrgency;
         budgetMin: number | null;
@@ -134,9 +136,9 @@ export declare class JobsController {
         category: import(".prisma/client").$Enums.ServiceCategory;
         title: string;
         expiresAt: Date | null;
+        images: string[];
         status: import(".prisma/client").$Enums.JobStatus;
         customerId: string;
-        images: string[];
         locationAddr: string;
         urgency: import(".prisma/client").$Enums.JobUrgency;
         budgetMin: number | null;
@@ -157,6 +159,7 @@ export declare class JobsController {
                 id: string;
                 bio: string | null;
                 locationCity: string;
+                locationDistrict: string | null;
                 locationArea: string;
                 locationLat: number;
                 locationLng: number;
@@ -174,6 +177,7 @@ export declare class JobsController {
                 currency: string;
                 responseTime: number;
                 serviceAreaCity: string;
+                serviceAreaDistricts: string[];
                 serviceAreaRadius: number;
                 onboardingCompleted: boolean;
                 onboardingStep: string | null;
@@ -189,8 +193,8 @@ export declare class JobsController {
             proId: string;
             message: string;
             status: import(".prisma/client").$Enums.BidStatus;
-            proposedPrice: number;
             jobId: string;
+            proposedPrice: number;
             estimatedDuration: number;
             availableFrom: Date | null;
         })[];
@@ -217,9 +221,9 @@ export declare class JobsController {
         category: import(".prisma/client").$Enums.ServiceCategory;
         title: string;
         expiresAt: Date | null;
+        images: string[];
         status: import(".prisma/client").$Enums.JobStatus;
         customerId: string;
-        images: string[];
         locationAddr: string;
         urgency: import(".prisma/client").$Enums.JobUrgency;
         budgetMin: number | null;
@@ -241,9 +245,9 @@ export declare class JobsController {
         category: import(".prisma/client").$Enums.ServiceCategory;
         title: string;
         expiresAt: Date | null;
+        images: string[];
         status: import(".prisma/client").$Enums.JobStatus;
         customerId: string;
-        images: string[];
         locationAddr: string;
         urgency: import(".prisma/client").$Enums.JobUrgency;
         budgetMin: number | null;
@@ -265,9 +269,9 @@ export declare class JobsController {
         category: import(".prisma/client").$Enums.ServiceCategory;
         title: string;
         expiresAt: Date | null;
+        images: string[];
         status: import(".prisma/client").$Enums.JobStatus;
         customerId: string;
-        images: string[];
         locationAddr: string;
         urgency: import(".prisma/client").$Enums.JobUrgency;
         budgetMin: number | null;
@@ -287,6 +291,7 @@ export declare class JobsController {
             id: string;
             bio: string | null;
             locationCity: string;
+            locationDistrict: string | null;
             locationArea: string;
             locationLat: number;
             locationLng: number;
@@ -304,6 +309,7 @@ export declare class JobsController {
             currency: string;
             responseTime: number;
             serviceAreaCity: string;
+            serviceAreaDistricts: string[];
             serviceAreaRadius: number;
             onboardingCompleted: boolean;
             onboardingStep: string | null;
@@ -324,9 +330,9 @@ export declare class JobsController {
             category: import(".prisma/client").$Enums.ServiceCategory;
             title: string;
             expiresAt: Date | null;
+            images: string[];
             status: import(".prisma/client").$Enums.JobStatus;
             customerId: string;
-            images: string[];
             locationAddr: string;
             urgency: import(".prisma/client").$Enums.JobUrgency;
             budgetMin: number | null;
@@ -343,8 +349,8 @@ export declare class JobsController {
         proId: string;
         message: string;
         status: import(".prisma/client").$Enums.BidStatus;
-        proposedPrice: number;
         jobId: string;
+        proposedPrice: number;
         estimatedDuration: number;
         availableFrom: Date | null;
     }>;
@@ -369,9 +375,9 @@ export declare class JobsController {
             category: import(".prisma/client").$Enums.ServiceCategory;
             title: string;
             expiresAt: Date | null;
+            images: string[];
             status: import(".prisma/client").$Enums.JobStatus;
             customerId: string;
-            images: string[];
             locationAddr: string;
             urgency: import(".prisma/client").$Enums.JobUrgency;
             budgetMin: number | null;
@@ -388,8 +394,8 @@ export declare class JobsController {
         proId: string;
         message: string;
         status: import(".prisma/client").$Enums.BidStatus;
-        proposedPrice: number;
         jobId: string;
+        proposedPrice: number;
         estimatedDuration: number;
         availableFrom: Date | null;
     })[]>;
@@ -404,6 +410,7 @@ export declare class JobsController {
             id: string;
             bio: string | null;
             locationCity: string;
+            locationDistrict: string | null;
             locationArea: string;
             locationLat: number;
             locationLng: number;
@@ -421,6 +428,7 @@ export declare class JobsController {
             currency: string;
             responseTime: number;
             serviceAreaCity: string;
+            serviceAreaDistricts: string[];
             serviceAreaRadius: number;
             onboardingCompleted: boolean;
             onboardingStep: string | null;
@@ -449,9 +457,9 @@ export declare class JobsController {
             category: import(".prisma/client").$Enums.ServiceCategory;
             title: string;
             expiresAt: Date | null;
+            images: string[];
             status: import(".prisma/client").$Enums.JobStatus;
             customerId: string;
-            images: string[];
             locationAddr: string;
             urgency: import(".prisma/client").$Enums.JobUrgency;
             budgetMin: number | null;
@@ -468,8 +476,8 @@ export declare class JobsController {
         proId: string;
         message: string;
         status: import(".prisma/client").$Enums.BidStatus;
-        proposedPrice: number;
         jobId: string;
+        proposedPrice: number;
         estimatedDuration: number;
         availableFrom: Date | null;
     }>;
@@ -481,8 +489,8 @@ export declare class JobsController {
         proId: string;
         message: string;
         status: import(".prisma/client").$Enums.BidStatus;
-        proposedPrice: number;
         jobId: string;
+        proposedPrice: number;
         estimatedDuration: number;
         availableFrom: Date | null;
     }>;
@@ -494,8 +502,8 @@ export declare class JobsController {
         proId: string;
         message: string;
         status: import(".prisma/client").$Enums.BidStatus;
-        proposedPrice: number;
         jobId: string;
+        proposedPrice: number;
         estimatedDuration: number;
         availableFrom: Date | null;
     }>;
@@ -508,8 +516,8 @@ export declare class JobsController {
             proId: string;
             message: string;
             status: import(".prisma/client").$Enums.BidStatus;
-            proposedPrice: number;
             jobId: string;
+            proposedPrice: number;
             estimatedDuration: number;
             availableFrom: Date | null;
         };
@@ -523,19 +531,19 @@ export declare class JobsController {
             currency: string;
             description: string;
             proId: string;
+            images: string[];
             status: import(".prisma/client").$Enums.BookingStatus;
             customerId: string;
-            images: string[];
             serviceId: string;
             scheduledFor: Date | null;
             isASAP: boolean;
+            completedAt: Date | null;
+            cancellationReason: string | null;
             customerNotes: string | null;
             locationAddr: string;
             servicePrice: number;
             platformFee: number;
             total: number;
-            completedAt: Date | null;
-            cancellationReason: string | null;
             cancelledBy: string | null;
             cancellationFee: number | null;
             refundAmount: number | null;
@@ -549,8 +557,8 @@ export declare class JobsController {
         proId: string;
         message: string;
         status: import(".prisma/client").$Enums.BidStatus;
-        proposedPrice: number;
         jobId: string;
+        proposedPrice: number;
         estimatedDuration: number;
         availableFrom: Date | null;
     }>;

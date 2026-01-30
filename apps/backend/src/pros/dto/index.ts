@@ -16,6 +16,15 @@ export class GetProsDto {
 
   @IsOptional()
   @IsString()
+  district?: string; // Budapest district (I-XXIII)
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  districts?: string[]; // Multiple districts
+
+  @IsOptional()
+  @IsString()
   categoryId?: string;
 
   @IsOptional()
@@ -162,12 +171,21 @@ export class UpdateProDto {
   serviceAreaCity?: string;
 
   @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  serviceAreaDistricts?: string[]; // Budapest districts they serve
+
+  @IsOptional()
   @IsNumber()
   serviceAreaRadius?: number;
 
   @IsOptional()
   @IsString()
   locationCity?: string;
+
+  @IsOptional()
+  @IsString()
+  locationDistrict?: string; // Their base district
 
   @IsOptional()
   @IsString()

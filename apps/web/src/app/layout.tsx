@@ -5,6 +5,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { ToastProvider } from '../contexts/ToastContext';
 import { SocketProvider } from '../contexts/SocketContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
+import { SearchProvider } from '../contexts/SearchContext';
 import OnboardingTutorial from '../components/OnboardingTutorial';
 
 export const metadata: Metadata = {
@@ -29,8 +30,10 @@ export default function RootLayout({
             <ToastProvider>
               <AuthProvider>
                 <SocketProvider>
-                  {children}
-                  <OnboardingTutorial />
+                  <SearchProvider>
+                    {children}
+                    <OnboardingTutorial />
+                  </SearchProvider>
                 </SocketProvider>
               </AuthProvider>
             </ToastProvider>

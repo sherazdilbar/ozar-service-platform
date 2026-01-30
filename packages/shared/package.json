@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "main": "index.ts",
   "types": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./apiClient": "./apiClient.ts",
+    "./types": "./types.ts",
+    "./constants": "./constants.ts",
+    "./api": "./api.ts",
+    "./currency": "./currency.ts",
+    "./categoryStructure": "./categoryStructure.ts",
+    "./budapestDistricts": "./budapestDistricts.ts"
+  },
   "dependencies": {
     "typescript": "^5.3.3"
   }

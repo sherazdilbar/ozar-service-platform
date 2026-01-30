@@ -60,6 +60,12 @@ export default function Header() {
                     <LanguageLink href="/bookings" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition">
                       {t('nav.myBookings')}
                     </LanguageLink>
+                    <LanguageLink href="/jobs" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition">
+                      My Jobs
+                    </LanguageLink>
+                    <LanguageLink href="/favorites" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition">
+                      Favorites
+                    </LanguageLink>
                     <LanguageLink href="/chat" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition">
                       {t('nav.messages')}
                     </LanguageLink>
@@ -69,6 +75,9 @@ export default function Header() {
                   <div className="hidden lg:flex items-center gap-2">
                     <LanguageLink href="/pro/dashboard" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition">
                       {t('nav.dashboard')}
+                    </LanguageLink>
+                    <LanguageLink href="/pro/jobs" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition">
+                      Available Jobs
                     </LanguageLink>
                     <LanguageLink href="/pro/profile" className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition">
                       {t('nav.profile')}
@@ -165,6 +174,20 @@ export default function Header() {
                       {t('nav.myBookings')}
                     </LanguageLink>
                     <LanguageLink 
+                      href="/jobs" 
+                      className="block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      My Jobs
+                    </LanguageLink>
+                    <LanguageLink 
+                      href="/favorites" 
+                      className="block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Favorites
+                    </LanguageLink>
+                    <LanguageLink 
                       href="/chat" 
                       className="block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
                       onClick={() => setMobileMenuOpen(false)}
@@ -181,6 +204,13 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {t('nav.dashboard')}
+                    </LanguageLink>
+                    <LanguageLink 
+                      href="/pro/jobs" 
+                      className="block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Available Jobs
                     </LanguageLink>
                     <LanguageLink 
                       href="/pro/profile" 

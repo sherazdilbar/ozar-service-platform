@@ -175,7 +175,7 @@ export default function BookingDetailPage() {
         label: 'Cancelled'
       }
     };
-    return configs[status] || configs.REQUESTED;
+    return configs[status as keyof typeof configs] || configs.REQUESTED;
   };
 
   const isPro = user?.role === 'PRO';

@@ -9,3 +9,4 @@ export interface CategoryGroup {
 export declare const CATEGORY_GROUPS: CategoryGroup[];
 export declare function getCategoryGroup(category: ServiceCategory): CategoryGroup | undefined;
 export declare function getAllCategories(): ServiceCategory[];
+//# sourceMappingURL=categoryStructure.d.ts.map

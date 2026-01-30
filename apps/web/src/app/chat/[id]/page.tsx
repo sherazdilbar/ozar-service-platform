@@ -4,8 +4,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
-import { chatApi } from '@ozar/shared/apiClient';
-import { Paperclip, Image as ImageIcon, X, Download, FileText } from 'lucide-react';
+import { chatApi, templatesApi } from '@ozar/shared/apiClient';
+import { Paperclip, Image as ImageIcon, X, Download, FileText, Zap } from 'lucide-react';
+import Avatar from '@/components/Avatar';
+import { getImageUrl } from '@/utils/imageUrl';
 
 interface Message {
   id: string;
@@ -29,6 +31,12 @@ interface Conversation {
   booking?: any;
 }
 
+interface QuickMessage {
+  id: string;
+  title: string;
+  message: string;
+}
+
 export default function ChatConversationPage() {
   const params = useParams();
   const router = useRouter();
@@ -46,12 +54,17 @@ export default function ChatConversationPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [showQuickMessages, setShowQuickMessages] = useState(false);
+  const [quickMessages, setQuickMessages] = useState<QuickMessage[]>([]);
+  const [loadingQuickMessages, setLoadingQuickMessages] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const conversationId = params.id as string;
+
+  const isPro = user?.role === 'PRO';
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -129,7 +142,7 @@ export default function ChatConversationPage() {
         : conversation.customer; // Customer is direct
       
       if (otherUser && otherUser.id) {
-        setIsOtherUserOnline(onlineUsers.has(otherUser.id));
+        setIsOtherUserOnline(onlineUsers.includes(otherUser.id));
       }
     }
   }, [conversation, onlineUsers, user?.role]);
@@ -140,6 +153,33 @@ export default function ChatConversationPage() {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const loadQuickMessages = async () => {
+    if (!isPro) return;
+    
+    setLoadingQuickMessages(true);
+    try {
+      const result = await templatesApi.getQuickMessages();
+      setQuickMessages(Array.isArray(result) ? result : []);
+    } catch (error) {
+      console.error('Failed to load quick messages:', error);
+      setQuickMessages([]);
+    } finally {
+      setLoadingQuickMessages(false);
+    }
+  };
+
+  const handleQuickMessageClick = () => {
+    if (quickMessages.length === 0) {
+      loadQuickMessages();
+    }
+    setShowQuickMessages(true);
+  };
+
+  const handleSelectQuickMessage = (message: QuickMessage) => {
+    setNewMessage(message.message);
+    setShowQuickMessages(false);
   };
 
   const loadConversation = async () => {
@@ -399,9 +439,11 @@ export default function ChatConversationPage() {
           </button>
           <div className="flex items-center gap-3 flex-1">
             <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-lg font-bold">
-                {otherUser.firstName[0]}{otherUser.lastName[0]}
-              </div>
+              <Avatar
+                imageUrl={otherUser.avatar}
+                name={`${otherUser.firstName} ${otherUser.lastName}`}
+                size={48}
+              />
               {isOtherUserOnline && (
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
               )}
@@ -458,9 +500,11 @@ export default function ChatConversationPage() {
                 >
                   <div className={`flex gap-2 max-w-[70%] ${isMe ? 'flex-row-reverse' : ''}`}>
                     {showAvatar ? (
-                      <div className="w-8 h-8 flex-shrink-0 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
-                        {message.sender.firstName[0]}{message.sender.lastName[0]}
-                      </div>
+                      <Avatar
+                        imageUrl={message.sender.avatar}
+                        name={`${message.sender.firstName} ${message.sender.lastName}`}
+                        size={32}
+                      />
                     ) : (
                       <div className="w-8 h-8 flex-shrink-0"></div>
                     )}
@@ -475,13 +519,13 @@ export default function ChatConversationPage() {
                         {hasImage && (
                           <div className="relative group">
                             <img
-                              src={message.imageUrl}
+                              src={getImageUrl(message.imageUrl) || message.imageUrl}
                               alt="Attachment"
                               className="max-w-xs max-h-64 object-cover cursor-pointer hover:opacity-90 transition"
-                              onClick={() => window.open(message.imageUrl, '_blank')}
+                              onClick={() => window.open(getImageUrl(message.imageUrl) || message.imageUrl, '_blank')}
                             />
                             <a
-                              href={message.imageUrl}
+                              href={getImageUrl(message.imageUrl) || message.imageUrl}
                               download
                               target="_blank"
                               rel="noopener noreferrer"
@@ -493,7 +537,7 @@ export default function ChatConversationPage() {
                         )}
                         {hasDocument && (
                           <a
-                            href={message.imageUrl}
+                            href={getImageUrl(message.imageUrl) || message.imageUrl}
                             download
                             target="_blank"
                             rel="noopener noreferrer"
@@ -537,9 +581,11 @@ export default function ChatConversationPage() {
           {otherUserTyping && (
             <div className="flex justify-start animate-fade-in">
               <div className="flex gap-2 max-w-[70%]">
-                <div className="w-8 h-8 flex-shrink-0 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
-                  {otherUser.firstName[0]}{otherUser.lastName[0]}
-                </div>
+                <Avatar
+                  imageUrl={otherUser.avatar}
+                  name={`${otherUser.firstName} ${otherUser.lastName}`}
+                  size={32}
+                />
                 <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 shadow-sm">
                   <div className="flex gap-1">
                     <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
@@ -613,6 +659,17 @@ export default function ChatConversationPage() {
             
             {/* Attachment buttons */}
             <div className="flex gap-1">
+              {isPro && (
+                <button
+                  type="button"
+                  onClick={handleQuickMessageClick}
+                  disabled={sending || uploading}
+                  className="p-3 text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-full transition disabled:opacity-50"
+                  title="Quick messages"
+                >
+                  <Zap className="w-5 h-5" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => imageInputRef.current?.click()}
@@ -670,6 +727,96 @@ export default function ChatConversationPage() {
           </form>
         </div>
       </div>
+
+      {/* Quick Messages Modal */}
+      {showQuickMessages && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowQuickMessages(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Quick Messages</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Select a template to use</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowQuickMessages(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingQuickMessages ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-teal-600 mb-4"></div>
+                  <p className="text-gray-600 dark:text-gray-400">Loading templates...</p>
+                </div>
+              ) : quickMessages.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Zap className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    No quick messages yet
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Create templates in Quick Messages settings to respond faster
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowQuickMessages(false);
+                      router.push('/pro/quick-messages');
+                    }}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition"
+                  >
+                    <Zap className="w-5 h-5" />
+                    Create Templates
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3">
+                  {quickMessages.map((msg) => (
+                    <button
+                      key={msg.id}
+                      onClick={() => handleSelectQuickMessage(msg)}
+                      className="text-left p-4 bg-gray-50 dark:bg-gray-700/50 hover:bg-teal-50 dark:hover:bg-teal-900/20 border-2 border-transparent hover:border-teal-500 rounded-xl transition group"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">
+                          {msg.title}
+                        </h3>
+                        <Zap className="w-5 h-5 text-gray-400 group-hover:text-teal-500 transition flex-shrink-0" />
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                        {msg.message}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            {quickMessages.length > 0 && (
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                <button
+                  onClick={() => router.push('/pro/quick-messages')}
+                  className="text-sm text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-medium transition"
+                >
+                  Manage templates →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -30,6 +30,7 @@ export declare class UsersService {
         passwordResetToken: string | null;
         passwordResetExpires: Date | null;
         locationCity: string | null;
+        locationDistrict: string | null;
         locationArea: string | null;
         locationLat: number | null;
         locationLng: number | null;
@@ -53,6 +54,11 @@ export declare class UsersService {
         phone?: string;
         bio?: string;
         avatar?: string;
+        locationCity?: string;
+        locationDistrict?: string;
+        locationArea?: string;
+        locationLat?: number;
+        locationLng?: number;
     }): Promise<{
         id: string;
         email: string;
@@ -62,6 +68,11 @@ export declare class UsersService {
         avatar: string;
         bio: string;
         role: import(".prisma/client").$Enums.UserRole;
+        locationCity: string;
+        locationDistrict: string;
+        locationArea: string;
+        locationLat: number;
+        locationLng: number;
         createdAt: Date;
     }>;
 }

@@ -15,6 +15,7 @@ export declare class ServicesService {
             id: string;
             bio: string | null;
             locationCity: string;
+            locationDistrict: string | null;
             locationArea: string;
             locationLat: number;
             locationLng: number;
@@ -32,6 +33,7 @@ export declare class ServicesService {
             currency: string;
             responseTime: number;
             serviceAreaCity: string;
+            serviceAreaDistricts: string[];
             serviceAreaRadius: number;
             onboardingCompleted: boolean;
             onboardingStep: string | null;
@@ -57,6 +59,7 @@ export declare class ServicesService {
         id: string;
         bio: string | null;
         locationCity: string;
+        locationDistrict: string | null;
         locationArea: string;
         locationLat: number;
         locationLng: number;
@@ -74,6 +77,7 @@ export declare class ServicesService {
         currency: string;
         responseTime: number;
         serviceAreaCity: string;
+        serviceAreaDistricts: string[];
         serviceAreaRadius: number;
         onboardingCompleted: boolean;
         onboardingStep: string | null;
@@ -100,6 +104,7 @@ export declare class ServicesService {
             id: string;
             bio: string | null;
             locationCity: string;
+            locationDistrict: string | null;
             locationArea: string;
             locationLat: number;
             locationLng: number;
@@ -117,6 +122,7 @@ export declare class ServicesService {
             currency: string;
             responseTime: number;
             serviceAreaCity: string;
+            serviceAreaDistricts: string[];
             serviceAreaRadius: number;
             onboardingCompleted: boolean;
             onboardingStep: string | null;

@@ -12,6 +12,8 @@ export class ProsService {
     
     const { 
       city, 
+      district,
+      districts,
       categoryId, 
       availableNow, 
       radiusKm, 
@@ -34,6 +36,33 @@ export class ProsService {
 
     if (city) {
       where.locationCity = city;
+      
+      // If city is Budapest and district(s) specified
+      if (city.toLowerCase() === 'budapest') {
+        if (district) {
+          where.serviceAreaDistricts = {
+            has: district,
+          };
+          console.log('🏘️  Filtering by Budapest district:', district);
+        } else if (districts && districts.length > 0) {
+          where.serviceAreaDistricts = {
+            hasSome: districts,
+          };
+          console.log('🏘️  Filtering by Budapest districts:', districts);
+        } else if (query || searchTerm) {
+          // Extract district from search query
+          const searchQuery = (query || searchTerm || '').toLowerCase();
+          const districtMatch = searchQuery.match(/(?:district\s+)?([ivx]+)(?:\.|kerület)?/i);
+          
+          if (districtMatch) {
+            const extractedDistrict = districtMatch[1].toUpperCase();
+            where.serviceAreaDistricts = {
+              has: extractedDistrict,
+            };
+            console.log('🏘️  Filtering by Budapest district from query:', extractedDistrict);
+          }
+        }
+      }
     }
 
     if (categoryId) {
@@ -312,6 +341,7 @@ export class ProsService {
         categories: dto.categories as any,
         serviceAreaCity: dto.serviceArea.city,
         serviceAreaRadius: dto.serviceArea.radiusKm,
+        serviceAreaDistricts: [], // Will be set during onboarding
         locationCity: dto.location.city,
         locationArea: dto.location.area,
         locationLat: dto.location.lat,
@@ -469,11 +499,13 @@ export class ProsService {
     if (dto.availabilityStatus !== undefined) updateData.availabilityStatus = dto.availabilityStatus;
     if (dto.serviceAreaCity !== undefined) updateData.serviceAreaCity = dto.serviceAreaCity;
     if (dto.locationCity !== undefined) updateData.locationCity = dto.locationCity;
+    if (dto.locationDistrict !== undefined) updateData.locationDistrict = dto.locationDistrict;
     if (dto.locationArea !== undefined) updateData.locationArea = dto.locationArea;
     if (dto.onboardingStep !== undefined) updateData.onboardingStep = dto.onboardingStep;
     
     // Array fields
     if (dto.categories !== undefined) updateData.categories = dto.categories as any;
+    if (dto.serviceAreaDistricts !== undefined) updateData.serviceAreaDistricts = dto.serviceAreaDistricts;
     // Note: portfolioImages are handled separately through the portfolio relation
     
     // Numeric fields (use !== undefined to allow 0 values)
@@ -547,10 +579,12 @@ export class ProsService {
 
       console.log('Updated profile location:', {
         locationCity: result.locationCity,
+        locationDistrict: result.locationDistrict,
         locationArea: result.locationArea,
         locationLat: result.locationLat,
         locationLng: result.locationLng,
         serviceAreaCity: result.serviceAreaCity,
+        serviceAreaDistricts: result.serviceAreaDistricts,
         serviceAreaRadius: result.serviceAreaRadius,
       });
 
@@ -559,10 +593,12 @@ export class ProsService {
         where: { userId },
         select: {
           locationCity: true,
+          locationDistrict: true,
           locationArea: true,
           locationLat: true,
           locationLng: true,
           serviceAreaCity: true,
+          serviceAreaDistricts: true,
           serviceAreaRadius: true,
         },
       });

@@ -173,10 +173,11 @@ model User {
   passwordResetExpires DateTime?
   
   // Location fields
-  locationCity String?
-  locationArea String?
-  locationLat  Float?
-  locationLng  Float?
+  locationCity     String?
+  locationDistrict String?  // Budapest district (I-XXIII)
+  locationArea     String?
+  locationLat      Float?
+  locationLng      Float?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -231,8 +232,10 @@ model ProProfile {
   currency           String             @default("USD")
   responseTime       Int                @default(30)
   serviceAreaCity    String
+  serviceAreaDistricts String[]         // Budapest districts they serve (I-XXIII)
   serviceAreaRadius  Int                @default(10)
   locationCity       String
+  locationDistrict   String?            // Their base district
   locationArea       String
   locationLat        Float
   locationLng        Float

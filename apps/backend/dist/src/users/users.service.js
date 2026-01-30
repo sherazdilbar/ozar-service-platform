@@ -67,6 +67,11 @@ let UsersService = class UsersService {
                 avatar: true,
                 bio: true,
                 role: true,
+                locationCity: true,
+                locationDistrict: true,
+                locationArea: true,
+                locationLat: true,
+                locationLng: true,
                 createdAt: true,
             },
         });

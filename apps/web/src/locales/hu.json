@@ -3,6 +3,7 @@
     "title": "Ozar - Találj Helyi Szakembereket",
     "description": "Kapcsolódj megbízható helyi szakemberekhez minden otthoni szolgáltatási igényedhez"
   },
+  "locale": "hu",
   "nav": {
     "howItWorks": "Hogyan működik",
     "trustSafety": "Biztonság",
@@ -109,6 +110,8 @@
     "phonePlaceholder": "+36 20 123 4567",
     "city": "Város",
     "cityPlaceholder": "Budapest",
+    "district": "Kerület",
+    "districtPlaceholder": "Válaszd ki a kerületed",
     "area": "Utca/Kerület",
     "areaPlaceholder": "Először válassz várost",
     "selectCityFirst": "Először válassz várost",

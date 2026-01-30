@@ -46,7 +46,18 @@ export class UsersService {
     });
   }
 
-  async updateProfile(userId: string, data: { firstName?: string; lastName?: string; phone?: string; bio?: string; avatar?: string }) {
+  async updateProfile(userId: string, data: { 
+    firstName?: string; 
+    lastName?: string; 
+    phone?: string; 
+    bio?: string; 
+    avatar?: string;
+    locationCity?: string;
+    locationDistrict?: string;
+    locationArea?: string;
+    locationLat?: number;
+    locationLng?: number;
+  }) {
     return this.prisma.user.update({
       where: { id: userId },
       data,
@@ -59,6 +70,11 @@ export class UsersService {
         avatar: true,
         bio: true,
         role: true,
+        locationCity: true,
+        locationDistrict: true,
+        locationArea: true,
+        locationLat: true,
+        locationLng: true,
         createdAt: true,
       },
     });

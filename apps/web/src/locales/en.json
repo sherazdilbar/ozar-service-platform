@@ -3,6 +3,7 @@
     "title": "Ozar - Find Local Professionals",
     "description": "Connect with trusted local professionals for all your home service needs"
   },
+  "locale": "en",
   "nav": {
     "howItWorks": "How it works",
     "trustSafety": "Trust & Safety",
@@ -109,6 +110,8 @@
     "phonePlaceholder": "+1 234 567 8900",
     "city": "City",
     "cityPlaceholder": "Budapest",
+    "district": "District",
+    "districtPlaceholder": "Select your district",
     "area": "Street/Area",
     "areaPlaceholder": "Select city first",
     "selectCityFirst": "Select city first",

@@ -14,6 +14,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { favoritesApi } from '@ozar/shared/apiClient';
 import { Ionicons } from '@expo/vector-icons';
 import FavoriteButton from '../components/FavoriteButton';
+import { Avatar } from '../components/Avatar';
 
 export default function FavoritesScreen() {
   const router = useRouter();
@@ -96,7 +97,6 @@ export default function FavoritesScreen() {
           <View style={styles.list}>
             {favorites.map((pro) => {
               const displayName = pro.businessName || `${pro.user.firstName} ${pro.user.lastName}`;
-              const initials = displayName.split(' ').map((n: string) => n[0]).join('');
 
               return (
                 <TouchableOpacity
@@ -105,13 +105,11 @@ export default function FavoritesScreen() {
                   onPress={() => router.push(`/pro/${pro.id}`)}
                 >
                   <View style={styles.proHeader}>
-                    {pro.user.avatar ? (
-                      <Image source={{ uri: pro.user.avatar }} style={styles.avatar} />
-                    ) : (
-                      <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>{initials}</Text>
-                      </View>
-                    )}
+                    <Avatar 
+                      imageUrl={pro.user.avatar}
+                      name={displayName}
+                      size={60}
+                    />
                     <View style={styles.proInfo}>
                       <Text style={styles.proName}>{displayName}</Text>
                       <View style={styles.ratingRow}>

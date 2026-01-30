@@ -8,6 +8,7 @@ import { useNotifications } from '../../contexts/NotificationsContext';
 import { useSearch } from '../../contexts/SearchContext';
 import { useAuth } from '../../contexts/AuthContext';
 import ProDashboard from '../../components/ProDashboard';
+import { Avatar } from '../../components/Avatar';
 
 // Conditionally import ProsMapView only on native platforms
 let ProsMapView: any = null;
@@ -689,7 +690,6 @@ function CustomerHome() {
               filteredAndSortedPros.map((pro) => {
                 const personName = `${pro.user.firstName} ${pro.user.lastName}`;
                 const workType = pro.categories[0] ? CATEGORY_LABELS[pro.categories[0] as ServiceCategory] : 'Professional';
-                const initials = `${pro.user.firstName[0]}${pro.user.lastName[0]}`.toUpperCase();
                 const isVerified = pro.verificationStatus === 'APPROVED';
                 
                 return (
@@ -700,9 +700,11 @@ function CustomerHome() {
                       <View style={styles.cardRow}>
                         {/* Left: Avatar with verified badge */}
                         <View style={styles.avatarContainer}>
-                          <View style={styles.proAvatar}>
-                            <Text style={styles.proAvatarText}>{initials}</Text>
-                          </View>
+                          <Avatar 
+                            imageUrl={pro.user.avatar}
+                            name={personName}
+                            size={60}
+                          />
                           {isVerified && (
                             <View style={styles.verifiedBadgeBottom}>
                               <Text style={styles.verifiedIcon}>✓</Text>
@@ -776,7 +778,6 @@ function CustomerHome() {
               pros.slice(0, 2).map((pro) => {
                 const personName = `${pro.user.firstName} ${pro.user.lastName}`;
                 const workType = pro.categories[0] ? CATEGORY_LABELS[pro.categories[0] as ServiceCategory] : 'Professional';
-                const initials = `${pro.user.firstName[0]}${pro.user.lastName[0]}`.toUpperCase();
                 const isVerified = pro.verificationStatus === 'APPROVED';
                 
                 return (
@@ -787,9 +788,11 @@ function CustomerHome() {
                       <View style={styles.cardRow}>
                         {/* Left: Avatar with verified badge */}
                         <View style={styles.avatarContainer}>
-                          <View style={styles.proAvatar}>
-                            <Text style={styles.proAvatarText}>{initials}</Text>
-                          </View>
+                          <Avatar 
+                            imageUrl={pro.user.avatar}
+                            name={personName}
+                            size={60}
+                          />
                           {isVerified && (
                             <View style={styles.verifiedBadgeBottom}>
                               <Text style={styles.verifiedIcon}>✓</Text>

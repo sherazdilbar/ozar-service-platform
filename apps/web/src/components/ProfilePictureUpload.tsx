@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Camera, Upload, X, Loader2, ZoomIn, RotateCw, Check } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
+import { getImageUrl } from '@/utils/imageUrl';
 import Cropper from 'react-easy-crop';
 
 interface Point {
@@ -218,7 +219,7 @@ export default function ProfilePictureUpload({
     }
   };
 
-  const displayAvatar = currentAvatar;
+  const displayAvatar = getImageUrl(currentAvatar);
   const initials = userName
     .split(' ')
     .map((n) => n[0])

@@ -17,6 +17,7 @@ exports.updateAvailability = updateAvailability;
 exports.getAvailability = getAvailability;
 exports.submitReview = submitReview;
 const apiClient_1 = require("./apiClient");
+// Pro Discovery & Search
 async function getPros(filters) {
     try {
         const result = await apiClient_1.prosApi.getPros({
@@ -29,6 +30,7 @@ async function getPros(filters) {
             minRating: filters?.minRating,
             searchTerm: filters?.searchTerm,
         });
+        // Transform backend response to frontend format
         return result.data.map((pro) => ({
             id: pro.id,
             userId: pro.userId,
@@ -87,6 +89,7 @@ async function getReviews(proId) {
         return [];
     }
 }
+// Booking Management
 async function createBooking(payload) {
     try {
         const result = await apiClient_1.bookingsApi.createBooking({
@@ -98,6 +101,7 @@ async function createBooking(payload) {
             images: payload.images,
             location: payload.location,
         });
+        // Transform to frontend format
         return {
             id: result.id,
             customerId: result.customerId,
@@ -210,6 +214,7 @@ async function getBookingById(bookingId) {
     }
 }
 async function authorizePayment(bookingId) {
+    // TODO: Implement real payment authorization
     return {
         id: `pi_${Date.now()}`,
         bookingId,
@@ -220,15 +225,20 @@ async function authorizePayment(bookingId) {
     };
 }
 async function cancelBooking(bookingId, reason, cancelledBy) {
+    // TODO: Implement real cancellation
     throw new Error('Not implemented');
 }
+// Messaging
 async function getConversations(userId) {
+    // TODO: Implement real conversations API
     return [];
 }
 async function getMessages(conversationId) {
+    // TODO: Implement real messages API
     return [];
 }
 async function sendMessage(conversationId, senderId, text, imageUrl) {
+    // TODO: Implement real send message API
     return {
         id: `msg_${Date.now()}`,
         conversationId,
@@ -239,7 +249,9 @@ async function sendMessage(conversationId, senderId, text, imageUrl) {
         read: false
     };
 }
+// Pro Dashboard
 async function getProDashboard(proId) {
+    // TODO: Implement real dashboard API
     return {
         proId,
         todaySchedule: [],
@@ -329,12 +341,16 @@ async function respondToBooking(bookingId, action, counterOffer) {
     }
 }
 async function updateAvailability(proId, slots) {
+    // TODO: Implement real availability update
     return slots;
 }
 async function getAvailability(proId) {
+    // TODO: Implement real availability fetch
     return [];
 }
+// Reviews
 async function submitReview(bookingId, proId, customerId, rating, comment) {
+    // TODO: Implement real review submission
     return {
         id: `rev_${Date.now()}`,
         bookingId,
