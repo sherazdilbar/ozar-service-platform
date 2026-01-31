@@ -4,7 +4,7 @@
   "description": "Ozar Backend API - NestJS + Prisma + PostgreSQL",
   "main": "dist/main.js",
   "scripts": {
-    "build": "nest build",
+    "build": "prisma generate && nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
@@ -12,7 +12,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
-    "fix:completed-jobs": "ts-node src/scripts/fix-completed-jobs.ts"
+    "fix:completed-jobs": "ts-node src/scripts/fix-completed-jobs.ts",
+    "postinstall": "prisma generate"
   },
   "keywords": [
     "nestjs",
@@ -26,14 +27,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nestjs/schematics": "^11.0.9",
-    "@types/bcrypt": "^6.0.0",
-    "@types/multer": "^2.0.0",
-    "@types/node": "^25.0.3",
-    "@types/passport-jwt": "^4.0.1"
+    "@nestjs/schematics": "^11.0.9"
   },
   "dependencies": {
     "@nestjs/cli": "^11.0.14",
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^25.0.3",
+    "@types/passport-jwt": "^4.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "@nestjs/common": "^11.1.10",
