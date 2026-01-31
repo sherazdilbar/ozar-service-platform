@@ -4,7 +4,7 @@
   "description": "Ozar Backend API - NestJS + Prisma + PostgreSQL",
   "main": "dist/main.js",
   "scripts": {
-    "build": "bash build.sh",
+    "build": "mkdir -p node_modules/@ozar && cp -r ../../packages/shared node_modules/@ozar/ && npx prisma generate && npx nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
