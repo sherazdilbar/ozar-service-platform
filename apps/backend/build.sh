@@ -16,4 +16,11 @@ npx prisma generate
 echo "Building NestJS application..."
 npx nest build
 
-echo "Build complete!"
+# Verify dist folder was created
+if [ -d "dist" ]; then
+  echo "✓ Build complete! dist folder created successfully"
+  ls -la dist/
+else
+  echo "✗ ERROR: dist folder not found!"
+  exit 1
+fi
