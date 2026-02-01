@@ -125,7 +125,8 @@ export default function BudapestLocationSelector({
       <div className="space-y-3">
         {Object.entries(DISTRICT_ZONES).map(([zoneKey, zone]) => {
           const isExpanded = expandedZone === zoneKey;
-          const isSelected = zone.districts.includes(selectedDistrict as any);
+          const zoneDistricts = zone.districts as readonly string[];
+          const isSelected = zoneDistricts.includes(selectedDistrict);
 
           return (
             <div key={zoneKey} className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
@@ -152,7 +153,7 @@ export default function BudapestLocationSelector({
                       {language === 'hu' ? zone.nameHu : zone.name}
                     </h4>
                     <p className="text-xs text-gray-500">
-                      {zone.districts.length} {language === 'hu' ? 'kerület' : 'districts'}
+                      {zoneDistricts.length} {language === 'hu' ? 'kerület' : 'districts'}
                     </p>
                   </div>
                 </div>
@@ -164,7 +165,7 @@ export default function BudapestLocationSelector({
               {/* Districts Grid */}
               {isExpanded && (
                 <div className="p-4 pt-0 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                  {zone.districts.map((district) => {
+                  {zoneDistricts.map((district) => {
                     const isDistrictSelected = selectedDistrict === district;
                     const districtData = BUDAPEST_DISTRICTS[district as BudapestDistrict];
 
