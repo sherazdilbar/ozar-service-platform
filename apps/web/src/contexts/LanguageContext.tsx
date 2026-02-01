@@ -31,7 +31,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setMounted(true);
     
     // Priority: URL > localStorage > Browser > Default
-    const urlLang = searchParams.get('lang');
+    const urlLang = searchParams?.get('lang');
     if (urlLang === 'hu' || urlLang === 'en') {
       setLanguageState(urlLang);
       localStorage.setItem('language', urlLang);

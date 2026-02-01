@@ -27,7 +27,7 @@ type BookingStep = 'service' | 'schedule' | 'details' | 'summary' | 'payment' | 
 export default function NewBookingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const proId = searchParams.get('proId');
+  const proId = searchParams?.get('proId');
   const { user } = useAuth();
 
   const [step, setStep] = useState<BookingStep>('service');

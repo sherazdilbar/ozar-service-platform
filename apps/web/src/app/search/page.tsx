@@ -231,8 +231,8 @@ function SearchPageContent() {
   const { t } = useLanguage();
 
   // Get initial values from URL
-  const initialCategory = (searchParams.get('category') as ServiceCategory) || undefined;
-  const initialQuery = searchParams.get('q') || '';
+  const initialCategory = (searchParams?.get('category') as ServiceCategory) || undefined;
+  const initialQuery = searchParams?.get('q') || '';
   
   const [selectedCategory, setSelectedCategory] = useState<ServiceCategory | undefined>(initialCategory);
   const [searchQuery, setSearchQuery] = useState(initialQuery);

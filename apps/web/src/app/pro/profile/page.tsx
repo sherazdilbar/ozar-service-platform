@@ -9,7 +9,7 @@ export default function ProProfilePage() {
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const useNewDesign = searchParams.get('new') === 'true';
+  const useNewDesign = searchParams?.get('new') === 'true';
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== 'PRO') {
