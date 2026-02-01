@@ -13,12 +13,6 @@ const nextConfig = {
     };
     return config;
   },
-  // Standalone output for optimized deployment
-  output: 'standalone',
-  // Skip generating error pages during build (they'll be generated on-demand)
-  generateBuildId: async () => {
-    return 'build-' + Date.now();
-  },
 }
 
 module.exports = nextConfig
