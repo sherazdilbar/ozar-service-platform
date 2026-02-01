@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
+import { getAccessToken } from '@ozar/shared/apiClient';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -21,9 +22,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
+    const token = getAccessToken();
     if (!user || !token) {
       if (socket) {
         socket.disconnect();
@@ -64,7 +66,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     return () => {
       newSocket.disconnect();
     };
-  }, [user, token]);
+  }, [user]);
 
   const joinConversation = (conversationId: string) => {
     if (socket) {
