@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import Map, { Marker, NavigationControl, GeolocateControl, MapRef, ViewStateChangeEvent } from 'react-map-gl';
+import { useState, useCallback, useRef } from 'react';
+import Map, { Marker, NavigationControl, GeolocateControl, ViewStateChangeEvent } from 'react-map-gl';
+import type { MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { ProProfile } from '@ozar/shared';
 
