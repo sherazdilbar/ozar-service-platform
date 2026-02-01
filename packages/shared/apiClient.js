@@ -28,11 +28,15 @@ if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined')
 else {
     // React Native environment - try to load AsyncStorage
     try {
-        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-        storageAdapter = AsyncStorage;
+        // Use dynamic import to avoid build errors in web
+        if (typeof require !== 'undefined') {
+            const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+            storageAdapter = AsyncStorage;
+        }
     }
     catch (e) {
-        console.warn('[API Client] No storage available');
+        // AsyncStorage not available - this is fine for web builds
+        console.log('[API Client] Running in web environment without AsyncStorage');
     }
 }
 function setTokens(access, refresh) {

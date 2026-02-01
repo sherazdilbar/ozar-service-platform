@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { getAccessToken } from '@ozar/shared/apiClient';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { 
@@ -30,7 +31,7 @@ interface Notification {
 
 export default function NotificationsPage() {
   const router = useRouter();
-  const { user, isAuthenticated, token } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
@@ -45,6 +46,7 @@ export default function NotificationsPage() {
 
   const loadNotifications = async () => {
     try {
+      const token = getAccessToken();
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -63,6 +65,7 @@ export default function NotificationsPage() {
 
   const markAsRead = async (id: string) => {
     try {
+      const token = getAccessToken();
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications/${id}/read`, {
         method: 'PATCH',
         headers: {
@@ -79,6 +82,7 @@ export default function NotificationsPage() {
 
   const markAllAsRead = async () => {
     try {
+      const token = getAccessToken();
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications/read-all`, {
         method: 'PATCH',
         headers: {
@@ -93,6 +97,7 @@ export default function NotificationsPage() {
 
   const deleteNotification = async (id: string) => {
     try {
+      const token = getAccessToken();
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications/${id}`, {
         method: 'DELETE',
         headers: {
