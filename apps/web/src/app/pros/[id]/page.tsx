@@ -29,9 +29,10 @@ export default function ProProfilePage() {
 
   useEffect(() => {
     loadProData();
-  }, [params.id]);
+  }, [params?.id]);
 
   const loadProData = async () => {
+    if (!params?.id) return;
     try {
       const proData = await prosApi.getProById(params.id as string);
       const reviewsData = await prosApi.getProReviews(params.id as string);

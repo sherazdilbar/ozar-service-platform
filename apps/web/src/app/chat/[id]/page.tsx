@@ -62,12 +62,12 @@ export default function ChatConversationPage() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const conversationId = params.id as string;
+  const conversationId = (params?.id as string) || '';
 
   const isPro = user?.role === 'PRO';
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !conversationId) {
       router.push('/auth/login');
       return;
     }

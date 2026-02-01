@@ -62,13 +62,14 @@ export default function JobDetailsPage() {
 
   useEffect(() => {
     if (!user) {
-      router.push('/auth/login?redirect=/jobs/' + params.id);
+      router.push('/auth/login?redirect=/jobs/' + (params?.id || ''));
       return;
     }
     loadJob();
-  }, [params.id, user]);
+  }, [params?.id, user]);
 
   const loadJob = async () => {
+    if (!params?.id) return;
     try {
       const result = await jobsApi.getJobById(params.id as string);
       setJob(result);

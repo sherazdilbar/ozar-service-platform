@@ -45,16 +45,17 @@ export default function BookingDetailPage() {
 
   useEffect(() => {
     if (!user) {
-      router.push('/auth/login?redirect=/bookings/' + params.id);
+      router.push('/auth/login?redirect=/bookings/' + (params?.id || ''));
       return;
     }
     loadBooking();
     
     const interval = setInterval(loadBooking, 10000);
     return () => clearInterval(interval);
-  }, [params.id, user]);
+  }, [params?.id, user]);
 
   const loadBooking = async () => {
+    if (!params?.id) return;
     try {
       const data = await getBookingById(params.id as string);
       setBooking(data);
