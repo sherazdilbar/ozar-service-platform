@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// Trigger rebuild for env vars
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@ozar/shared'],
