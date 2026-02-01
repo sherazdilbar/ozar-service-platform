@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import Map, { Marker, NavigationControl, GeolocateControl, ViewStateChangeEvent } from 'react-map-gl';
-import type { MapRef } from 'react-map-gl';
+import Map, { Marker, NavigationControl, GeolocateControl } from 'react-map-gl';
+import type { MapRef, ViewStateChangeInfo } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { ProProfile } from '@ozar/shared';
 
@@ -65,7 +65,7 @@ export default function MapSimple({
       
       <Map
         {...viewState}
-        onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
+        onMove={(evt: ViewStateChangeInfo) => setViewState(evt.viewState)}
         mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/streets-v12"
