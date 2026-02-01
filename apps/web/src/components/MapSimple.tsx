@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import Map, { Marker, NavigationControl, GeolocateControl } from 'react-map-gl';
-import type { ViewStateChangeInfo } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { ProProfile } from '@ozar/shared';
 
@@ -65,7 +64,7 @@ export default function MapSimple({
       
       <Map
         {...viewState}
-        onMove={(evt: ViewStateChangeInfo) => setViewState(evt.viewState)}
+        onMove={(evt) => setViewState(evt.viewState)}
         mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/streets-v12"
