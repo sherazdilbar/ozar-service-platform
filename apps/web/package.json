@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ozar/shared": "*",
     "@types/mapbox-gl": "^3.4.1",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.46",
