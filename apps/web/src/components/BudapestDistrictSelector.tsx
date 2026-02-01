@@ -29,11 +29,11 @@ export default function BudapestDistrictSelector({
   };
 
   const toggleZone = (zone: DistrictZone) => {
-    const zoneDistricts = DISTRICT_ZONES[zone].districts;
+    const zoneDistricts = DISTRICT_ZONES[zone].districts as readonly string[];
     const allSelected = zoneDistricts.every(d => selectedDistricts.includes(d));
     
     if (allSelected) {
-      onChange(selectedDistricts.filter(d => !zoneDistricts.includes(d as any)));
+      onChange(selectedDistricts.filter(d => !zoneDistricts.includes(d)));
     } else {
       const newDistricts = [...new Set([...selectedDistricts, ...zoneDistricts])];
       onChange(newDistricts);
