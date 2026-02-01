@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import BudapestMapSelector from '@/components/BudapestMapSelector';
+import BudapestLocationSelector from '@/components/BudapestLocationSelector';
 import { BUDAPEST_DISTRICTS, BUDAPEST_DISTRICT_COORDINATES, getAccessToken } from '@ozar/shared';
 import { MapPin, Home, Check, ArrowRight } from 'lucide-react';
 
@@ -264,18 +264,18 @@ export default function CustomerOnboardingPage() {
                 </div>
               )}
 
-              {/* Map Selector */}
+              {/* Location Selector */}
               <div className="mb-6">
-                <BudapestMapSelector
-                  selectedDistricts={selectedDistrict ? [selectedDistrict] : []}
-                  onChange={(districts) => {
-                    setSelectedDistrict(districts[0] || '');
+                <BudapestLocationSelector
+                  selectedDistrict={selectedDistrict}
+                  onDistrictChange={(district, lat, lng) => {
+                    setSelectedDistrict(district);
                     setStreetAddress('');
-                    setSelectedCoordinates(null);
+                    setSelectedCoordinates({ lat, lng });
                     setError('');
                   }}
                   language={language as 'en' | 'hu'}
-                  mode="single"
+                  showCurrentLocation={true}
                 />
               </div>
 
