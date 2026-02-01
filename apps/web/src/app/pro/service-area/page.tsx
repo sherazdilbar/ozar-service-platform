@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import BudapestMapSelector from '@/components/BudapestMapSelector';
+import BudapestDistrictSelector from '@/components/BudapestDistrictSelector';
 import { prosApi } from '@ozar/shared/apiClient';
 import { isBudapest } from '@ozar/shared/budapestDistricts';
 import { MapPin, Save, Navigation } from 'lucide-react';
@@ -208,7 +208,7 @@ export default function ProServiceAreaPage() {
                 </p>
               </div>
               
-              <BudapestMapSelector
+              <BudapestDistrictSelector
                 selectedDistricts={serviceAreaDistricts}
                 onChange={setServiceAreaDistricts}
                 language={language as 'en' | 'hu'}
