@@ -31,6 +31,9 @@ async function bootstrap() {
     'http://localhost:8082',  // Mobile app (Expo alternative port)
     'http://127.0.0.1:8081',  // Mobile app alternative
     'http://127.0.0.1:8082',  // Mobile app alternative port
+    'https://ozar-app-g4w6h.ondigitalocean.app',  // Production DigitalOcean URL
+    'https://www.ozar.hu',  // Production custom domain
+    'https://ozar.hu',  // Production root domain
     ...(process.env.CORS_ORIGIN?.split(',').map(origin => origin.trim()) || [])
   ];
 
