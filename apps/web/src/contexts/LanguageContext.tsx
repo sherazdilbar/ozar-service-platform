@@ -65,7 +65,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('language', lang);
     
     // Update URL with ?lang=hu
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     if (lang === 'hu') {
       params.set('lang', 'hu');
     } else {
