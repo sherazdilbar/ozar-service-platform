@@ -9,6 +9,9 @@ import { LanguageProvider } from '../contexts/LanguageContext';
 import { SearchProvider } from '../contexts/SearchContext';
 import OnboardingTutorial from '../components/OnboardingTutorial';
 
+// Force dynamic rendering for all pages (required for useSearchParams and other client features)
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Ozar - Find Local Professionals',
   description: 'Connect with trusted local professionals for all your home service needs',

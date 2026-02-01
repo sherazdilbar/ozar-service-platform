@@ -13,6 +13,12 @@ const nextConfig = {
     };
     return config;
   },
+  // Disable static optimization for all pages (required for dynamic features)
+  output: 'standalone',
+  experimental: {
+    // Force dynamic rendering for all pages
+    isrMemoryCacheSize: 0,
+  },
 }
 
 module.exports = nextConfig
