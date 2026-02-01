@@ -72,7 +72,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       params.delete('lang');
     }
     
-    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    const currentPath = pathname || '/';
+    const newUrl = params.toString() ? `${currentPath}?${params.toString()}` : currentPath;
     router.replace(newUrl);
   };
 
