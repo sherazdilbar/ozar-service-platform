@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { ProProfile } from '@ozar/shared';
 import Image from 'next/image';
 import { Star, MapPin, Award, TrendingUp, X } from 'lucide-react';
