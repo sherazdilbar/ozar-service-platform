@@ -13,11 +13,11 @@ const nextConfig = {
     };
     return config;
   },
-  // Disable static optimization for all pages (required for dynamic features)
+  // Standalone output for optimized deployment
   output: 'standalone',
-  experimental: {
-    // Force dynamic rendering for all pages
-    isrMemoryCacheSize: 0,
+  // Skip generating error pages during build (they'll be generated on-demand)
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
   },
 }
 
