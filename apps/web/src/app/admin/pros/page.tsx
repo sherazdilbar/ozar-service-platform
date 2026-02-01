@@ -12,7 +12,7 @@ export default function AdminProsPage() {
   const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [pros, setPros] = useState<any[]>([]);
-  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'ALL');
+  const [statusFilter, setStatusFilter] = useState(searchParams?.get('status') || 'ALL');
   const [processing, setProcessing] = useState<string | null>(null);
 
   useEffect(() => {
