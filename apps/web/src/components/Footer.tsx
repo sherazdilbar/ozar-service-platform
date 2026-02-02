@@ -14,9 +14,11 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center shadow-lg">
-                <span className="text-xl">🔧</span>
-              </div>
+              <img 
+                src="/ozar-logo.png" 
+                alt="Ozar" 
+                className="h-16 w-auto"
+              />
               <div>
                 <div className="text-xl font-bold">Ozar</div>
                 <div className="text-xs text-gray-400">Find Local Pros</div>

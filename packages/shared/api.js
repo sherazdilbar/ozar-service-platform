@@ -23,6 +23,7 @@ async function getPros(filters) {
         const result = await apiClient_1.prosApi.getPros({
             category: filters?.category,
             city: filters?.city,
+            district: filters?.district,
             lat: filters?.location?.lat,
             lng: filters?.location?.lng,
             radiusKm: filters?.maxDistance,

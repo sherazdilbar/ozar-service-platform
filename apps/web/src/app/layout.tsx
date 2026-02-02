@@ -15,6 +15,11 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Ozar - Find Local Professionals',
   description: 'Connect with trusted local professionals for all your home service needs',
+  icons: {
+    icon: '/ozar-logo.png',
+    shortcut: '/ozar-logo.png',
+    apple: '/ozar-logo.png',
+  },
 };
 
 export default function RootLayout({

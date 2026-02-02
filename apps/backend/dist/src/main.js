@@ -25,6 +25,9 @@ async function bootstrap() {
         'http://localhost:8082',
         'http://127.0.0.1:8081',
         'http://127.0.0.1:8082',
+        'https://ozar-app-g4w6h.ondigitalocean.app',
+        'https://www.ozar.hu',
+        'https://ozar.hu',
         ...(process.env.CORS_ORIGIN?.split(',').map(origin => origin.trim()) || [])
     ];
     app.enableCors({

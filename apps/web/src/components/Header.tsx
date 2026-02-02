@@ -16,16 +16,18 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 shadow-sm transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Brand */}
-          <LanguageLink href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">O</span>
-            </div>
+          <LanguageLink href="/" className="flex items-center gap-1">
+            <img 
+              src="/ozar-logo.png" 
+              alt="Ozar" 
+              className="h-10 sm:h-12 md:h-14 w-auto transition-transform hover:scale-105"
+            />
             <div>
-              <div className="text-xl font-bold text-gray-900 dark:text-white">Ozar</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Find Local Pros</div>
+              <div className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white">Ozar</div>
+              <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 hidden xs:block">Find Local Pros</div>
             </div>
           </LanguageLink>
 
@@ -46,9 +48,13 @@ export default function Header() {
           </nav>
 
           {/* Right */}
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
-            <ThemeToggle />
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
             {isAuthenticated ? (
               <>
                 <NotificationsDropdown />
