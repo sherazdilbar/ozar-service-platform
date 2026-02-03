@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ProProfile, ServiceCategory, getPros } from '@ozar/shared';
+import { ProProfile, getPros } from '@ozar/shared';
 import dynamic from 'next/dynamic';
-import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CategoryGroupCarousel from '@/components/CategoryGroupCarousel';
 import ImprovedSearchBar from '@/components/ImprovedSearchBar';
-import { Search, MapIcon, CheckCircle } from 'lucide-react';
+import RotatingText from '@/components/RotatingText';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { MapIcon, Users, Briefcase, Star } from 'lucide-react';
 
 // Dynamically import Map component with no SSR
 const DynamicMap = dynamic(() => import('@/components/DynamicMap'), {
@@ -54,8 +55,8 @@ export default function HomePage() {
       {/* Header */}
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 sm:py-16 md:py-24">
+      {/* Hero Section with Integrated Search */}
+      <section className="relative bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 sm:py-16 md:py-20 pb-24 sm:pb-28 md:pb-32">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-72 h-72 bg-teal-400/20 rounded-full blur-3xl animate-float"></div>
@@ -64,120 +65,68 @@ export default function HomePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div className="animate-fade-in text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full text-sm font-semibold mb-4 md:mb-6">
-                <CheckCircle className="w-4 h-4" />
-                <span>{t('hero.badge')}</span>
-              </div>
-              
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6 leading-tight">
-                {t('hero.title')}
-                <span className="block bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                  {t('hero.professionals')}
-                </span>
-              </h2>
-              
-              <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 md:mb-8 leading-relaxed">
-                {t('hero.subtitle')}
-              </p>
+          <div className="text-center space-y-8">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-teal-600 dark:text-teal-400 rounded-full text-sm font-medium shadow-lg mb-6">
+              <span className="flex h-2 w-2 rounded-full bg-teal-500 animate-pulse"></span>
+              <span>{t('hero.badge')}</span>
+            </div>
+            
+            {/* Main Heading with Rotating Text */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-[1.1] mb-8">
+              {t('hero.title')} <br className="hidden md:block" />
+              <RotatingText />
+            </h1>
 
-              <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
-                <div className="text-center p-3 sm:p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700">
-                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-teal-600 dark:text-teal-400 mb-1">10K+</div>
-                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{t('hero.stats.professionals')}</div>
-                </div>
-                <div className="text-center p-3 sm:p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700">
-                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-teal-600 dark:text-teal-400 mb-1">50K+</div>
-                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{t('hero.stats.reviews')}</div>
-                </div>
-                <div className="text-center p-3 sm:p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700">
-                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-teal-600 dark:text-teal-400 mb-1">100%</div>
-                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{t('hero.stats.secure')}</div>
-                </div>
-              </div>
+            {/* Search Bar */}
+            <div className="max-w-4xl mx-auto">
+              <ImprovedSearchBar />
+            </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-                <button
-                  onClick={() => document.getElementById('search-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white rounded-xl md:rounded-2xl font-bold text-base md:text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 flex items-center justify-center gap-2"
-                >
-                  <Search className="w-5 h-5" />
-                  {t('hero.cta.findPro')}
-                </button>
-                <button
-                  onClick={() => router.push('/auth/signup?role=PRO')}
-                  className="px-6 sm:px-8 py-3 sm:py-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2"
-                >
-                  {t('hero.cta.becomePro')}
-                  <span className="text-xl">→</span>
-                </button>
+            {/* Stats Row */}
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-12 pt-4 text-gray-700 dark:text-gray-300 font-medium">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                <span><strong className="text-gray-900 dark:text-white text-lg">10K+</strong> {t('hero.stats.pros')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                <span><strong className="text-gray-900 dark:text-white text-lg">50K+</strong> {t('hero.stats.jobsDone')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Star className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                <span><strong className="text-gray-900 dark:text-white text-lg">4.9/5</strong> {t('hero.stats.averageRating')}</span>
               </div>
             </div>
 
-            <div className="relative animate-fade-in hidden md:block" style={{ animationDelay: '0.2s' }}>
-              <div className="relative h-96 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                {/* Decorative Elements */}
-                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-cyan-500/10"></div>
-                
-                {/* Floating Cards */}
-                <div className="absolute top-8 left-8 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-200 dark:border-gray-700 animate-float">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center">
-                      <CheckCircle className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-gray-900 dark:text-white">Verified</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">100% Trusted</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute bottom-8 right-8 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-200 dark:border-gray-700 animate-float" style={{ animationDelay: '1s' }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center">
-                      <span className="text-2xl">⭐</span>
-                    </div>
-                    <div>
-                      <div className="font-bold text-gray-900 dark:text-white">4.9/5</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Avg Rating</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <div className="w-32 h-32 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-full flex items-center justify-center shadow-2xl">
-                    <MapIcon className="w-16 h-16 text-white" />
-                  </div>
-                </div>
-              </div>
+            {/* Quick Links Below Stats */}
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => router.push('/how-it-works')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 hover:border-teal-300 dark:hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-all shadow-sm hover:shadow-md"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {t('nav.howItWorks')}
+              </button>
+              <button
+                onClick={() => router.push('/trust-safety')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 hover:border-teal-300 dark:hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-all shadow-sm hover:shadow-md"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                {t('nav.trustSafety')}
+              </button>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Search Section */}
-      <section id="search-section" className="bg-white dark:bg-gray-800 py-8 sm:py-10 md:py-12 border-b border-gray-100 dark:border-gray-700">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-6 md:mb-8">
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
-              Connect with verified experts across Budapest's 23 districts. Book instantly or request custom quotes.
-            </p>
-          </div>
-
-          {/* Improved Search Bar */}
-          <ImprovedSearchBar />
         </div>
       </section>
 
       {/* Category Section */}
-      <section className="bg-gray-50 dark:bg-gray-900 py-8 sm:py-10 md:py-12">
+      <section className="bg-gray-50 dark:bg-gray-900 py-12 sm:py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-6 md:mb-8">
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Browse by Category</h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Find the perfect professional for your needs</p>
-          </div>
-          
           <CategoryGroupCarousel 
             onCategorySelect={(category) => router.push(`/search?category=${category}`)} 
           />
@@ -185,33 +134,54 @@ export default function HomePage() {
       </section>
 
       {/* Map Section */}
-      <section className="bg-white dark:bg-gray-900 py-8 sm:py-10 md:py-12">
+      <section className="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-6 md:mb-8">
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              {t('map.title')}
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-              {loading ? t('map.loading') : `${pros.length} ${t('map.available')}`}
-            </p>
-          </div>
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            {/* Left Side - Text Content */}
+            <div className="space-y-6 lg:space-y-8">
+              <div>
+                <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-4" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  {t('map.title')}
+                </h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {t('map.subtitle')}
+                </p>
+              </div>
+              
+              {/* Button and Count - Stacked on Mobile, Side by Side on Desktop */}
+              <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
+                <button
+                  onClick={() => router.push('/search')}
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                >
+                  {t('map.viewAllProfessionals')}
+                </button>
+                
+                <div className="flex items-center justify-center sm:justify-start gap-2 text-sm">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">
+                    {loading ? t('map.loading') : `${pros.length} ${t('map.available')}`}
+                  </span>
+                </div>
+              </div>
 
-          <div className="rounded-xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-lg">
-            <DynamicMap
-              pros={pros}
-              onProClick={(pro) => router.push(`/pros/${pro.id}`)}
-              height="600px"
-            />
-          </div>
+              {/* Districts Badge */}
+              <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 rounded-xl px-4 py-3 shadow-lg border border-gray-200 dark:border-gray-700">
+                <MapIcon className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">23 {t('map.districtsCovered')}</span>
+              </div>
+            </div>
 
-          <div className="text-center mt-6">
-            <button
-              onClick={() => router.push('/search')}
-              className="px-6 sm:px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto text-sm sm:text-base"
-            >
-              <span>{t('map.viewAll')}</span>
-              <MapIcon className="w-5 h-5" />
-            </button>
+            {/* Right Side - Map */}
+            <div className="relative order-first lg:order-last">
+              <div className="rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-2xl h-[400px] sm:h-[450px] lg:h-[500px]">
+                <DynamicMap
+                  pros={pros}
+                  onProClick={(pro) => router.push(`/pros/${pro.id}`)}
+                  height="100%"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>

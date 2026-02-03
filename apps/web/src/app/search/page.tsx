@@ -362,7 +362,7 @@ function SearchPageContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
-        <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-6">
+        <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-6 items-start">
           {/* Filters Sidebar */}
           <aside className={cn(
             'lg:block lg:w-72 flex-shrink-0',
@@ -600,12 +600,12 @@ function SearchPageContent() {
               <>
                 <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-5">
                   {filteredPros.length === 0 ? (
-                    <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
-                      <div className="text-7xl mb-6">🔍</div>
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    <div className="w-full text-center py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 px-4 sm:px-6">
+                      <div className="text-5xl sm:text-6xl md:text-7xl mb-4 sm:mb-6">🔍</div>
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
                         {t('searchPage.noResults')}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 max-w-md mx-auto">
                         {t('searchPage.tryAdjusting')}
                       </p>
                       <button
@@ -618,7 +618,7 @@ function SearchPageContent() {
                           setRadiusKm(10);
                           router.push('/search');
                         }}
-                        className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition font-medium"
+                        className="px-4 sm:px-6 py-2.5 sm:py-3 bg-teal-600 text-white rounded-lg sm:rounded-xl hover:bg-teal-700 transition font-medium text-sm sm:text-base"
                       >
                         {t('searchPage.clearFilters')}
                       </button>

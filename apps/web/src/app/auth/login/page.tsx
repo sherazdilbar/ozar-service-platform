@@ -198,38 +198,6 @@ export default function LoginPage() {
               </LanguageLink>
             </p>
           </div>
-
-          {/* Demo Accounts */}
-          <div className="mt-8 p-5 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
-            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 text-center mb-3">{t('login.demoAccess')}</p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setFormData({ email: 'customer@demo.com', password: 'demo123' })}
-                className="px-3 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-teal-300 dark:hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition text-center"
-              >
-                <div className="text-xl mb-1">👤</div>
-                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('signup.customer')}</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData({ email: 'pro@demo.com', password: 'demo123' })}
-                className="px-3 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-teal-300 dark:hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition text-center"
-              >
-                <div className="text-xl mb-1">🔧</div>
-                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('login.demoPro')}</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData({ email: 'admin@demo.com', password: 'demo123' })}
-                className="px-3 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-teal-300 dark:hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition text-center"
-              >
-                <div className="text-xl mb-1">👑</div>
-                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('login.demoAdmin')}</div>
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">{t('login.demoPassword')}</p>
-          </div>
         </div>
       </div>
     </div>
