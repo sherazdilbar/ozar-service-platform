@@ -167,7 +167,7 @@ export default function ImprovedSearchBar({
         {/* Search Button */}
         <button
           type="submit"
-          className="px-8 py-4 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold text-base transition-all hover:shadow-lg flex-shrink-0"
+          className="px-8 py-4 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold text-base transition-all hover:shadow-lg flex-shrink-0 rounded-r-2xl"
         >
           Search
         </button>
@@ -264,7 +264,7 @@ export default function ImprovedSearchBar({
         {/* Search Button */}
         <button
           type="submit"
-          className="w-full px-4 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold text-base transition-all hover:shadow-lg"
+          className="w-full px-4 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold text-base transition-all hover:shadow-lg rounded-b-2xl"
         >
           Search
         </button>
