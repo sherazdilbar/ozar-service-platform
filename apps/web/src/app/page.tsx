@@ -6,12 +6,14 @@ import { ProProfile, getPros } from '@ozar/shared';
 import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CategoryGroupCarousel from '@/components/CategoryGroupCarousel';
 import ImprovedSearchBar from '@/components/ImprovedSearchBar';
 import RotatingText from '@/components/RotatingText';
+import VisionSection from '@/components/VisionSection';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MapIcon, Users, Briefcase, Star } from 'lucide-react';
 
-// Dynamically import heavy components with no SSR
+// Only dynamically import Map component (heavy Mapbox dependency)
 const DynamicMap = dynamic(() => import('@/components/DynamicMap'), {
   ssr: false,
   loading: () => (
@@ -22,16 +24,6 @@ const DynamicMap = dynamic(() => import('@/components/DynamicMap'), {
       </div>
     </div>
   ),
-});
-
-const VisionSection = dynamic(() => import('@/components/VisionSection'), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-gradient-to-b from-teal-50/50 via-white to-teal-50/30" />,
-});
-
-const CategoryGroupCarousel = dynamic(() => import('@/components/CategoryGroupCarousel'), {
-  ssr: false,
-  loading: () => <div className="h-64 bg-gray-50 dark:bg-gray-900 animate-pulse" />,
 });
 
 export default function HomePage() {
