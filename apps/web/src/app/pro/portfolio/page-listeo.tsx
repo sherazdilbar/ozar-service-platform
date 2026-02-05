@@ -96,8 +96,7 @@ export default function ProPortfolioPageListeo() {
     if (!confirm('Are you sure you want to delete this portfolio item?')) return;
     
     try {
-      if (!proId) return;
-      await prosApi.deletePortfolioItem(proId, itemId);
+      await prosApi.deletePortfolioItem(itemId);
       await loadPortfolio();
       alert('Portfolio item deleted successfully!');
     } catch (error) {

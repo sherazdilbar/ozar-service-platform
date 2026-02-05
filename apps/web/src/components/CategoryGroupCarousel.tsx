@@ -6,7 +6,7 @@ import { CATEGORY_GROUPS, ServiceCategory, CATEGORY_LABELS } from '@ozar/shared'
 import { 
   ChevronLeft, ChevronRight, Home, Sparkles, Scissors, Monitor, Truck, ChefHat, Dog, PartyPopper, BookOpen, Zap, X,
   Zap as Electric, Droplet, Wrench, Wind, Refrigerator, Flame, PaintBucket, Grid3x3, Bath, DoorOpen,
-  Trees, Fence, Spray, Snowflake, SparklesIcon, Building2, Package, Sofa, Armchair,
+  Trees, Fence, Droplets as Spray, Snowflake, SparklesIcon, Building2, Package, Sofa, Armchair,
   ScissorsIcon, User, Smile, Hand, Stethoscope, Activity, Dumbbell,
   Tv, Wifi, Home as SmartHome, Camera, Laptop, Printer,
   TruckIcon, Box, PackageCheck, Trash2,
@@ -14,7 +14,7 @@ import {
   PawPrint, Bone, Scissors as PetScissors, Cross,
   Cake, UtensilsIcon, Music, CameraIcon, Video,
   GraduationCap, Guitar, Languages, Dumbbell as Fitness,
-  Hammer, Drill, Tool, AlertCircle
+  Hammer, Drill, Wrench as Tool, AlertCircle
 } from 'lucide-react';
 
 interface CategoryGroupCarouselProps {
