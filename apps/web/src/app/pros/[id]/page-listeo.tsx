@@ -112,45 +112,45 @@ export default function ProProfilePageListeo() {
       <Header />
 
       {/* Hero Section with Cover */}
-      <div className="relative h-80 bg-gradient-to-r from-teal-600 to-cyan-600">
+      <div className="relative h-48 sm:h-64 lg:h-80 bg-gradient-to-r from-teal-600 to-cyan-600">
         <div className="absolute inset-0 bg-black/20"></div>
         {/* Could add cover image here if available */}
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 pb-12 relative z-10 w-full">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 sm:-mt-24 lg:-mt-32 pb-12 relative z-10 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Profile Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-              <div className="flex flex-col sm:flex-row gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 {/* Avatar */}
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 mx-auto sm:mx-0">
                   <div className="relative">
                     <Avatar
                       imageUrl={pro.user.avatar}
                       name={`${pro.user.firstName} ${pro.user.lastName}`}
-                      size={120}
-                      className="rounded-lg"
+                      size={100}
+                      className="rounded-lg sm:w-[120px] sm:h-[120px]"
                     />
                     {pro.verificationStatus === 'APPROVED' && (
-                      <div className="absolute -bottom-2 -right-2 bg-teal-600 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
-                        <Shield className="w-5 h-5" />
+                      <div className="absolute -bottom-2 -right-2 bg-teal-600 text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-lg">
+                        <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Info */}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                <div className="flex-1 text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between mb-3 gap-3">
+                    <div className="flex-1">
+                      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {pro.user.firstName} {pro.user.lastName}
                       </h1>
                       {pro.businessName && (
-                        <p className="text-lg text-gray-600 dark:text-gray-400">{pro.businessName}</p>
+                        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">{pro.businessName}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -172,20 +172,20 @@ export default function ProProfilePageListeo() {
                   </div>
 
                   {/* Stats */}
-                  <div className="flex flex-wrap items-center gap-6 text-sm">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1">
-                        <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                        <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 fill-yellow-500" />
                         <span className="font-bold text-gray-900 dark:text-white">{pro.rating}</span>
                       </div>
                       <span className="text-gray-600 dark:text-gray-400">({pro.reviewCount} reviews)</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                      <CheckCircle className="w-5 h-5 text-teal-600" />
-                      <span>{pro.jobsCompleted} jobs completed</span>
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600" />
+                      <span>{pro.jobsCompleted} jobs</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                      <MapPin className="w-5 h-5" />
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span>{pro.locationCity}</span>
                     </div>
                   </div>
@@ -194,9 +194,9 @@ export default function ProProfilePageListeo() {
             </div>
 
             {/* Tabs */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-              <div className="border-b border-gray-200 dark:border-gray-700">
-                <nav className="flex -mb-px">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+              <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                <nav className="flex -mb-px min-w-max">
                   {[
                     { id: 'overview', label: 'Overview' },
                     { id: 'services', label: 'Services', count: pro.services?.length },
@@ -206,7 +206,7 @@ export default function ProProfilePageListeo() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as any)}
-                      className={`px-6 py-4 text-sm font-semibold border-b-2 transition-colors ${
+                      className={`px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
                         activeTab === tab.id
                           ? 'border-teal-600 text-teal-600 dark:text-teal-400'
                           : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -214,7 +214,7 @@ export default function ProProfilePageListeo() {
                     >
                       {tab.label}
                       {tab.count !== undefined && tab.count > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
+                        <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
                           {tab.count}
                         </span>
                       )}
@@ -224,7 +224,7 @@ export default function ProProfilePageListeo() {
               </div>
 
               {/* Tab Content */}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {activeTab === 'overview' && (
                   <div className="space-y-6">
                     {/* About */}
