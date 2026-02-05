@@ -282,6 +282,7 @@ export interface ProDashboard {
 export interface ProFilters {
     category?: ServiceCategory;
     city?: string;
+    district?: string;
     availableNow?: boolean;
     maxDistance?: number;
     minRating?: number;

@@ -16,39 +16,34 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 shadow-sm transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Brand */}
-          <LanguageLink href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">O</span>
-            </div>
+          <LanguageLink href="/" className="flex items-center gap-1" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <img 
+              src="/ozar-logo.png" 
+              alt="Ozar" 
+              className="h-12 sm:h-14 md:h-16 w-auto transition-transform hover:scale-105"
+            />
             <div>
-              <div className="text-xl font-bold text-gray-900 dark:text-white">Ozar</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Find Local Pros</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Ozar</div>
+              <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Find Local Pros</div>
             </div>
           </LanguageLink>
 
           {/* Nav */}
           <nav className="hidden md:flex items-center gap-4">
-            <LanguageLink 
-              href="/how-it-works" 
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 border-2 border-gray-200 dark:border-gray-600 hover:border-teal-500 dark:hover:border-teal-500 rounded-lg transition-all duration-200 hover:shadow-md"
-            >
-              {t('nav.howItWorks')}
-            </LanguageLink>
-            <LanguageLink 
-              href="/trust-safety" 
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 border-2 border-gray-200 dark:border-gray-600 hover:border-teal-500 dark:hover:border-teal-500 rounded-lg transition-all duration-200 hover:shadow-md"
-            >
-              {t('nav.trustSafety')}
-            </LanguageLink>
+            {/* Navigation links removed - now below search bar on homepage */}
           </nav>
 
           {/* Right */}
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
-            <ThemeToggle />
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
             {isAuthenticated ? (
               <>
                 <NotificationsDropdown />
@@ -139,22 +134,6 @@ export default function Header() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-gray-100 dark:border-gray-700 py-4 space-y-2">
-            {/* Navigation Links */}
-            <LanguageLink 
-              href="/how-it-works" 
-              className="block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.howItWorks')}
-            </LanguageLink>
-            <LanguageLink 
-              href="/trust-safety" 
-              className="block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.trustSafety')}
-            </LanguageLink>
-
             {isAuthenticated ? (
               <>
                 {user?.role === 'CUSTOMER' && (

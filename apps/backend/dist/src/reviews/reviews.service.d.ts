@@ -149,6 +149,7 @@ export declare class ReviewsService {
             serviceAreaRadius: number;
             onboardingCompleted: boolean;
             onboardingStep: string | null;
+            onboardingDraft: import(".prisma/client/runtime/library").JsonValue | null;
             onboardingStartedAt: Date | null;
             onboardingCompletedAt: Date | null;
             userId: string;

@@ -330,6 +330,7 @@ export interface ProDashboard {
 export interface ProFilters {
   category?: ServiceCategory;
   city?: string; // Filter by city
+  district?: string; // Filter by Budapest district
   availableNow?: boolean;
   maxDistance?: number;
   minRating?: number;

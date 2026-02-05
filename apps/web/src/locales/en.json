@@ -18,12 +18,26 @@
     "admin": "Admin"
   },
   "hero": {
-    "badge": "Trusted by 50,000+ customers",
-    "title": "Find trusted local",
+    "badge": "Budapest's #1 Local Services Marketplace",
+    "title": "Find your perfect",
+    "rotatingProfessions": {
+      "cleaner": "cleaner",
+      "handyman": "handyman",
+      "plumber": "plumber",
+      "electrician": "electrician",
+      "painter": "painter",
+      "gardener": "gardener",
+      "beautician": "beautician",
+      "tutor": "tutor",
+      "chef": "chef"
+    },
     "professionals": "professionals",
     "subtitle": "Connect with verified, highly-rated service professionals. Book instantly, pay safely, and get the job done right.",
     "stats": {
       "professionals": "Professionals",
+      "pros": "Pros",
+      "jobsDone": "Jobs Done",
+      "averageRating": "Average Rating",
       "reviews": "Reviews",
       "secure": "Secure"
     },
@@ -35,7 +49,10 @@
   "search": {
     "title": "What service do you need?",
     "subtitle": "Search for professionals or browse by category",
-    "placeholder": "Search for services or professionals...",
+    "placeholder": "What service do you need?",
+    "selectDistrict": "Select District",
+    "allDistricts": "All Districts",
+    "district": "District",
     "button": "Search",
     "quickActions": {
       "availableToday": "Available Today",
@@ -48,10 +65,13 @@
     "subtitle": "Find the perfect professional for your needs"
   },
   "map": {
-    "title": "Explore Professionals Near You",
+    "title": "Professionals Near You",
+    "subtitle": "Explore verified experts across Budapest's 23 districts. Our map view helps you find professionals who are already working in your neighborhood.",
     "loading": "Loading map...",
     "available": "professionals available",
-    "viewAll": "View All Professionals"
+    "viewAll": "View All Professionals",
+    "viewAllProfessionals": "View All Professionals",
+    "districtsCovered": "districts covered"
   },
   "footer": {
     "tagline": "Connect with trusted local professionals for all your home service needs.",
@@ -369,6 +389,7 @@
     "booking": "Booking"
   },
   "proDashboard": {
+    "dashboard": "Dashboard",
     "welcomeBack": "Welcome back",
     "businessToday": "Here's what's happening with your business today",
     "todayEarnings": "Today's Earnings",

@@ -48,6 +48,7 @@ export declare const prosApi: {
     getPros(filters?: {
         category?: string;
         city?: string;
+        district?: string;
         lat?: number;
         lng?: number;
         radiusKm?: number;

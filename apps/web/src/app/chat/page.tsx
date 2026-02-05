@@ -1,3 +1,10 @@
+import ChatListPageListeo from './page-listeo';
+
+export default function ChatListPage() {
+  return <ChatListPageListeo />;
+}
+
+/*
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,7 +30,7 @@ interface Conversation {
   updatedAt: string;
 }
 
-export default function ChatListPage() {
+function ChatListPageOld() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
   const { socket, isConnected, onlineUsers } = useSocket();
@@ -204,3 +211,4 @@ export default function ChatListPage() {
     </div>
   );
 }
+*/

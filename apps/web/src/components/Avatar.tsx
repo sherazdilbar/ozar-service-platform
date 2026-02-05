@@ -16,11 +16,15 @@ export default function Avatar({ imageUrl, name, size = 48, className = '' }: Av
 
   // Get initials from name
   const getInitials = (name: string) => {
-    const parts = name.trim().split(' ');
+    if (!name || typeof name !== 'string') return '??';
+    const trimmedName = name.trim();
+    if (!trimmedName) return '??';
+    
+    const parts = trimmedName.split(' ');
     if (parts.length >= 2) {
       return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
     }
-    return name.substring(0, 2).toUpperCase();
+    return trimmedName.substring(0, 2).toUpperCase();
   };
 
   const fullImageUrl = getImageUrl(imageUrl);
@@ -28,6 +32,7 @@ export default function Avatar({ imageUrl, name, size = 48, className = '' }: Av
 
   // Generate a consistent color based on name
   const getColorFromName = (name: string) => {
+    if (!name || typeof name !== 'string') return 'bg-gray-500';
     const colors = [
       'bg-blue-500',
       'bg-green-500',

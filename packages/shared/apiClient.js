@@ -182,6 +182,8 @@ exports.prosApi = {
             params.append('categoryId', filters.category); // Backend expects 'categoryId'
         if (filters?.city)
             params.append('city', filters.city);
+        if (filters?.district)
+            params.append('district', filters.district);
         if (filters?.lat)
             params.append('lat', filters.lat.toString());
         if (filters?.lng)

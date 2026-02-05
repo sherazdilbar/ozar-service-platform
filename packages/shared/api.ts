@@ -19,6 +19,7 @@ export async function getPros(filters?: ProFilters): Promise<ProProfile[]> {
     const result = await prosApi.getPros({
       category: filters?.category,
       city: filters?.city,
+      district: filters?.district,
       lat: filters?.location?.lat,
       lng: filters?.location?.lng,
       radiusKm: filters?.maxDistance,

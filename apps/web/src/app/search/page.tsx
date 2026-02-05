@@ -8,14 +8,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import BudapestDistrictSelector from '@/components/BudapestDistrictSelector';
 import {
   ProProfile,
   ServiceCategory,
   getPros,
   CATEGORY_LABELS,
   CATEGORY_ICONS,
-  isBudapest,
+  BUDAPEST_DISTRICTS,
+  BudapestDistrict,
 } from '@ozar/shared';
 import { getImageUrl } from '@/utils/imageUrl';
 import {
@@ -24,16 +24,11 @@ import {
   Star,
   Shield,
   Clock,
-  ChevronRight,
-  Heart,
-  MessageSquare,
   MapIcon,
   LayoutList,
   CheckCircle,
   Filter,
   X,
-  Zap,
-  TrendingUp,
 } from 'lucide-react';
 
 const DynamicMap = dynamic(() => import('@/components/DynamicMap'), {
@@ -72,149 +67,83 @@ function toRad(degrees: number): number {
 
 // Pro Card Component - Enhanced
 function ProCard({ pro, userLocation }: { pro: ProProfile; userLocation: { lat: number; lng: number } | null }) {
-  const { t } = useLanguage();
   const distance = userLocation
     ? calculateDistance(userLocation.lat, userLocation.lng, pro.location.lat, pro.location.lng)
     : null;
 
-  // Determine badge
-  const isTopRated = pro.rating >= 4.7;
-  const isQuickResponse = pro.responseTime <= 15;
-
   return (
     <Link href={`/pros/${pro.id}`}>
-      <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-teal-500 dark:hover:border-teal-500 relative overflow-hidden">
-        {/* Hover Effect Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/10 dark:to-cyan-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
-        <div className="relative">
-          <div className="flex gap-4">
-            {/* Avatar with Status */}
-            <div className="flex-shrink-0 relative">
-              {pro.user.avatar ? (
-                <img
-                  src={getImageUrl(pro.user.avatar) || '/placeholder-avatar.png'}
-                  alt={`${pro.user.firstName} ${pro.user.lastName}`}
-                  className="w-24 h-24 rounded-2xl object-cover shadow-lg"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-teal-400 via-teal-500 to-teal-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                  {pro.user.firstName[0]}{pro.user.lastName[0]}
+      <div className="group bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl md:rounded-2xl p-2.5 sm:p-3 md:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-teal-500 dark:hover:border-teal-500">
+        <div className="flex gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
+          {/* Avatar */}
+          <div className="flex-shrink-0 relative">
+            {pro.user.avatar ? (
+              <img
+                src={getImageUrl(pro.user.avatar) || '/placeholder-avatar.png'}
+                alt={`${pro.user.firstName} ${pro.user.lastName}`}
+                className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-lg md:rounded-xl object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-lg md:rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold">
+                {pro.user.firstName[0]}{pro.user.lastName[0]}
+              </div>
+            )}
+            {pro.availabilityStatus === 'AVAILABLE_NOW' && (
+              <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full" />
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-2 mb-1 md:mb-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors truncate">
+                  {pro.businessName || `${pro.user.firstName} ${pro.user.lastName}`}
+                </h3>
+                <div className="flex items-center gap-1.5 md:gap-2 mt-0.5 md:mt-1">
+                  <div className="flex items-center gap-0.5 md:gap-1">
+                    <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                    <span className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm">{pro.rating.toFixed(1)}</span>
+                    <span className="text-[9px] sm:text-[10px] md:text-xs text-gray-500 dark:text-gray-400">({pro.reviewCount})</span>
+                  </div>
+                  {pro.verificationStatus === 'APPROVED' && (
+                    <div className="flex items-center gap-0.5 md:gap-1 px-1.5 md:px-2 py-0.5 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full">
+                      <CheckCircle className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                      <span className="text-[9px] md:text-xs font-semibold hidden xs:inline">Verified</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {pro.availabilityStatus === 'AVAILABLE_NOW' && (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white dark:border-gray-800 rounded-full animate-pulse" />
-              )}
+              </div>
+              
+              {/* Price */}
+              <div className="text-right flex-shrink-0">
+                <div className="text-sm sm:text-base md:text-lg lg:text-2xl font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                  {pro.startingPrice.toLocaleString()}<span className="text-[9px] sm:text-[10px] md:text-sm font-normal text-gray-500 dark:text-gray-400 ml-0.5 md:ml-1">{pro.currency}</span>
+                </div>
+                <span className="text-[9px] md:text-xs text-gray-500 dark:text-gray-400">starting from</span>
+              </div>
             </div>
 
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                    {pro.businessName || `${pro.user.firstName} ${pro.user.lastName}`}
-                  </h3>
-                  <div className="flex items-center gap-3 mt-2 flex-wrap">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                      <span className="font-bold text-gray-900 dark:text-white">{pro.rating.toFixed(1)}</span>
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        ({pro.reviewCount} {t('searchPage.reviews')})
-                      </span>
-                    </div>
-                    {pro.verificationStatus === 'APPROVED' && (
-                      <div className="flex items-center gap-1 px-2 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full">
-                        <CheckCircle className="w-3.5 h-3.5" />
-                        <span className="text-xs font-semibold">{t('search.quickActions.verifiedOnly')}</span>
-                      </div>
-                    )}
-                    {isTopRated && (
-                      <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full">
-                        <TrendingUp className="w-3.5 h-3.5" />
-                        <span className="text-xs font-semibold">{t('searchPage.topRated')}</span>
-                      </div>
-                    )}
-                    {isQuickResponse && (
-                      <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full">
-                        <Zap className="w-3.5 h-3.5" />
-                        <span className="text-xs font-semibold">{t('searchPage.fastestResponse')}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+            {/* Bio - Hidden on mobile, shown on desktop */}
+            <p className="hidden md:block text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-1">
+              {pro.bio}
+            </p>
 
-                {/* Availability Badge */}
-                {pro.availabilityStatus === 'AVAILABLE_NOW' && (
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-semibold shadow-sm">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    {t('searchPage.availableNow')}
-                  </div>
-                )}
+            {/* Stats Row */}
+            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 text-[10px] sm:text-xs md:text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-0.5 md:gap-1">
+                <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-teal-600 flex-shrink-0" />
+                <span className="truncate max-w-[80px] sm:max-w-none">{pro.location.area}</span>
+                {distance && <span className="text-gray-400 hidden md:inline">• {distance.toFixed(1)}km</span>}
               </div>
-
-              {/* Bio */}
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 leading-relaxed">
-                {pro.bio}
-              </p>
-
-              {/* Categories */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {pro.categories.slice(0, 3).map((cat) => (
-                  <span
-                    key={cat}
-                    className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium"
-                  >
-                    {CATEGORY_LABELS[cat]}
-                  </span>
-                ))}
-                {pro.categories.length > 3 && (
-                  <span className="px-3 py-1 text-gray-600 dark:text-gray-400 text-xs font-medium">
-                    +{pro.categories.length - 3} more
-                  </span>
-                )}
+              <div className="flex items-center gap-0.5 md:gap-1">
+                <Shield className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-teal-600 flex-shrink-0" />
+                <span>{pro.jobsCompleted}<span className="hidden md:inline"> jobs</span></span>
               </div>
-
-              {/* Stats */}
-              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4 flex-wrap">
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                  <span className="font-medium">{pro.location.area}</span>
-                  {distance && <span className="text-xs text-gray-500">• {distance.toFixed(1)}km</span>}
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Shield className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                  <span className="font-medium">{pro.jobsCompleted} {t('searchPage.jobsCompleted').toLowerCase()}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                  <span className="font-medium">~{pro.responseTime}min</span>
-                </div>
-              </div>
-
-              {/* Price & CTA */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                <div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('searchPage.startingFrom')}</span>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {pro.startingPrice.toLocaleString()} <span className="text-base font-normal text-gray-600 dark:text-gray-400">{pro.currency}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // Handle message
-                    }}
-                    className="p-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-teal-500 dark:hover:border-teal-500 transition-all"
-                    title={t('nav.messages')}
-                  >
-                    <MessageSquare className="w-5 h-5" />
-                  </button>
-                  <button className="px-6 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl hover:from-teal-700 hover:to-cyan-700 transition-all flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl">
-                    {t('searchPage.viewProfile')}
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
+              <div className="flex items-center gap-0.5 md:gap-1">
+                <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-teal-600 flex-shrink-0" />
+                <span>~{pro.responseTime}<span className="hidden md:inline">min</span><span className="md:hidden">m</span></span>
               </div>
             </div>
           </div>
@@ -227,24 +156,26 @@ function ProCard({ pro, userLocation }: { pro: ProProfile; userLocation: { lat: 
 function SearchPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
   const { t } = useLanguage();
 
   // Get initial values from URL
   const initialCategory = (searchParams?.get('category') as ServiceCategory) || undefined;
   const initialQuery = searchParams?.get('q') || '';
+  const initialDistrict = searchParams?.get('district') || '';
   
   const [selectedCategory, setSelectedCategory] = useState<ServiceCategory | undefined>(initialCategory);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+  const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict);
 
   const [availableNow, setAvailableNow] = useState(false);
   const [radiusKm, setRadiusKm] = useState(10);
-  const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [minRating, setMinRating] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(0);
   const [sortBy, setSortBy] = useState<SortOption>('recommended');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   
   const [pros, setPros] = useState<ProProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -277,6 +208,7 @@ function SearchPageContent() {
         searchTerm: debouncedQuery || undefined,
         location: userLocation || undefined,
         maxDistance: radiusKm,
+        district: selectedDistrict || undefined,
       });
       
       const results = await getPros({
@@ -285,6 +217,7 @@ function SearchPageContent() {
         searchTerm: debouncedQuery || undefined,
         location: userLocation || undefined,
         maxDistance: radiusKm,
+        district: selectedDistrict || undefined,
       });
       
       console.log('Search page received pros:', results.length);
@@ -295,7 +228,7 @@ function SearchPageContent() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, availableNow, debouncedQuery, userLocation, radiusKm]);
+  }, [selectedCategory, availableNow, debouncedQuery, userLocation, radiusKm, selectedDistrict]);
 
   useEffect(() => {
     fetchPros();
@@ -343,6 +276,17 @@ function SearchPageContent() {
   }, [pros, minRating, maxPrice, sortBy, userLocation]);
 
   const total = filteredPros.length;
+  
+  // Pagination
+  const totalPages = Math.ceil(total / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedPros = filteredPros.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedDistrict, availableNow, minRating, maxPrice, sortBy, debouncedQuery]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -350,54 +294,96 @@ function SearchPageContent() {
       <Header />
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-16 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-4">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 sm:top-16 z-30 shadow-sm">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
               <input
                 type="text"
                 placeholder={t('search.placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                className="w-full pl-9 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg sm:rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
               />
             </div>
 
             <button
               onClick={() => setShowMobileFilters(!showMobileFilters)}
-              className="lg:hidden px-4 py-3 bg-teal-600 text-white rounded-xl flex items-center gap-2 font-medium hover:bg-teal-700 transition-all"
+              className="lg:hidden px-3 sm:px-4 py-2 sm:py-3 bg-teal-600 text-white rounded-lg sm:rounded-xl flex items-center gap-1.5 sm:gap-2 font-medium hover:bg-teal-700 transition-all text-sm sm:text-base flex-shrink-0"
             >
-              <Filter className="w-5 h-5" />
-              <span>{t('searchPage.filters')}</span>
+              <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden xs:inline">{t('searchPage.filters')}</span>
             </button>
           </div>
+
+          {/* Active Filters Display */}
+          {(selectedDistrict || selectedCategory) && (
+            <div className="flex items-center gap-2 mt-2 sm:mt-3 flex-wrap">
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Active:</span>
+              {selectedDistrict && (
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">District </span>
+                  <span>{selectedDistrict}</span>
+                  <button
+                    onClick={() => {
+                      setSelectedDistrict('');
+                      const params = new URLSearchParams(window.location.search);
+                      params.delete('district');
+                      router.push(`/search?${params.toString()}`);
+                    }}
+                    className="hover:bg-teal-200 dark:hover:bg-teal-800 rounded p-0.5"
+                  >
+                    <X className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  </button>
+                </div>
+              )}
+              {selectedCategory && (
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium">
+                  <span className="text-base sm:text-lg">{CATEGORY_ICONS[selectedCategory]}</span>
+                  <span className="hidden xs:inline">{CATEGORY_LABELS[selectedCategory]}</span>
+                  <button
+                    onClick={() => {
+                      setSelectedCategory(undefined);
+                      const params = new URLSearchParams(window.location.search);
+                      params.delete('category');
+                      router.push(`/search?${params.toString()}`);
+                    }}
+                    className="hover:bg-teal-200 dark:hover:bg-teal-800 rounded p-0.5"
+                  >
+                    <X className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex gap-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+        <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-6 items-start">
           {/* Filters Sidebar */}
           <aside className={cn(
             'lg:block lg:w-72 flex-shrink-0',
-            showMobileFilters ? 'fixed inset-0 z-50 bg-white dark:bg-gray-800 p-6 overflow-y-auto' : 'hidden'
+            showMobileFilters ? 'fixed inset-0 z-50 bg-white dark:bg-gray-800 p-4 sm:p-6 overflow-y-auto' : 'hidden'
           )}>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 sticky top-24">
-              <div className="space-y-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 lg:sticky lg:top-24">
+              <div className="space-y-4 sm:space-y-6">
               {showMobileFilters && (
-                <div className="flex items-center justify-between mb-6 lg:hidden">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t('searchPage.filters')}</h3>
+                <div className="flex items-center justify-between mb-4 sm:mb-6 lg:hidden">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">{t('searchPage.filters')}</h3>
                   <button 
                     onClick={() => setShowMobileFilters(false)}
                     className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
                   >
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
                 </div>
               )}
 
               <div className="hidden lg:block">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center gap-2">
                   <Filter className="w-5 h-5 text-teal-600" />
                   {t('searchPage.filters')}
                 </h3>
@@ -421,6 +407,38 @@ function SearchPageContent() {
                   </div>
                 </div>
               )}
+
+              {/* District Filter */}
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  <MapPin className="w-4 h-4 inline mr-2 text-teal-600" />
+                  Budapest District
+                </h4>
+                <select
+                  value={selectedDistrict}
+                  onChange={(e) => {
+                    const newDistrict = e.target.value;
+                    setSelectedDistrict(newDistrict);
+                    
+                    // Update URL
+                    const params = new URLSearchParams(window.location.search);
+                    if (newDistrict) {
+                      params.set('district', newDistrict);
+                    } else {
+                      params.delete('district');
+                    }
+                    router.push(`/search?${params.toString()}`);
+                  }}
+                  className="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                >
+                  <option value="">All Districts</option>
+                  {Object.keys(BUDAPEST_DISTRICTS).map((district) => (
+                    <option key={district} value={district}>
+                      District {district} - {BUDAPEST_DISTRICTS[district as BudapestDistrict].nameEn}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Availability */}
               <div>
@@ -480,12 +498,14 @@ function SearchPageContent() {
               <button
                 onClick={() => {
                   setSelectedCategory(undefined);
+                  setSelectedDistrict('');
                   setAvailableNow(false);
                   setMinRating(0);
                   setMaxPrice(0);
                   setRadiusKm(10);
                   setSortBy('recommended');
                   setShowMobileFilters(false);
+                  router.push('/search');
                 }}
                 className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition font-medium"
               >
@@ -498,16 +518,16 @@ function SearchPageContent() {
           {/* Main Content */}
           <main className="flex-1 min-w-0">
             {/* Results Header */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-              <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-3 sm:gap-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                     {selectedCategory ? CATEGORY_LABELS[selectedCategory] : t('searchPage.title')}
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">
                     {loading ? (
                       <span className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
+                        <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
                         {t('searchPage.findingProfessionals')}
                       </span>
                     ) : (
@@ -516,41 +536,48 @@ function SearchPageContent() {
                   </p>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => setViewMode('list')}
                     className={cn(
-                      'p-3 rounded-xl transition-all font-medium',
+                      'flex-1 sm:flex-none p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all font-medium',
                       viewMode === 'list' 
                         ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg' 
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     )}
                     title={t('searchPage.listView')}
                   >
-                    <LayoutList className="w-5 h-5" />
+                    <LayoutList className="w-4 h-4 sm:w-5 sm:h-5 mx-auto" />
                   </button>
                   <button
                     onClick={() => setViewMode('map')}
                     className={cn(
-                      'p-3 rounded-xl transition-all font-medium',
+                      'flex-1 sm:flex-none p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all font-medium',
                       viewMode === 'map' 
                         ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg' 
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     )}
                     title={t('searchPage.mapView')}
                   >
-                    <MapIcon className="w-5 h-5" />
+                    <MapIcon className="w-4 h-4 sm:w-5 sm:h-5 mx-auto" />
                   </button>
                 </div>
               </div>
 
+              {/* Pagination Info - Only show in list view */}
+              {viewMode === 'list' && total > 0 && (
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">
+                  Showing {startIndex + 1}-{Math.min(endIndex, total)} of {total} professionals
+                </div>
+              )}
+
               {/* Sort Options */}
-              <div className="flex items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('searchPage.sortBy')}:</label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 md:gap-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700">
+                <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">{t('searchPage.sortBy')}:</label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="flex-1 px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all font-medium"
+                  className="w-full sm:flex-1 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg sm:rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all font-medium"
                 >
                   <option value="recommended">{t('searchPage.recommended')}</option>
                   <option value="rating">{t('searchPage.highestRating')}</option>
@@ -570,35 +597,108 @@ function SearchPageContent() {
                 </div>
               </div>
             ) : viewMode === 'list' ? (
-              <div className="space-y-8">
-                {filteredPros.length === 0 ? (
-                  <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
-                    <div className="text-7xl mb-6">🔍</div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                      {t('searchPage.noResults')}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                      {t('searchPage.tryAdjusting')}
-                    </p>
+              <>
+                <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-5">
+                  {filteredPros.length === 0 ? (
+                    <div className="w-full text-center py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 px-4 sm:px-6">
+                      <div className="text-5xl sm:text-6xl md:text-7xl mb-4 sm:mb-6">🔍</div>
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
+                        {t('searchPage.noResults')}
+                      </h3>
+                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 max-w-md mx-auto">
+                        {t('searchPage.tryAdjusting')}
+                      </p>
+                      <button
+                        onClick={() => {
+                          setSelectedCategory(undefined);
+                          setSelectedDistrict('');
+                          setAvailableNow(false);
+                          setMinRating(0);
+                          setMaxPrice(0);
+                          setRadiusKm(10);
+                          router.push('/search');
+                        }}
+                        className="px-4 sm:px-6 py-2.5 sm:py-3 bg-teal-600 text-white rounded-lg sm:rounded-xl hover:bg-teal-700 transition font-medium text-sm sm:text-base"
+                      >
+                        {t('searchPage.clearFilters')}
+                      </button>
+                    </div>
+                  ) : (
+                    paginatedPros.map((pro) => (
+                      <ProCard key={pro.id} pro={pro} userLocation={userLocation} />
+                    ))
+                  )}
+                </div>
+
+                {/* Pagination Controls */}
+                {total > itemsPerPage && (
+                  <div className="mt-6 sm:mt-8 flex items-center justify-center gap-2">
                     <button
                       onClick={() => {
-                        setSelectedCategory(undefined);
-                        setAvailableNow(false);
-                        setMinRating(0);
-                        setMaxPrice(0);
-                        setRadiusKm(10);
+                        setCurrentPage(prev => Math.max(1, prev - 1));
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition font-medium"
+                      disabled={currentPage === 1}
+                      className="px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
-                      {t('searchPage.clearFilters')}
+                      Previous
+                    </button>
+
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        // Show first page, last page, current page, and pages around current
+                        const showPage = 
+                          page === 1 || 
+                          page === totalPages || 
+                          (page >= currentPage - 1 && page <= currentPage + 1);
+                        
+                        const showEllipsis = 
+                          (page === currentPage - 2 && currentPage > 3) ||
+                          (page === currentPage + 2 && currentPage < totalPages - 2);
+
+                        if (showEllipsis) {
+                          return (
+                            <span key={page} className="px-2 text-gray-500 dark:text-gray-400">
+                              ...
+                            </span>
+                          );
+                        }
+
+                        if (!showPage) return null;
+
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => {
+                              setCurrentPage(page);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className={cn(
+                              'w-8 h-8 sm:w-10 sm:h-10 text-sm sm:text-base font-medium rounded-lg transition',
+                              currentPage === page
+                                ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg'
+                                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            )}
+                          >
+                            {page}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      disabled={currentPage === totalPages}
+                      className="px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    >
+                      Next
                     </button>
                   </div>
-                ) : (
-                  filteredPros.map((pro) => (
-                    <ProCard key={pro.id} pro={pro} userLocation={userLocation} />
-                  ))
                 )}
-              </div>
+              </>
             ) : (
               <div className="h-[700px] rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg">
                 <DynamicMap

@@ -18,12 +18,26 @@
     "admin": "Admin"
   },
   "hero": {
-    "badge": "50 000+ ügyfél bízik bennünk",
-    "title": "Találj megbízható helyi",
+    "badge": "Budapest #1 helyi szolgáltatási piactere",
+    "title": "Találd meg a tökéletes",
+    "rotatingProfessions": {
+      "cleaner": "takarítót",
+      "handyman": "kézművest",
+      "plumber": "vízszerelőt",
+      "electrician": "villanyszerelőt",
+      "painter": "festőt",
+      "gardener": "kertészt",
+      "beautician": "kozmetikust",
+      "tutor": "oktatót",
+      "chef": "szakácsot"
+    },
     "professionals": "szakembereket",
     "subtitle": "Kapcsolódj hitelesített, magasan értékelt szolgáltatókhoz. Foglalj azonnal, fizess biztonságosan, és végeztesd el a munkát megfelelően.",
     "stats": {
       "professionals": "Szakember",
+      "pros": "Szakember",
+      "jobsDone": "Elvégzett munka",
+      "averageRating": "Átlagos értékelés",
       "reviews": "Értékelés",
       "secure": "Biztonságos"
     },
@@ -35,7 +49,10 @@
   "search": {
     "title": "Milyen szolgáltatásra van szükséged?",
     "subtitle": "Keress szakembereket vagy böngéssz kategóriák szerint",
-    "placeholder": "Keress szolgáltatásokat vagy szakembereket...",
+    "placeholder": "Milyen szolgáltatásra van szükséged?",
+    "selectDistrict": "Válassz kerületet",
+    "allDistricts": "Minden kerület",
+    "district": "Kerület",
     "button": "Keresés",
     "quickActions": {
       "availableToday": "Ma elérhető",
@@ -48,10 +65,13 @@
     "subtitle": "Találd meg a tökéletes szakembert az igényeidhez"
   },
   "map": {
-    "title": "Fedezd fel a közeli szakembereket",
+    "title": "Közeli szakemberek",
+    "subtitle": "Fedezd fel a hitelesített szakértőket Budapest 23 kerületében. A térképnézetünk segít megtalálni azokat a szakembereket, akik már dolgoznak a környékedben.",
     "loading": "Térkép betöltése...",
     "available": "szakember elérhető",
-    "viewAll": "Összes szakember megtekintése"
+    "viewAll": "Összes szakember megtekintése",
+    "viewAllProfessionals": "Összes szakember megtekintése",
+    "districtsCovered": "lefedett kerület"
   },
   "footer": {
     "tagline": "Kapcsolódj megbízható helyi szakemberekhez minden otthoni szolgáltatási igényedhez.",
@@ -370,6 +390,7 @@
     "booking": "Foglalás"
   },
   "proDashboard": {
+    "dashboard": "Irányítópult",
     "welcomeBack": "Üdvözlünk vissza",
     "businessToday": "Itt van, mi történik ma a vállalkozásoddal",
     "todayEarnings": "Mai bevétel",

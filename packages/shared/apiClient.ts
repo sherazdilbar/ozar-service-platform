@@ -230,6 +230,7 @@ export const prosApi = {
   async getPros(filters?: {
     category?: string;
     city?: string;
+    district?: string;
     lat?: number;
     lng?: number;
     radiusKm?: number;
@@ -240,6 +241,7 @@ export const prosApi = {
     const params = new URLSearchParams();
     if (filters?.category) params.append('categoryId', filters.category); // Backend expects 'categoryId'
     if (filters?.city) params.append('city', filters.city);
+    if (filters?.district) params.append('district', filters.district);
     if (filters?.lat) params.append('lat', filters.lat.toString());
     if (filters?.lng) params.append('lng', filters.lng.toString());
     if (filters?.radiusKm) params.append('radiusKm', filters.radiusKm.toString());

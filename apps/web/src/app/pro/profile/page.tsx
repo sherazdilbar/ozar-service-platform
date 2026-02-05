@@ -2,14 +2,12 @@
 
 import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter, useSearchParams } from 'next/navigation';
-import ProProfilePageNew from './page-new';
+import { useRouter } from 'next/navigation';
+import ProProfilePageListeo from './page-listeo';
 
 export default function ProProfilePage() {
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const useNewDesign = searchParams?.get('new') === 'true';
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== 'PRO') {
@@ -22,7 +20,6 @@ export default function ProProfilePage() {
     return null;
   }
 
-  // For now, always use the new design
-  // Later we can add: return useNewDesign ? <ProProfilePageNew /> : <ProProfilePageOld />;
-  return <ProProfilePageNew />;
+  // Use the new Listeo-inspired design by default
+  return <ProProfilePageListeo />;
 }

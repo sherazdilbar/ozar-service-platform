@@ -431,32 +431,23 @@ export default function ProProfilePageNew() {
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
               <span className="font-medium">Back to Dashboard</span>
             </button>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.push(`/pros/${profile?.id}`)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition flex items-center gap-2"
-              >
-                <span>👁️</span>
-                Preview Profile
-              </button>
-              <button
-                onClick={() => handleSubmit()}
-                disabled={saving}
-                className="flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-              >
-                {saving ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                    <span>Saving...</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-5 h-5" />
-                    <span>Save Changes</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={() => handleSubmit()}
+              disabled={saving}
+              className="flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            >
+              {saving ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  <span>Save Changes</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
