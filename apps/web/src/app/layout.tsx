@@ -13,12 +13,26 @@ import OnboardingTutorial from '../components/OnboardingTutorial';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Ozar - Find Local Professionals',
-  description: 'Connect with trusted local professionals for all your home service needs',
+  title: 'Ozar - Find Local Professionals in Budapest',
+  description: 'Connect with verified professionals across Budapest\'s 23 districts. Fast, trusted, quality service for all your home needs.',
+  keywords: ['Budapest professionals', 'home services', 'local experts', 'verified pros', 'Budapest districts'],
+  authors: [{ name: 'Ozar' }],
+  openGraph: {
+    title: 'Ozar - Find Local Professionals in Budapest',
+    description: 'Connect with verified professionals across Budapest\'s 23 districts',
+    type: 'website',
+    locale: 'en_US',
+    alternateLocale: 'hu_HU',
+  },
   icons: {
     icon: '/ozar-logo.png',
     shortcut: '/ozar-logo.png',
     apple: '/ozar-logo.png',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
   },
 };
 

@@ -94,11 +94,45 @@ export function clearTokens() {
   }
 }
 
+// Simple in-memory cache for API responses
+const apiCache = new Map<string, { data: any; expiry: number }>();
+
+function getCachedData<T>(key: string): T | null {
+  const cached = apiCache.get(key);
+  if (!cached) return null;
+  
+  if (Date.now() > cached.expiry) {
+    apiCache.delete(key);
+    return null;
+  }
+  
+  return cached.data as T;
+}
+
+function setCachedData(key: string, data: any, ttlMs: number = 300000) {
+  // Default 5 minutes
+  apiCache.set(key, {
+    data,
+    expiry: Date.now() + ttlMs,
+  });
+}
+
 // HTTP client with auth
 async function apiRequest<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  cacheKey?: string,
+  cacheTTL?: number
 ): Promise<T> {
+  // Check cache for GET requests
+  if (cacheKey && options.method === 'GET') {
+    const cached = getCachedData<T>(cacheKey);
+    if (cached) {
+      console.log(`[API Client] Cache hit for ${cacheKey}`);
+      return cached;
+    }
+  }
+  
   const token = getAccessToken();
   
   console.log(`[API Client] Request to ${endpoint}`);
@@ -135,7 +169,15 @@ async function apiRequest<T>(
     throw new Error(error.message || `HTTP ${response.status}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  
+  // Cache successful GET responses
+  if (cacheKey && options.method === 'GET') {
+    setCachedData(cacheKey, data, cacheTTL);
+    console.log(`[API Client] Cached response for ${cacheKey}`);
+  }
+  
+  return data;
 }
 
 // Users API
@@ -250,7 +292,10 @@ export const prosApi = {
     if (filters?.searchTerm) params.append('searchTerm', filters.searchTerm);
 
     const query = params.toString();
-    return apiRequest<any>(`/pros${query ? `?${query}` : ''}`);
+    const endpoint = `/pros${query ? `?${query}` : ''}`;
+    const cacheKey = `pros-${query || 'all'}`;
+    
+    return apiRequest<any>(endpoint, { method: 'GET' }, cacheKey, 120000); // Cache for 2 minutes
   },
 
   async getProById(id: string) {
