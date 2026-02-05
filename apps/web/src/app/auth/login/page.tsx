@@ -21,6 +21,11 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Disable login functionality
+    alert('Login is currently disabled. This feature will be available soon. Please check back later!');
+    return;
+
     setError('');
     setLoading(true);
 

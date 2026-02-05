@@ -43,6 +43,11 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Disable signup functionality
+    alert('Account creation is currently disabled. This feature will be available soon. Please check back later!');
+    return;
+
     setError('');
 
     // Validation
