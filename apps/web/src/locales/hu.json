@@ -46,6 +46,31 @@
       "becomePro": "Legyél szakember"
     }
   },
+  "vision": {
+    "badge": "Víziónk",
+    "title": "Budapest Legmegbízhatóbb Szolgáltatási Platformjának Építése",
+    "subtitle": "Küldetésünk, hogy minden budapesti háztartást összekapcsoljunk megbízható, képzett szakemberekkel, akik büszkék a munkájukra.",
+    "trust": {
+      "title": "Bizalom Először",
+      "description": "Minden szakember ellenőrzött, háttérvizsgálaton átesett, és valódi ügyfelek értékelik. Az Ön biztonsága és elégedettsége a legfontosabb számunkra."
+    },
+    "speed": {
+      "title": "Villámgyors",
+      "description": "Foglalj szolgáltatásokat percek alatt, nem napok alatt. Azonnali árajánlatok, valós idejű elérhetőség, és még aznapi szolgáltatás, amikor a leginkább szükséged van rá."
+    },
+    "quality": {
+      "title": "Minőség Garantálva",
+      "description": "Legjobban értékelt szakemberek, biztonságos fizetés, és elégedettségi garancia. Ha nem vagy elégedett, megoldjuk."
+    },
+    "stats": {
+      "customers": "Elégedett Ügyfél",
+      "professionals": "Megbízható Szakember",
+      "categories": "Szolgáltatási Kategória",
+      "satisfaction": "Elégedettségi Arány"
+    },
+    "mission": "Hiszünk abban, hogy mindenkinek joga van megbízható, megfizethető és magas minőségű szolgáltatásokhoz. Ezért építünk egy platformot, amely lehetővé teszi mind az ügyfelek, mind a szakemberek számára, hogy együtt boldoguljanak.",
+    "team": "Az Ozar Csapata"
+  },
   "search": {
     "title": "Milyen szolgáltatásra van szükséged?",
     "subtitle": "Keress szakembereket vagy böngéssz kategóriák szerint",

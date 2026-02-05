@@ -46,6 +46,31 @@
       "becomePro": "Become a Pro"
     }
   },
+  "vision": {
+    "badge": "Our Vision",
+    "title": "Building Budapest's Most Trusted Service Platform",
+    "subtitle": "We're on a mission to connect every household in Budapest with reliable, skilled professionals who take pride in their work.",
+    "trust": {
+      "title": "Trust First",
+      "description": "Every professional is verified, background-checked, and rated by real customers. Your safety and satisfaction are our top priorities."
+    },
+    "speed": {
+      "title": "Lightning Fast",
+      "description": "Book services in minutes, not days. Get instant quotes, real-time availability, and same-day service when you need it most."
+    },
+    "quality": {
+      "title": "Quality Guaranteed",
+      "description": "Top-rated professionals, secure payments, and satisfaction guaranteed. If you're not happy, we'll make it right."
+    },
+    "stats": {
+      "customers": "Happy Customers",
+      "professionals": "Trusted Professionals",
+      "categories": "Service Categories",
+      "satisfaction": "Satisfaction Rate"
+    },
+    "mission": "We believe everyone deserves access to reliable, affordable, and high-quality services. That's why we're building a platform that empowers both customers and professionals to thrive together.",
+    "team": "The Ozar Team"
+  },
   "search": {
     "title": "What service do you need?",
     "subtitle": "Search for professionals or browse by category",

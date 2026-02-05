@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import CategoryGroupCarousel from '@/components/CategoryGroupCarousel';
 import ImprovedSearchBar from '@/components/ImprovedSearchBar';
 import RotatingText from '@/components/RotatingText';
+import VisionSection from '@/components/VisionSection';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MapIcon, Users, Briefcase, Star } from 'lucide-react';
 
@@ -124,6 +125,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Vision Section */}
+      <VisionSection />
+
       {/* Category Section */}
       <section className="bg-gray-50 dark:bg-gray-900 py-12 sm:py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,7 +142,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left Side - Text Content */}
-            <div className="space-y-6 lg:space-y-8">
+            <div className="space-y-6 lg:space-y-8 order-first text-center lg:text-left">
               <div>
                 <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-4" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                   {t('map.title')}
@@ -149,37 +153,39 @@ export default function HomePage() {
               </div>
               
               {/* Button and Count - Stacked on Mobile, Side by Side on Desktop */}
-              <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
+              <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-center lg:justify-start sm:gap-4">
                 <button
                   onClick={() => router.push('/search')}
-                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 mx-auto sm:mx-0"
                 >
                   {t('map.viewAllProfessionals')}
                 </button>
                 
-                <div className="flex items-center justify-center sm:justify-start gap-2 text-sm">
+                <div className="flex items-center justify-center gap-2 text-sm">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-gray-700 dark:text-gray-300 font-medium">
                     {loading ? t('map.loading') : `${pros.length} ${t('map.available')}`}
                   </span>
                 </div>
               </div>
-
-              {/* Districts Badge */}
-              <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 rounded-xl px-4 py-3 shadow-lg border border-gray-200 dark:border-gray-700">
-                <MapIcon className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-                <span className="text-sm font-semibold text-gray-900 dark:text-white">23 {t('map.districtsCovered')}</span>
-              </div>
             </div>
 
             {/* Right Side - Map */}
-            <div className="relative order-first lg:order-last">
+            <div className="relative order-last">
               <div className="rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-2xl h-[400px] sm:h-[450px] lg:h-[500px]">
                 <DynamicMap
                   pros={pros}
                   onProClick={(pro) => router.push(`/pros/${pro.id}`)}
                   height="100%"
                 />
+              </div>
+              
+              {/* Districts Badge - Below Map and Centered */}
+              <div className="flex justify-center mt-4">
+                <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 rounded-xl px-4 py-3 shadow-lg border border-gray-200 dark:border-gray-700">
+                  <MapIcon className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">23 {t('map.districtsCovered')}</span>
+                </div>
               </div>
             </div>
           </div>
