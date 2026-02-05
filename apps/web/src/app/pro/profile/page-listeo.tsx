@@ -284,7 +284,7 @@ export default function ProProfilePageListeo() {
                       >
                         <option value={AvailabilityStatus.AVAILABLE_NOW}>Available Now</option>
                         <option value={AvailabilityStatus.BUSY}>Busy</option>
-                        <option value={AvailabilityStatus.UNAVAILABLE}>Unavailable</option>
+                        <option value={AvailabilityStatus.OFFLINE}>Offline</option>
                       </select>
                     </div>
                   </div>
