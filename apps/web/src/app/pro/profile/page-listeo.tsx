@@ -354,9 +354,16 @@ export default function ProProfilePageListeo() {
                         Your Location *
                       </label>
                       <BudapestLocationSelector
-                        selectedCity={formData.locationCity}
                         selectedDistrict={formData.locationDistrict}
-                        onLocationSelect={handleLocationSelect}
+                        onDistrictChange={(district, lat, lng) => {
+                          setFormData(prev => ({
+                            ...prev,
+                            locationCity: 'Budapest',
+                            locationDistrict: district,
+                            locationLat: lat,
+                            locationLng: lng,
+                          }));
+                        }}
                       />
                     </div>
 
