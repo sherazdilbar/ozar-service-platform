@@ -207,7 +207,7 @@ export default function ProProfilePageListeo() {
                       </label>
                       <ProfilePictureUpload
                         currentAvatar={user?.avatar}
-                        onUploadComplete={(url) => {
+                        onUploadSuccess={(url) => {
                           updateUser({ ...user!, avatar: url });
                         }}
                       />
