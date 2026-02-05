@@ -590,22 +590,22 @@ function SearchPageContent() {
 
             {/* Results */}
             {loading ? (
-              <div className="flex items-center justify-center py-20">
+              <div className="flex items-center justify-center py-12 sm:py-16 md:py-20">
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-teal-600 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-gray-600 dark:text-gray-400">{t('searchPage.findingProfessionals')}</p>
+                  <div className="animate-spin rounded-full h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 border-b-4 border-teal-600 mx-auto mb-3 sm:mb-4" />
+                  <p className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-400">{t('searchPage.findingProfessionals')}</p>
                 </div>
               </div>
             ) : viewMode === 'list' ? (
               <>
-                <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-5">
+                <div className="space-y-2 sm:space-y-3 md:space-y-4">
                   {filteredPros.length === 0 ? (
-                    <div className="w-full text-center py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 px-4 sm:px-6">
-                      <div className="text-5xl sm:text-6xl md:text-7xl mb-4 sm:mb-6">🔍</div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
+                    <div className="w-full text-center py-10 sm:py-12 md:py-16 lg:py-20 bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700 px-4 sm:px-6">
+                      <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-3 sm:mb-4 md:mb-6">🔍</div>
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
                         {t('searchPage.noResults')}
                       </h3>
-                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 max-w-md mx-auto">
+                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 max-w-md mx-auto px-4">
                         {t('searchPage.tryAdjusting')}
                       </p>
                       <button
@@ -632,16 +632,17 @@ function SearchPageContent() {
 
                 {/* Pagination Controls */}
                 {total > itemsPerPage && (
-                  <div className="mt-6 sm:mt-8 flex items-center justify-center gap-2">
+                  <div className="mt-4 sm:mt-6 md:mt-8 flex items-center justify-center gap-1 sm:gap-2">
                     <button
                       onClick={() => {
                         setCurrentPage(prev => Math.max(1, prev - 1));
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       disabled={currentPage === 1}
-                      className="px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      className="px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
-                      Previous
+                      <span className="hidden sm:inline">Previous</span>
+                      <span className="sm:hidden">Prev</span>
                     </button>
 
                     <div className="flex items-center gap-1 sm:gap-2">
