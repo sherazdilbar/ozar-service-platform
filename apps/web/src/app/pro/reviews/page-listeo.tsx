@@ -187,9 +187,9 @@ export default function ProReviewsPageListeo() {
                     <div key={review.id} className="p-6">
                       <div className="flex gap-4">
                         <Avatar
-                          src={review.customer.avatar}
-                          alt={`${review.customer.firstName} ${review.customer.lastName}`}
-                          size="md"
+                          imageUrl={review.customer.avatar}
+                          name={`${review.customer.firstName} ${review.customer.lastName}`}
+                          size={48}
                         />
                         <div className="flex-1">
                           <div className="flex items-start justify-between mb-2">
