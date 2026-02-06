@@ -65,7 +65,7 @@ function toRad(degrees: number): number {
   return degrees * (Math.PI / 180);
 }
 
-// Pro Card Component - Enhanced
+// Pro Card Component - Listeo Style
 function ProCard({ pro, userLocation }: { pro: ProProfile; userLocation: { lat: number; lng: number } | null }) {
   const distance = userLocation
     ? calculateDistance(userLocation.lat, userLocation.lng, pro.location.lat, pro.location.lng)
@@ -73,79 +73,133 @@ function ProCard({ pro, userLocation }: { pro: ProProfile; userLocation: { lat: 
 
   return (
     <Link href={`/pros/${pro.id}`}>
-      <div className="group bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl md:rounded-2xl p-2.5 sm:p-3 md:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-teal-500 dark:hover:border-teal-500">
-        <div className="flex gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
-          {/* Avatar */}
-          <div className="flex-shrink-0 relative">
+      <div className="group bg-white dark:bg-gray-800 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-teal-500 dark:hover:border-teal-500">
+        <div className="flex flex-col sm:flex-row">
+          {/* Avatar Section */}
+          <div className="relative flex-shrink-0 sm:w-48 md:w-56">
             {pro.user.avatar ? (
               <img
                 src={getImageUrl(pro.user.avatar) || '/placeholder-avatar.png'}
                 alt={`${pro.user.firstName} ${pro.user.lastName}`}
-                className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-lg md:rounded-xl object-cover"
+                className="w-full h-48 sm:h-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-lg md:rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold">
+              <div className="w-full h-48 sm:h-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-5xl font-bold">
                 {pro.user.firstName[0]}{pro.user.lastName[0]}
               </div>
             )}
+            
+            {/* Availability Badge */}
             {pro.availabilityStatus === 'AVAILABLE_NOW' && (
-              <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full" />
+              <div className="absolute top-3 left-3 px-3 py-1.5 bg-green-500 text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                Available Now
+              </div>
+            )}
+            
+            {/* Verification Badge */}
+            {pro.verificationStatus === 'APPROVED' && (
+              <div className="absolute top-3 right-3 p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg">
+                <CheckCircle className="w-5 h-5 text-teal-600" />
+              </div>
             )}
           </div>
 
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            {/* Header */}
-            <div className="flex items-start justify-between gap-2 mb-1 md:mb-2">
+          {/* Content Section */}
+          <div className="flex-1 p-4 md:p-5 lg:p-6">
+            {/* Header Row */}
+            <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors truncate">
+                <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors mb-1 line-clamp-1">
                   {pro.businessName || `${pro.user.firstName} ${pro.user.lastName}`}
                 </h3>
-                <div className="flex items-center gap-1.5 md:gap-2 mt-0.5 md:mt-1">
-                  <div className="flex items-center gap-0.5 md:gap-1">
-                    <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm">{pro.rating.toFixed(1)}</span>
-                    <span className="text-[9px] sm:text-[10px] md:text-xs text-gray-500 dark:text-gray-400">({pro.reviewCount})</span>
+                
+                {/* Rating */}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-lg">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <span className="font-bold text-gray-900 dark:text-white text-sm">{pro.rating.toFixed(1)}</span>
                   </div>
-                  {pro.verificationStatus === 'APPROVED' && (
-                    <div className="flex items-center gap-0.5 md:gap-1 px-1.5 md:px-2 py-0.5 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full">
-                      <CheckCircle className="w-2.5 h-2.5 md:w-3 md:h-3" />
-                      <span className="text-[9px] md:text-xs font-semibold hidden xs:inline">Verified</span>
-                    </div>
-                  )}
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    ({pro.reviewCount} {pro.reviewCount === 1 ? 'review' : 'reviews'})
+                  </span>
                 </div>
               </div>
               
-              {/* Price */}
-              <div className="text-right flex-shrink-0">
-                <div className="text-sm sm:text-base md:text-lg lg:text-2xl font-bold text-gray-900 dark:text-white whitespace-nowrap">
-                  {pro.startingPrice.toLocaleString()}<span className="text-[9px] sm:text-[10px] md:text-sm font-normal text-gray-500 dark:text-gray-400 ml-0.5 md:ml-1">{pro.currency}</span>
+              {/* Price Badge */}
+              <div className="flex-shrink-0 text-right">
+                <div className="inline-block px-4 py-2 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-900/30 dark:to-cyan-900/30 rounded-xl border border-teal-200 dark:border-teal-800">
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-0.5">Starting from</div>
+                  <div className="text-xl md:text-2xl font-bold text-teal-600 dark:text-teal-400">
+                    {pro.startingPrice.toLocaleString()}
+                    <span className="text-sm font-normal ml-1">{pro.currency}</span>
+                  </div>
                 </div>
-                <span className="text-[9px] md:text-xs text-gray-500 dark:text-gray-400">starting from</span>
               </div>
             </div>
 
-            {/* Bio - Hidden on mobile, shown on desktop */}
-            <p className="hidden md:block text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-1">
-              {pro.bio}
+            {/* Bio */}
+            <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+              {pro.bio || 'Professional service provider ready to help with your needs.'}
             </p>
 
-            {/* Stats Row */}
-            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 text-[10px] sm:text-xs md:text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-center gap-0.5 md:gap-1">
-                <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-teal-600 flex-shrink-0" />
-                <span className="truncate max-w-[80px] sm:max-w-none">{pro.location.area}</span>
-                {distance && <span className="text-gray-400 hidden md:inline">• {distance.toFixed(1)}km</span>}
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-teal-50 dark:bg-teal-900/30 rounded-lg">
+                  <MapPin className="w-4 h-4 text-teal-600" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Location</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    {pro.location.area}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-0.5 md:gap-1">
-                <Shield className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-teal-600 flex-shrink-0" />
-                <span>{pro.jobsCompleted}<span className="hidden md:inline"> jobs</span></span>
+              
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-teal-50 dark:bg-teal-900/30 rounded-lg">
+                  <Shield className="w-4 h-4 text-teal-600" />
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Completed</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {pro.jobsCompleted} jobs
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-0.5 md:gap-1">
-                <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-teal-600 flex-shrink-0" />
-                <span>~{pro.responseTime}<span className="hidden md:inline">min</span><span className="md:hidden">m</span></span>
+              
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-teal-50 dark:bg-teal-900/30 rounded-lg">
+                  <Clock className="w-4 h-4 text-teal-600" />
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Response</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                    ~{pro.responseTime}min
+                  </div>
+                </div>
               </div>
+              
+              {distance && (
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-teal-50 dark:bg-teal-900/30 rounded-lg">
+                    <MapPin className="w-4 h-4 text-teal-600" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Distance</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {distance.toFixed(1)}km
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Action Button */}
+            <button className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold rounded-lg transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-xl">
+              View Profile & Book
+            </button>
           </div>
         </div>
       </div>
@@ -289,13 +343,13 @@ function SearchPageContent() {
   }, [selectedCategory, selectedDistrict, availableNow, minRating, maxPrice, sortBy, debouncedQuery]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-x-hidden">
       {/* Header */}
       <Header />
 
       {/* Search Bar */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 sm:top-16 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center gap-2 sm:gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
@@ -361,8 +415,8 @@ function SearchPageContent() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
-        <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-6 items-start">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start">
           {/* Filters Sidebar */}
           <aside className={cn(
             'lg:block lg:w-72 flex-shrink-0',
@@ -518,7 +572,7 @@ function SearchPageContent() {
           {/* Main Content */}
           <main className="flex-1 min-w-0">
             {/* Results Header */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-2.5 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-6 border border-gray-200 dark:border-gray-700 shadow-sm">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-3 sm:gap-4">
                 <div>
                   <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
@@ -598,7 +652,7 @@ function SearchPageContent() {
               </div>
             ) : viewMode === 'list' ? (
               <>
-                <div className="space-y-2 sm:space-y-3 md:space-y-4">
+                <div className="space-y-4 md:space-y-5 lg:space-y-6">
                   {filteredPros.length === 0 ? (
                     <div className="w-full text-center py-10 sm:py-12 md:py-16 lg:py-20 bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700 px-4 sm:px-6">
                       <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-3 sm:mb-4 md:mb-6">🔍</div>

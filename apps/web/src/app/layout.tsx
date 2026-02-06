@@ -47,7 +47,7 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="en" href="https://ozar.com" />
         <link rel="alternate" hrefLang="hu" href="https://ozar.com?lang=hu" />
       </head>
-      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 overflow-x-hidden">
         <ThemeProvider>
           <LanguageProvider>
             <ToastProvider>
