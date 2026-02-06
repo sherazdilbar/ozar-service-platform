@@ -229,7 +229,7 @@ function SearchPageContent() {
   const [maxPrice, setMaxPrice] = useState<number>(0);
   const [sortBy, setSortBy] = useState<SortOption>('recommended');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   
   const [pros, setPros] = useState<ProProfile[]>([]);
   const [loading, setLoading] = useState(true);
