@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageLink from '@/components/LanguageLink';
-import { Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Sparkles, Zap } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,184 +25,229 @@ export default function LoginPage() {
     // Disable login functionality
     alert('Login is currently disabled. This feature will be available soon. Please check back later!');
     return;
-
-    setError('');
-    setLoading(true);
-
-    try {
-      await login(formData.email, formData.password);
-      router.push('/');
-    } catch (err: any) {
-      setError(err.message || 'Invalid email or password');
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 p-12 flex-col justify-between relative overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-700/30 rounded-full blur-3xl"></div>
-        
-        <div className="relative z-10">
-          <LanguageLink href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition">
-              <span className="text-2xl font-bold text-teal-600">O</span>
-            </div>
-            <span className="text-3xl font-bold text-white">Ozar</span>
-          </LanguageLink>
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-[#13131f]">
+      {/* Left Panel - Brand & Benefits */}
+      <div className="hidden lg:block relative lg:w-1/2 bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 overflow-hidden">
+        {/* Decorative background */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-full"></div>
         </div>
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 right-0 w-64 h-64 bg-cyan-400/20 rounded-full blur-3xl"></div>
 
-        <div className="relative z-10 space-y-8">
+        {/* Content Container */}
+        <div className="relative flex flex-col lg:px-16 lg:py-12 lg:justify-center lg:h-full z-10">
+          {/* Logo */}
+          <div className="lg:absolute lg:top-8 lg:left-16 flex items-center">
+            <img 
+              src="/ozar-logo.png" 
+              alt="Ozar" 
+              className="h-16 w-auto"
+            />
+            <span className="text-2xl font-bold text-white tracking-tight">Ozar</span>
+          </div>
+
+          {/* Main Content */}
           <div>
-            <h1 className="text-5xl font-bold text-white mb-4 leading-tight">
-              {t('login.heroTitle')}
+            <h1 className="text-5xl font-bold text-white mb-6 leading-tight">
+              Welcome Back
             </h1>
-            <p className="text-xl text-teal-50">
-              {t('login.heroSubtitle')}
+            <p className="text-lg text-teal-50 mb-12 max-w-md leading-relaxed">
+              Sign in to access your account and connect with trusted professionals in Budapest.
             </p>
+
+            {/* Benefits */}
+            <div className="flex flex-col space-y-6 mb-12">
+              <div className="flex items-start p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors">
+                <div className="flex-shrink-0 p-2 bg-white/20 rounded-lg mr-4">
+                  <Zap className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold text-lg mb-1">Instant Access</h3>
+                  <p className="text-teal-50 text-sm leading-relaxed opacity-90">
+                    Get back to managing your bookings and messages instantly.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors">
+                <div className="flex-shrink-0 p-2 bg-white/20 rounded-lg mr-4">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold text-lg mb-1">Secure & Safe</h3>
+                  <p className="text-teal-50 text-sm leading-relaxed opacity-90">
+                    Your data is protected with industry-standard encryption.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Signal */}
+            <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-xl backdrop-blur-sm w-fit border border-white/10">
+              <div className="flex -space-x-3">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="w-10 h-10 rounded-full border-2 border-teal-600 bg-slate-200 overflow-hidden"
+                  >
+                    <img
+                      src={`https://i.pravatar.cc/100?img=${i + 10}`}
+                      alt="User"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                <div className="w-10 h-10 rounded-full border-2 border-teal-600 bg-white flex items-center justify-center text-xs font-bold text-teal-600">
+                  +12k
+                </div>
+              </div>
+              <div className="text-white text-sm">
+                <span className="font-bold block">12,000+ professionals</span>
+                <span className="text-teal-100 text-xs">already on Ozar</span>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold mb-1">{t('login.feature1Title')}</h3>
-                <p className="text-teal-50 text-sm">{t('login.feature1Desc')}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold mb-1">{t('login.feature2Title')}</h3>
-                <p className="text-teal-50 text-sm">{t('login.feature2Desc')}</p>
-              </div>
-            </div>
+          {/* Copyright */}
+          <div className="absolute bottom-8 left-16 text-teal-100/60 text-xs">
+            © 2026 Ozar. All rights reserved.
           </div>
         </div>
 
-        <div className="relative z-10 text-teal-50 text-sm">
-          {t('footer.copyright')}
+        {/* Curved Divider */}
+        <div className="absolute top-0 right-0 h-full w-16 z-20 overflow-hidden pointer-events-none">
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            className="h-full w-full text-[#13131f] fill-current"
+          >
+            <path d="M 100 0 L 100 100 L 0 100 C 50 100 50 0 0 0 Z" />
+          </svg>
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gray-50 dark:bg-gray-900">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="lg:hidden mb-8 text-center">
-            <LanguageLink href="/" className="inline-flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">O</span>
-              </div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">Ozar</span>
-            </LanguageLink>
-          </div>
+      {/* Right Panel - Form */}
+      <div className="flex-1 flex flex-col justify-center items-center px-5 py-10 sm:px-8 lg:p-12 relative min-h-screen lg:min-h-0">
+        {/* Mobile Logo */}
+        <div className="lg:hidden flex items-center mb-8">
+          <img 
+            src="/ozar-logo.png" 
+            alt="Ozar" 
+            className="h-16 w-auto"
+          />
+          <span className="text-2xl font-bold text-white tracking-tight">Ozar</span>
+        </div>
 
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('login.title')}</h2>
-            <p className="text-gray-600 dark:text-gray-400">{t('login.subtitle')}</p>
+        <div className="w-full max-w-md mx-auto">
+          {/* Header */}
+          <div className="mb-6 sm:mb-8 text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">Welcome Back</h2>
+            <p className="text-slate-400 text-sm sm:text-base">
+              Sign in to your account
+            </p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm flex items-start gap-3">
-              <span className="text-xl">⚠️</span>
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-2">
+              <span className="text-lg">⚠️</span>
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('login.email')}
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">Email Address</label>
+              <div className="relative group">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 transition-colors group-focus-within:text-emerald-500" />
                 <input
                   type="email"
-                  required
+                  placeholder="john@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full pl-12 pr-4 py-3.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-                  placeholder={t('login.emailPlaceholder')}
+                  className="w-full rounded-lg bg-[#1e1e30] border border-[#2a2a40] pl-10 pr-4 py-2.5 text-white placeholder:text-slate-600 transition-all duration-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                   autoComplete="email"
+                  autoFocus
                 />
               </div>
             </div>
 
+            {/* Password */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {t('login.password')}
-                </label>
-                <LanguageLink href="/auth/forgot-password" className="text-sm text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-medium">
-                  {t('login.forgotPassword')}
-                </LanguageLink>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium text-slate-300">Password</label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-xs text-emerald-400 hover:text-emerald-300 font-medium hover:underline"
+                >
+                  Forgot password?
+                </Link>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+              <div className="relative group">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 transition-colors group-focus-within:text-emerald-500" />
                 <input
                   type="password"
-                  required
+                  placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-12 pr-4 py-3.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-                  placeholder={t('login.passwordPlaceholder')}
+                  className="w-full rounded-lg bg-[#1e1e30] border border-[#2a2a40] pl-10 pr-4 py-2.5 text-white placeholder:text-slate-600 transition-all duration-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                   autoComplete="current-password"
                 />
               </div>
             </div>
 
+            {/* Remember Me */}
             <div className="flex items-center">
               <input
                 type="checkbox"
                 id="remember"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-teal-600 border-gray-300 dark:border-gray-600 rounded focus:ring-teal-500 dark:bg-gray-800"
+                className="w-4 h-4 text-emerald-600 bg-[#1e1e30] border-[#2a2a40] rounded focus:ring-emerald-500 focus:ring-offset-0"
               />
-              <label htmlFor="remember" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                {t('login.rememberMe')}
+              <label htmlFor="remember" className="ml-2 text-sm text-slate-300">
+                Remember me
               </label>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 text-white py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 group"
+              className="w-full h-11 px-4 text-sm inline-flex items-center justify-center rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white shadow-lg shadow-emerald-500/20 border border-transparent focus:ring-emerald-500"
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  <span>{t('login.loggingIn')}</span>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  <span>Signing in...</span>
                 </>
               ) : (
                 <>
-                  <span>{t('login.loginButton')}</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
+                  <span>Sign In</span>
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {t('login.noAccount')}{' '}
-              <LanguageLink href="/auth/signup" className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-semibold">
-                {t('login.signupLink')}
-              </LanguageLink>
-            </p>
+          {/* Footer Links */}
+          <div className="mt-6 sm:mt-8 text-center text-sm text-slate-500">
+            Don't have an account?{' '}
+            <Link
+              href="/auth/signup"
+              className="text-emerald-400 hover:text-emerald-300 font-medium hover:underline"
+            >
+              Sign up
+            </Link>
           </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-8 text-slate-600 text-xs text-center">
+          © 2026 Ozar. All rights reserved.
         </div>
       </div>
     </div>

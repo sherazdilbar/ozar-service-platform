@@ -7,324 +7,358 @@ import {
   Mail,
   Phone,
   MapPin,
-  MessageSquare,
   Send,
-  CheckCircle,
   Clock,
-  HelpCircle,
-  Users,
-  Sparkles
+  ChevronDown
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
+    inquiryType: 'General Inquiry',
     subject: '',
-    message: '',
-    type: 'general'
+    message: ''
   });
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setSubmitted(true);
-    setLoading(false);
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-        type: 'general'
-      });
-    }, 3000);
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // Simulate submission
+    setTimeout(() => setIsSubmitting(false), 1500);
+  };
+
+  const faqs = [
+    {
+      question: 'How quickly will I get a response?',
+      answer: 'We typically respond within 24 hours during business days. For urgent service issues, please check your booking confirmation for direct provider contact details.'
+    },
+    {
+      question: 'How do I report an issue with a service provider?',
+      answer: 'You can report issues directly through your booking page or by emailing us at teamozarhu@gmail.com. We take all reports seriously and investigate immediately.'
+    },
+    {
+      question: 'Can I request a specific professional?',
+      answer: 'Yes, you can search for and request specific professionals by name or browse their profiles to see availability before booking.'
+    },
+    {
+      question: 'What areas does Ozar cover?',
+      answer: 'We currently operate in Budapest and surrounding areas. We are expanding to other major cities in Hungary soon.'
+    },
+    {
+      question: 'How do I become a service provider on Ozar?',
+      answer: 'Visit our Partner page or send us a Partnership inquiry using the form on this page. We review all applications within 3-5 business days.'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col">
       {/* Header */}
       <Header />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-cyan-500 to-blue-500 text-white py-24">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-700 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
-            <MessageSquare className="w-4 h-4" />
-            <span className="text-sm font-medium">Get in Touch</span>
+      <main className="flex-grow">
+        <section className="relative w-full py-16 md:py-20 bg-white dark:bg-gray-900 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="flex flex-col items-center"
+            >
+              <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
+                Contact Us
+              </h1>
+              <div className="w-16 h-0.5 bg-teal-600 mb-8 rounded-full" />
+              <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
+                We'd love to hear from you. Reach out and we'll respond as soon as we can.
+              </p>
+            </motion.div>
           </div>
-          
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-            Contact Us
-          </h1>
-          <p className="text-xl text-teal-50 max-w-2xl mx-auto mb-8">
-            Have questions? We're here to help. Reach out to our team anytime.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      {/* Contact Info Cards */}
-      <section className="py-12 -mt-16 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Email */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
-              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6">
-                <Mail className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Email Us</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Send us an email anytime
-              </p>
-              <a href="mailto:support@ozar.com" className="text-teal-600 dark:text-teal-400 font-semibold hover:underline">
-                support@ozar.com
-              </a>
-            </div>
-
-            {/* Phone */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mb-6">
-                <Phone className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Call Us</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Mon-Fri from 8am to 6pm
-              </p>
-              <a href="tel:+36201234567" className="text-teal-600 dark:text-teal-400 font-semibold hover:underline">
-                +36 20 123 4567
-              </a>
-            </div>
-
-            {/* Office */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6">
-                <MapPin className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Visit Us</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Come say hello at our office
-              </p>
-              <p className="text-teal-600 dark:text-teal-400 font-semibold">
-                Budapest, Hungary
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Form Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Form */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full mb-4">
-                <Send className="w-4 h-4" />
-                <span className="font-bold">Send Message</span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+        {/* Contact Methods */}
+        <section className="w-full py-16 bg-white dark:bg-gray-900">
+          <div className="max-w-4xl mx-auto px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-sm font-medium tracking-widest text-teal-600 uppercase mb-2">
                 Get in Touch
               </h2>
-              <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
-                Fill out the form below and we'll get back to you as soon as possible.
-              </p>
+            </div>
 
-              {submitted ? (
-                <div className="bg-green-50 dark:bg-green-900/30 border-2 border-green-500 rounded-2xl p-8 text-center">
-                  <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400 mx-auto mb-4" />
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    Message Sent!
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Thank you for contacting us. We'll respond within 24 hours.
-                  </p>
+            <motion.div
+              initial="hidden"
+              animate="show"
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1 }
+                }
+              }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12"
+            >
+              {/* Email */}
+              <motion.a
+                href="mailto:teamozarhu@gmail.com"
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+                }}
+                className="group flex flex-col items-start p-4 pl-6 border-l-2 border-teal-100 dark:border-teal-900 hover:border-teal-600 dark:hover:border-teal-500 transition-colors duration-300"
+              >
+                <div className="flex items-center mb-3">
+                  <Mail className="w-5 h-5 text-teal-600 dark:text-teal-500 mr-3" />
+                  <span className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Email
+                  </span>
                 </div>
-              ) : (
+                <span className="text-lg font-medium text-gray-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                  teamozarhu@gmail.com
+                </span>
+              </motion.a>
+
+              {/* Phone */}
+              <motion.a
+                href="tel:+36705681248"
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+                }}
+                className="group flex flex-col items-start p-4 pl-6 border-l-2 border-teal-100 dark:border-teal-900 hover:border-teal-600 dark:hover:border-teal-500 transition-colors duration-300"
+              >
+                <div className="flex items-center mb-3">
+                  <Phone className="w-5 h-5 text-teal-600 dark:text-teal-500 mr-3" />
+                  <span className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Call
+                  </span>
+                </div>
+                <span className="text-lg font-medium text-gray-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                  +36 70 568 1248
+                </span>
+              </motion.a>
+
+              {/* Location */}
+              <motion.a
+                href="#"
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+                }}
+                className="group flex flex-col items-start p-4 pl-6 border-l-2 border-teal-100 dark:border-teal-900 hover:border-teal-600 dark:hover:border-teal-500 transition-colors duration-300"
+              >
+                <div className="flex items-center mb-3">
+                  <MapPin className="w-5 h-5 text-teal-600 dark:text-teal-500 mr-3" />
+                  <span className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Visit
+                  </span>
+                </div>
+                <span className="text-lg font-medium text-gray-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                  Budapest, Hungary
+                </span>
+              </motion.a>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Contact Form & FAQ Section */}
+        <section className="w-full py-20 bg-gray-50/50 dark:bg-gray-800/30">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
+              {/* Left Column: Contact Form */}
+              <div className="w-full lg:w-7/12">
+                <h2 className="text-sm font-medium tracking-widest text-teal-600 uppercase mb-8">
+                  Send Us a Message
+                </h2>
+
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Name */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                      placeholder="John Doe"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="fullName"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        id="fullName"
+                        name="fullName"
+                        required
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm py-3 px-4"
+                        placeholder="Jane Doe"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm py-3 px-4"
+                        placeholder="jane@example.com"
+                      />
+                    </div>
                   </div>
 
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                      placeholder="john@example.com"
-                    />
-                  </div>
-
-                  {/* Type */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Inquiry Type *
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="inquiryType"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Inquiry Type
                     </label>
                     <select
-                      required
-                      value={formData.type}
-                      onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                      id="inquiryType"
+                      name="inquiryType"
+                      value={formData.inquiryType}
+                      onChange={handleChange}
+                      className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm py-3 px-4"
                     >
-                      <option value="general">General Inquiry</option>
-                      <option value="support">Customer Support</option>
-                      <option value="pro">Professional Account</option>
-                      <option value="partnership">Partnership</option>
-                      <option value="feedback">Feedback</option>
+                      <option>General Inquiry</option>
+                      <option>Service Issue</option>
+                      <option>Partnership</option>
+                      <option>Billing</option>
+                      <option>Other</option>
                     </select>
                   </div>
 
-                  {/* Subject */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Subject *
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="subject"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Subject
                     </label>
                     <input
                       type="text"
+                      id="subject"
+                      name="subject"
                       required
                       value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                      onChange={handleChange}
+                      className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm py-3 px-4"
                       placeholder="How can we help?"
                     />
                   </div>
 
-                  {/* Message */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Message *
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Message
                     </label>
                     <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
                       required
-                      rows={6}
                       value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition resize-none"
+                      onChange={handleChange}
+                      className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm py-3 px-4 resize-y"
                       placeholder="Tell us more about your inquiry..."
                     />
                   </div>
 
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full px-8 py-4 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                        <span>Sending...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-5 h-5" />
-                        <span>Send Message</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-            </div>
-
-            {/* FAQ Section */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full mb-4">
-                <HelpCircle className="w-4 h-4" />
-                <span className="font-bold">Quick Help</span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                Frequently Asked Questions
-              </h2>
-
-              <div className="space-y-4">
-                {/* FAQ 1 */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    How do I book a service?
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Simply search for the service you need, browse professionals, and click "Book Now" to get started. You can schedule for ASAP or a specific time.
-                  </p>
-                </div>
-
-                {/* FAQ 2 */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    How do I become a professional?
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Sign up as a PRO, complete your profile with your skills and experience, and start receiving booking requests from customers.
-                  </p>
-                </div>
-
-                {/* FAQ 3 */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    Is payment secure?
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Yes! All payments are processed securely through our platform. We use industry-standard encryption to protect your information.
-                  </p>
-                </div>
-
-                {/* FAQ 4 */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    What if I'm not satisfied?
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    We have a satisfaction guarantee. Contact our support team and we'll work to resolve any issues with your service.
-                  </p>
-                </div>
-              </div>
-
-              {/* Response Time */}
-              <div className="mt-8 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl p-6 text-white">
-                <div className="flex items-center gap-4 mb-4">
-                  <Clock className="w-8 h-8" />
-                  <div>
-                    <div className="text-sm text-teal-100">Average Response Time</div>
-                    <div className="text-2xl font-bold">Under 24 Hours</div>
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-70 transition-colors duration-200"
+                    >
+                      {isSubmitting ? 'Sending...' : 'Send Message'}
+                      {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
+                    </button>
                   </div>
+
+                  <div className="flex items-center justify-center space-x-2 text-gray-500 dark:text-gray-400">
+                    <Clock className="h-4 w-4" />
+                    <span className="text-sm">Typically responds within 24 hours</span>
+                  </div>
+                </form>
+              </div>
+
+              {/* Right Column: FAQ */}
+              <div className="w-full lg:w-5/12">
+                <h2 className="text-sm font-medium tracking-widest text-teal-600 uppercase mb-8">
+                  Frequently Asked Questions
+                </h2>
+
+                <div className="space-y-1">
+                  {faqs.map((faq, index) => (
+                    <div
+                      key={index}
+                      className="border-b border-gray-100 dark:border-gray-700 last:border-0"
+                    >
+                      <button
+                        onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                        className="w-full py-4 flex items-center justify-between text-left focus:outline-none group"
+                      >
+                        <span
+                          className={`text-sm md:text-base font-medium transition-colors duration-200 ${
+                            openIndex === index
+                              ? 'text-teal-700 dark:text-teal-400'
+                              : 'text-gray-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400'
+                          }`}
+                        >
+                          {faq.question}
+                        </span>
+                        <ChevronDown
+                          className={`h-5 w-5 text-gray-400 dark:text-gray-500 transition-transform duration-300 ${
+                            openIndex === index
+                              ? 'transform rotate-180 text-teal-600 dark:text-teal-400'
+                              : ''
+                          }`}
+                        />
+                      </button>
+                      <AnimatePresence>
+                        {openIndex === index && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pb-4 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                              {faq.answer}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ))}
                 </div>
-                <p className="text-teal-50">
-                  Our support team typically responds to inquiries within 24 hours during business days.
-                </p>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* Footer */}
       <Footer />

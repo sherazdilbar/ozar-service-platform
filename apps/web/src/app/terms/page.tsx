@@ -1,419 +1,456 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { 
+import {
+  Search,
+  ChevronDown,
+  Check,
+  ArrowUp,
   FileText,
-  CheckCircle,
-  AlertTriangle,
-  Scale,
-  Users,
-  CreditCard,
-  Ban,
-  Shield,
-  Mail,
-  Sparkles
+  AlertCircle,
 } from 'lucide-react';
 
-export default function TermsOfServicePage() {
+// Types & Data
+type TermSection = {
+  id: string;
+  title: string;
+  content: React.ReactNode;
+};
+
+const termsData: TermSection[] = [
+  {
+    id: 'acceptance',
+    title: '1. Acceptance of Terms',
+    content: (
+      <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p>
+          By accessing or using the Ozar platform ("Service"), you agree to be
+          bound by these Terms of Service ("Terms"). If you disagree with any
+          part of the terms, you may not access the Service.
+        </p>
+        <p>
+          These Terms apply to all visitors, users, and others who access or use
+          the Service. Your access to and use of the Service is conditioned on
+          your acceptance of and compliance with these Terms.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: 'accounts',
+    title: '2. User Accounts',
+    content: (
+      <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p>
+          When you create an account with us, you must provide us information
+          that is accurate, complete, and current at all times. Failure to do so
+          constitutes a breach of the Terms, which may result in immediate
+          termination of your account on our Service.
+        </p>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>
+            You are responsible for safeguarding the password that you use to
+            access the Service.
+          </li>
+          <li>You agree not to disclose your password to any third party.</li>
+          <li>
+            You must notify us immediately upon becoming aware of any breach of
+            security or unauthorized use of your account.
+          </li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    id: 'services',
+    title: '3. Platform Services',
+    content: (
+      <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p>
+          Ozar provides a suite of tools for connecting customers with service professionals in Budapest. We
+          reserve the right to modify, suspend, or discontinue any part of the
+          Service at any time with or without notice.
+        </p>
+        <p>
+          We do not guarantee that the Service will be available at all times or
+          in all locations. We may experience hardware, software, or other
+          problems or need to perform maintenance related to the Service,
+          resulting in interruptions, delays, or errors.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: 'payments',
+    title: '4. Payments and Fees',
+    content: (
+      <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p>
+          Some parts of the Service are billed on a subscription basis
+          ("Subscription(s)"). You will be billed in advance on a recurring and
+          periodic basis ("Billing Cycle"). Billing cycles are set either on a
+          monthly or annual basis, depending on the type of subscription plan
+          you select when purchasing a Subscription.
+        </p>
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 text-sm">
+          <strong>Note:</strong> All fees are exclusive of all taxes, levies, or
+          duties imposed by taxing authorities, and you shall be responsible for
+          payment of all such taxes, levies, or duties.
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'prohibited',
+    title: '5. Prohibited Activities',
+    content: (
+      <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p>You may not use the Service for any of the following purposes:</p>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>
+            In any way that violates any applicable national or international
+            law or regulation.
+          </li>
+          <li>
+            For the purpose of exploiting, harming, or attempting to exploit or
+            harm minors in any way.
+          </li>
+          <li>
+            To transmit, or procure the sending of, any advertising or
+            promotional material, including any "junk mail", "chain letter",
+            "spam," or any other similar solicitation.
+          </li>
+          <li>
+            To impersonate or attempt to impersonate the Company, a Company
+            employee, another user, or any other person or entity.
+          </li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    id: 'liability',
+    title: '6. Limitation of Liability',
+    content: (
+      <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p>
+          In no event shall Ozar, nor its directors, employees, partners,
+          agents, suppliers, or affiliates, be liable for any indirect,
+          incidental, special, consequential or punitive damages, including
+          without limitation, loss of profits, data, use, goodwill, or other
+          intangible losses, resulting from your access to or use of or
+          inability to access or use the Service.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: 'changes',
+    title: '7. Changes to Terms',
+    content: (
+      <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p>
+          We reserve the right, at our sole discretion, to modify or replace
+          these Terms at any time. If a revision is material we will try to
+          provide at least 30 days notice prior to any new terms taking effect.
+          What constitutes a material change will be determined at our sole
+          discretion.
+        </p>
+        <p>
+          By continuing to access or use our Service after those revisions
+          become effective, you agree to be bound by the revised terms. If you
+          do not agree to the new terms, please stop using the Service.
+        </p>
+      </div>
+    ),
+  },
+];
+
+// Circular Progress Component
+function CircularProgress({ value, total }: { value: number; total: number }) {
+  const radius = 20;
+  const circumference = 2 * Math.PI * radius;
+  const percentage = (value / total) * 100;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Header */}
+    <div className="relative flex items-center justify-center">
+      <svg className="transform -rotate-90 w-12 h-12">
+        <circle
+          className="text-gray-200 dark:text-gray-700"
+          strokeWidth="3"
+          stroke="currentColor"
+          fill="transparent"
+          r={radius}
+          cx="24"
+          cy="24"
+        />
+        <circle
+          className="text-teal-600 transition-all duration-1000 ease-out"
+          strokeWidth="3"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          stroke="currentColor"
+          fill="transparent"
+          r={radius}
+          cx="24"
+          cy="24"
+        />
+      </svg>
+      <span className="absolute text-xs font-semibold text-gray-700 dark:text-gray-300">
+        {Math.round(percentage)}%
+      </span>
+    </div>
+  );
+}
+
+export default function TermsOfServicePage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [reviewedSections, setReviewedSections] = useState<Set<string>>(new Set());
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Filter terms based on search
+  const filteredTerms = termsData.filter((term) =>
+    term.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Handle scroll for back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleSection = (id: string) => {
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+      // Mark as reviewed permanently when opened
+      setReviewedSections((prev) => {
+        const newReviewed = new Set(prev);
+        newReviewed.add(id);
+        return newReviewed;
+      });
+    }
+    setExpandedSections(newExpanded);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  const progress = reviewedSections.size;
+  const totalSections = termsData.length;
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans text-gray-900 dark:text-gray-100">
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-teal-500 text-white py-24">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-700 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
-            <FileText className="w-4 h-4" />
-            <span className="text-sm font-medium">Legal Agreement</span>
+      {/* Hero / Banner */}
+      <div className="bg-teal-50 dark:bg-teal-900/20 border-b border-teal-100 dark:border-teal-800">
+        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-800 text-teal-800 dark:text-teal-200 text-xs font-medium mb-6">
+            <FileText className="w-3 h-3" />
+            Last Updated: February 2026
           </div>
-          
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
             Terms of Service
           </h1>
-          <p className="text-xl text-blue-50 max-w-2xl mx-auto mb-4">
-            Please read these terms carefully before using Ozar
-          </p>
-          <p className="text-sm text-blue-100">
-            Last updated: January 2024
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Please read these terms carefully before using our platform. We've
+            made them as clear and transparent as possible.
           </p>
         </div>
-      </section>
+      </div>
 
-      {/* Quick Links */}
-      <section className="py-8 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-4 justify-center">
-            <a href="#acceptance" className="px-4 py-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition">
-              Acceptance
-            </a>
-            <a href="#user-accounts" className="px-4 py-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition">
-              User Accounts
-            </a>
-            <a href="#services" className="px-4 py-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition">
-              Services
-            </a>
-            <a href="#payments" className="px-4 py-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition">
-              Payments
-            </a>
-            <a href="#prohibited" className="px-4 py-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition">
-              Prohibited Use
-            </a>
+      <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 relative">
+        {/* Sticky Controls Bar */}
+        <div className="sticky top-16 z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-4 mb-8 border-b border-gray-200 dark:border-gray-700 transition-all">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="w-full sm:max-w-md relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search terms..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-800 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none transition-all"
+              />
+            </div>
+            <div className="hidden sm:flex items-center gap-3 bg-white dark:bg-gray-800 pl-4 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="text-right">
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Reviewed
+                </p>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">
+                  {progress} of {totalSections}
+                </p>
+              </div>
+              <CircularProgress value={progress} total={totalSections} />
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Introduction */}
-          <div className="mb-16">
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl p-8 border-2 border-blue-200 dark:border-blue-800">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Scale className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                    Agreement to Terms
-                  </h2>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    By accessing and using Ozar, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our platform.
-                  </p>
-                </div>
+        {/* Accordion List */}
+        <div className="space-y-4">
+          <AnimatePresence>
+            {filteredTerms.map((term) => {
+              const isOpen = expandedSections.has(term.id);
+              return (
+                <motion.div
+                  key={term.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className={`group rounded-xl border transition-all duration-300 overflow-hidden ${
+                    isOpen
+                      ? 'bg-white dark:bg-gray-800 border-teal-200 dark:border-teal-700 shadow-lg shadow-teal-900/5 ring-1 ring-teal-500/20'
+                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-teal-300 dark:hover:border-teal-600 hover:shadow-md'
+                  }`}
+                >
+                  <button
+                    onClick={() => toggleSection(term.id)}
+                    className="flex w-full items-center justify-between p-6 text-left focus:outline-none"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${
+                          isOpen
+                            ? 'bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 group-hover:bg-teal-50 dark:group-hover:bg-teal-900/50 group-hover:text-teal-600 dark:group-hover:text-teal-400'
+                        }`}
+                      >
+                        {isOpen ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <span className="text-xs font-bold">
+                            {term.id.charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <span
+                        className={`text-lg font-semibold transition-colors ${
+                          isOpen ? 'text-teal-900 dark:text-teal-100' : 'text-gray-900 dark:text-white'
+                        }`}
+                      >
+                        {term.title}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`h-5 w-5 text-gray-400 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180 text-teal-600 dark:text-teal-400' : ''
+                      }`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      >
+                        <div className="px-6 pb-6 pt-0 border-t border-transparent">
+                          <div className="prose prose-teal dark:prose-invert prose-sm max-w-none pt-4 border-t border-dashed border-teal-100 dark:border-teal-800">
+                            {term.content}
+                          </div>
+                          <div className="mt-6 flex justify-end">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleSection(term.id);
+                              }}
+                              className="px-4 py-2 text-sm font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-900 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-lg transition-colors"
+                            >
+                              Close Section
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+
+          {filteredTerms.length === 0 && (
+            <div className="text-center py-12">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+                <Search className="h-6 w-6 text-gray-400" />
               </div>
-            </div>
-          </div>
-
-          {/* Acceptance */}
-          <div id="acceptance" className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                1. Acceptance of Terms
-              </h2>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                These Terms of Service constitute a legally binding agreement between you and Ozar. By using our platform, you represent that:
-              </p>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                  <span>You are at least 18 years old</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                  <span>You have the legal capacity to enter into binding contracts</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                  <span>You will comply with all applicable laws and regulations</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                  <span>All information you provide is accurate and truthful</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* User Accounts */}
-          <div id="user-accounts" className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                2. User Accounts
-              </h2>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                  Account Registration
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-3">
-                  To use certain features, you must create an account. You agree to:
-                </p>
-                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li className="flex items-start gap-2">
-                    <span className="text-teal-600 mt-1">•</span>
-                    <span>Provide accurate and complete information</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-teal-600 mt-1">•</span>
-                    <span>Maintain the security of your password</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-teal-600 mt-1">•</span>
-                    <span>Notify us immediately of any unauthorized access</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-teal-600 mt-1">•</span>
-                    <span>Be responsible for all activities under your account</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                  Professional Accounts
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Professionals must undergo verification and maintain accurate credentials, licenses, and insurance information. We reserve the right to verify and approve all professional accounts.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Services */}
-          <div id="services" className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                3. Platform Services
-              </h2>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                  Service Marketplace
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Ozar provides a platform connecting customers with service professionals. We are not a party to the actual service agreement between customers and professionals. We do not employ professionals and are not responsible for their actions or the quality of services provided.
-                </p>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                  Booking and Cancellation
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-3">
-                  Customers and professionals must adhere to our booking and cancellation policies:
-                </p>
-                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li className="flex items-start gap-2">
-                    <span className="text-teal-600 mt-1">•</span>
-                    <span>Bookings must be made in good faith</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-teal-600 mt-1">•</span>
-                    <span>Cancellations may incur fees as per our policy</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-teal-600 mt-1">•</span>
-                    <span>No-shows may result in account penalties</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Payments */}
-          <div id="payments" className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                4. Payments and Fees
-              </h2>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                  Payment Processing
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-3">
-                  All payments are processed securely through our platform:
-                </p>
-                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                    <span>Customers pay through the platform for all services</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                    <span>Platform fees are clearly disclosed before booking</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                    <span>Professionals receive payment after service completion</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                    <span>Refunds are processed according to our refund policy</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                  Service Fees
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Ozar charges a platform fee for facilitating connections between customers and professionals. This fee is typically 15% of the service price and is added to the total booking cost.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Prohibited Use */}
-          <div id="prohibited" className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <Ban className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                5. Prohibited Activities
-              </h2>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                You agree not to:
-              </p>
-              <div className="grid md:grid-cols-2 gap-3">
-                <div className="flex items-start gap-2">
-                  <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300">Violate any laws or regulations</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300">Provide false information</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300">Impersonate others</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300">Harass or abuse users</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300">Circumvent platform fees</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300">Spam or send unsolicited messages</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300">Hack or compromise security</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300">Use automated systems (bots)</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-xl p-6">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0" />
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    Violation Consequences
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Violation of these terms may result in account suspension or termination, legal action, and reporting to authorities.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Liability */}
-          <div className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                6. Limitation of Liability
-              </h2>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Ozar provides the platform "as is" and makes no warranties about:
-              </p>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400 mb-4">
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-600 mt-1">•</span>
-                  <span>The quality, safety, or legality of services provided by professionals</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-600 mt-1">•</span>
-                  <span>The accuracy of user-provided information</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-600 mt-1">•</span>
-                  <span>Uninterrupted or error-free platform operation</span>
-                </li>
-              </ul>
-              <p className="text-gray-600 dark:text-gray-400">
-                We are not liable for any indirect, incidental, or consequential damages arising from your use of the platform.
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                No results found
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
+                Try adjusting your search query.
               </p>
             </div>
-          </div>
+          )}
+        </div>
 
-          {/* Changes to Terms */}
-          <div className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                7. Changes to Terms
-              </h2>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-              <p className="text-gray-600 dark:text-gray-400">
-                We reserve the right to modify these Terms of Service at any time. We will notify users of significant changes via email or platform notification. Continued use of the platform after changes constitutes acceptance of the new terms.
-              </p>
-            </div>
-          </div>
-
-          {/* Contact */}
-          <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-8 text-white text-center">
-            <Mail className="w-12 h-12 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-3">
-              Questions About These Terms?
+        {/* Questions CTA */}
+        <div className="mt-16 rounded-2xl bg-gray-900 dark:bg-gray-800 p-8 sm:p-12 text-center relative overflow-hidden border border-gray-800 dark:border-gray-700">
+          <div className="absolute top-0 right-0 -mr-8 -mt-8 h-32 w-32 rounded-full bg-teal-500/20 blur-2xl"></div>
+          <div className="absolute bottom-0 left-0 -ml-8 -mb-8 h-32 w-32 rounded-full bg-blue-500/20 blur-2xl"></div>
+          <div className="relative z-10">
+            <AlertCircle className="h-10 w-10 text-teal-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-4">
+              Still have questions?
             </h2>
-            <p className="text-blue-100 mb-6">
-              If you have any questions about our Terms of Service, please contact us
+            <p className="text-gray-300 mb-8 max-w-xl mx-auto">
+              Our legal team is available to clarify any points in these terms.
+              We believe in full transparency with our users.
             </p>
-            <a
-              href="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-gray-50 transition"
-            >
-              <Mail className="w-5 h-5" />
-              <span>Contact Us</span>
-            </a>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="/contact"
+                className="inline-flex items-center justify-center px-6 py-3 bg-teal-500 hover:bg-teal-400 text-white rounded-lg font-medium transition-colors"
+              >
+                Contact Legal Team
+              </a>
+              <a
+                href="/help"
+                className="inline-flex items-center justify-center px-6 py-3 border border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg font-medium transition-colors"
+              >
+                Visit Help Center
+              </a>
+            </div>
           </div>
         </div>
-      </section>
+      </main>
 
-      {/* Footer */}
       <Footer />
+
+      {/* Floating Back to Top */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 z-40 p-3 rounded-full bg-teal-600 text-white shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
