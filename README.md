@@ -91,7 +91,8 @@ cp .env.example .env
 # Run database migrations
 npx prisma migrate dev
 
-# Seed the database
+# Seed the database with dummy/sample data
+# Note: All seeded data uses fictional names, emails, and contact info
 npx prisma db seed
 
 # Start the backend
@@ -228,7 +229,7 @@ npm run test
 
 ## 📄 License
 
-This project is proprietary and confidential.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👥 Team
 
